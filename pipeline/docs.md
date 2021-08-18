@@ -1,0 +1,1 @@
+rsync -avm --del --dry-run --stats --include='*-images.epub' -f 'hide,! */' aleph.gutenberg.org::gutenberg-epub "/media/gytdau/Filestore/gutenberg
