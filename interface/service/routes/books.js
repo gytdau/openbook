@@ -4,7 +4,7 @@ var db = require("better-sqlite3")("database.sqlite3")
 
 router.get("/search", function (req, res, next) {})
 
-router.get("/book/:title", function (req, res, next) {
+router.get("/get/:title", function (req, res, next) {
   const book = db
     .prepare(
       `SELECT * FROM books 

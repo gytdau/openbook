@@ -1,6 +1,8 @@
 import react, { useState } from "react"
 import InlineTOC from "./InlineTOC"
-let ChapterHeading = () => {
+
+let ChapterHeading = (props) => {
+  let chapters = props.chapters
   let [open, setOpen] = useState(false)
   let chevron = open ? "mdi mdi-chevron-up" : "mdi mdi-chevron-down"
   return (
@@ -16,7 +18,7 @@ let ChapterHeading = () => {
         </div>
         {open ? (
           <div className="chapter-toc">
-            <InlineTOC />
+            <InlineTOC chapters={chapters} />
             <div
               className="chapter-toc__close btn btn-outline-secondary"
               onClick={() => {

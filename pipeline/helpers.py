@@ -30,8 +30,6 @@ def process_epub(filename, output):
 
     shutil.unpack_archive(filename, filename_without_extension, "zip")
 
-    # todo: extract author and title
-
     def get_file(filename, relative_to=None):
 
         if relative_to:
