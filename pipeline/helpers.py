@@ -15,17 +15,17 @@ def normalize_navlink_src(filename):
     return filename
 
 
-def process_chapter(chapter: BeautifulSoup, filename, slug):
+def process_chapter(chapter: BeautifulSoup, filename, slug, output):
     body = chapter.find("body")
     body.name = "div"
     body = str(body)
-    result_path = f'output/{slug}/{filename}'
+    result_path = f'{output}/{slug}/{filename}'
     with open(result_path, "w") as f:
         f.write(body)
     return result_path
 
 
-def process_epub(filename):
+def process_epub(filename, output):
     filename_without_extension = filename.split(".")[0]
 
     shutil.unpack_archive(filename, filename_without_extension, "zip")
@@ -51,7 +51,7 @@ def process_epub(filename):
     author = content.find("dc:creator").text
 
     slug = f'{slugify(title)}_{random.randint(0, 1000)}'
-    os.makedirs(f'output/{slug}', exist_ok=True)
+    os.makedirs(f'{output}/{slug}', exist_ok=True)
 
     ncx, ncx_path = get_file(content.select_one(
         "#ncx").attrs["href"], content_path)
@@ -68,7 +68,7 @@ def process_epub(filename):
         chapter, _ = get_file(
             chapter_path, content_path)
 
-        result_path = process_chapter(chapter, chapter_path, slug)
+        result_path = process_chapter(chapter, chapter_path, slug, output)
 
         chapters.append((
             chapter_title,
@@ -78,9 +78,9 @@ def process_epub(filename):
     shutil.rmtree(filename_without_extension)
     return ((
         title,
-        description,
         author,
         slug,
+        description,
     ), chapters)
 
 
@@ -119,11 +119,11 @@ def add_chapters(book_id, chapters, con: sqlite3.Connection):
     con.commit()
 
 
-def process_epubs(filenames, con: sqlite3.Connection):
+def process_epubs(filenames, con: sqlite3.Connection, output):
     os.makedirs("output", exist_ok=True)
     create_tables(con)
 
     for filename in filenames:
-        book, chapters = process_epub(filename)
+        book, chapters = process_epub(filename, output)
         book_id = add_book(book, con)
         add_chapters(book_id, chapters, con)
