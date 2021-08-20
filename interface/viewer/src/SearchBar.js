@@ -40,6 +40,7 @@ function SearchBar() {
             onKeyPress={(event) => {
               if (event.key == "Enter") {
                 history.push(`/search/${searchString}`)
+                event.preventDefault()
               }
             }}
             class="form-control border-0"

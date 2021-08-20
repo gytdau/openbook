@@ -10,12 +10,15 @@ let ChapterHeading = (props) => {
     <div className="row">
       <div className="col-md-8 offset-md-2">
         <div
-          className="chapter"
+          className="chapter-heading"
           onClick={() => {
             setOpen(!open)
           }}
         >
-          {chapterHeading} <i className={chevron}></i>
+          <div className="chapter-heading__title">{chapterHeading}</div>
+          <div className="chapter-heading__chevron">
+            <i className={chevron}></i>
+          </div>
         </div>
         {open ? (
           <div className="chapter-toc">
