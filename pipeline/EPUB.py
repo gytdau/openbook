@@ -80,7 +80,7 @@ class EPUB(object):
         self.chapters.sort()
 
     def is_valid(self):
-        return self.ezip.testzip()
+        return not self.ezip.testzip()
 
     def list_files(self):
         return self.ezip.namelist()
