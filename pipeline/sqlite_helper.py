@@ -27,6 +27,11 @@ class sqlite_helper(object):
         )''')
         self.con.commit()
 
+    def drop_tables(self):
+        cur = self.con.cursor()
+        for table_name in ['chapters', 'books']:
+            cur.execute(f"DROP TABLE IF EXISTS {table_name};")
+        self.con.commit()
 
     def add_book(self, title, author, slug, description):
         cur = self.con.cursor()
