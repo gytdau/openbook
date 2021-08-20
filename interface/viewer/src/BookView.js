@@ -5,13 +5,18 @@ import InlineTOC from "./InlineTOC"
 import ChapterHeading from "./ChapterHeading"
 import ChapterView from "./ChapterView"
 import { Link } from "react-router-dom"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 function BookView(props) {
   let book = props.book
   let [renderedChapters, setRenderedChapters] = useState([
     parseInt(props.chapterId),
   ])
+  useEffect(() => {
+    setRenderedChapters([parseInt(props.chapterId)])
+  }, [props.chapterId])
+
+  let isHeaderHidden = parseInt(props.chapterId) != 0
 
   let last = renderedChapters[renderedChapters.length - 1]
   let isLast = last == props.book.chapters.length - 1
@@ -39,21 +44,25 @@ function BookView(props) {
           </div>
         </div>
       </nav>
-      <main class="container">
-        <div className="row">
-          <div className="col-md-8 offset-md-2">
-            <div class="title-well">
-              <h1 class="title-well__title">{book.title}</h1>
-              <div class="title-well__details">
-                {book.author ? (
-                  <div class="detail">by {book.author}</div>
-                ) : null}
-                <div class="detail">Published by Project Gutenberg</div>
+      {isHeaderHidden ? (
+        <div className="container m-4 p-4"></div>
+      ) : (
+        <main class="container">
+          <div className="row">
+            <div className="col-md-8 offset-md-2">
+              <div class="title-well">
+                <h1 class="title-well__title">{book.title}</h1>
+                <div class="title-well__details">
+                  {book.author ? (
+                    <div class="detail">by {book.author}</div>
+                  ) : null}
+                  <div class="detail">Published by Project Gutenberg</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+      )}
       <InfiniteScroll
         dataLength={renderedChapters.length}
         next={fetchData}
