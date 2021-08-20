@@ -12,6 +12,13 @@ import random
 class EPUB(object):
 
     @staticmethod
+    def _try_get_text(content, selector):
+        elem = content.find(selector)
+        if elem and elem.text:
+            return elem.text
+        return ""
+
+    @staticmethod
     def _join_path(path, filename):
         """
         epub path are unix based, we require this method for this to work correctly on windows
@@ -42,10 +49,9 @@ class EPUB(object):
         content_directory_path = os.path.dirname(content_path)
         content = self.get_file_content_xml(content_path)
 
-        self.title = content.find("dc:title").text
-        description_element = content.find("dc:description")
-        self.description = description_element.text if description_element else ""
-        self.author = content.find("dc:creator").text
+        self.title = self._try_get_text(content, "dc:title")
+        self.description = self._try_get_text(content, "dc:description")
+        self.author = self._try_get_text(content, "dc:creator")
         self.slug = f'{slugify(self.title)}_{random.randint(0, 1000)}'
 
         print(f"Reading: {self}")
