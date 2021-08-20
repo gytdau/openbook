@@ -24,7 +24,7 @@ function SearchBar() {
   const history = useHistory()
 
   return (
-    <div className="search">
+    <div className="search-bar">
       <form>
         <div class="input-group border-secondary">
           <span class="input-group-prepend">
