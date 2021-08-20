@@ -7,15 +7,13 @@ import { useEffect, useState } from "react"
 import BookView from "./BookView"
 import { Redirect, useParams } from "react-router-dom"
 
-const SERVER = "http://localhost:5000"
-
 function Book() {
   let { slug, chapterId } = useParams()
 
   let [book, setBook] = useState(null)
 
   useEffect(() => {
-    axios.get(`${SERVER}/books/get/${slug}`).then((value) => {
+    axios.get(`/books/get/${slug}`).then((value) => {
       setBook(value.data)
     })
   }, [slug, setBook])

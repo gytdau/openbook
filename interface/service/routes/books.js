@@ -20,7 +20,11 @@ router.get("/get/:title", function (req, res, next) {
 
   book.chapters = chapters
   res.json(book)
-  return
+})
+
+router.get("/catalog", function (req, res, next) {
+  const books = db.prepare(`SELECT * FROM books`).all()
+  res.json(books)
 })
 
 module.exports = router

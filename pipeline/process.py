@@ -59,8 +59,10 @@ else:
     sys.exit()
 
 print(f"Found {len(files)} files")
-for file in files:
-    print(file)
+
+if args.dry_run:
+    for file in files:
+        print(file)
 
 if not args.dry_run:
     process_epubs(files, con, output_directory)

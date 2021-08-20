@@ -5,8 +5,6 @@ import ChapterHeading from "./ChapterHeading"
 import { useEffect, useState } from "react"
 import axios from "axios"
 
-const SERVER = "http://localhost:5000"
-
 function ChapterView(props) {
   let chapterId = props.chapterId
   let chapters = props.book.chapters
@@ -14,7 +12,7 @@ function ChapterView(props) {
   let location = chapters[chapterId].location
   useEffect(() => {
     setChapterContent(null)
-    axios.get(`${SERVER}/output/${location}`).then((response) => {
+    axios.get(`/output/${location}`).then((response) => {
       console.log(response.data)
       setChapterContent(response.data)
     })

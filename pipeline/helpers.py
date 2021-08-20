@@ -26,6 +26,13 @@ def process_chapter(chapter: BeautifulSoup, filename, slug, output):
     return result_path
 
 
+def try_get_text(content, selector):
+    elem = content.find(selector)
+    if elem and elem.text:
+        return elem.text
+    return ""
+
+
 def process_epub(filename, output):
     filename_without_extension = filename.split(".")[0]
 
@@ -44,10 +51,9 @@ def process_epub(filename, output):
     content, content_path = get_file(
         container.find("rootfile").attrs["full-path"])
 
-    title = content.find("dc:title").text
-    description_element = content.find("dc:description")
-    description = description_element.text if description_element else ""
-    author = content.find("dc:creator").text
+    title = try_get_text(content, "dc:title")
+    description = try_get_text(content, "dc:description")
+    author = try_get_text(content, "dc:creator")
 
     slug = f'{slugify(title)}_{random.randint(0, 1000)}'
     os.makedirs(f'{output}/{slug}', exist_ok=True)
@@ -122,7 +128,7 @@ def process_epubs(filenames, con: sqlite3.Connection, output):
     create_tables(con)
 
     for filename in filenames:
-        print(".", end="")
+        print(".", end="", flush=True)
         book, chapters = process_epub(str(filename), output)
         book_id = add_book(book, con)
         add_chapters(book_id, chapters, con)
