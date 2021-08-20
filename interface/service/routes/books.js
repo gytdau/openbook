@@ -27,4 +27,10 @@ router.get("/catalog", function (req, res, next) {
   res.json(books)
 })
 
+router.get("/search/:query", function (req, res, next) {
+  const books = db
+    .prepare(`SELECT * FROM books WHERE title LIKE ('%' || (?) || '%')`)
+    .all(req.params.query)
+  res.json(books)
+})
 module.exports = router

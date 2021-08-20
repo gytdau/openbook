@@ -4,6 +4,8 @@ import Book from "./Book"
 import BookView from "./BookView"
 import axios from "axios"
 import Catalog from "./Catalog"
+import Search from "./Search"
+import Home from "./Home"
 
 axios.defaults.baseURL = "http://localhost:5000"
 
@@ -11,6 +13,12 @@ function App() {
   return (
     <Router>
       <Switch>
+        <Route path="/" exact>
+          <Home />
+        </Route>
+        <Route path="/search/:search" exact>
+          <Search />
+        </Route>
         <Route path="/catalog">
           <Catalog />
         </Route>

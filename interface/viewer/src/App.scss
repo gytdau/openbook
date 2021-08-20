@@ -138,3 +138,25 @@ h6 {
   max-width: 100%;
   width: auto;
 }
+.input-group {
+  border: 1px solid #eee;
+  border-radius: 100px;
+  background-color: white;
+  & > input {
+    background-color: transparent;
+    border-top-right-radius: 100px;
+    border-bottom-right-radius: 100px;
+  }
+}
+.search-result {
+  text-decoration: none;
+  color: unset;
+  h2 {
+    font-family: "Crimson Pro";
+    font-size: 1.9rem;
+
+  }
+  border-bottom: 1px solid #eee;
+  display: block;
+  padding: 0.75em 0;
+}
