@@ -19,8 +19,9 @@ def process_chapter(chapter: BeautifulSoup, filename, slug, output):
     body = chapter.find("body")
     body.name = "div"
     body = str(body)
-    result_path = f'{output}/{slug}/{filename}'
-    with open(result_path, "w") as f:
+    result_path = f'{slug}/{filename}'
+    path_to_write_to = f'{output}/{result_path}'
+    with open(path_to_write_to, "w") as f:
         f.write(body)
     return result_path
 

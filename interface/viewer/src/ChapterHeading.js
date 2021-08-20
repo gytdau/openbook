@@ -18,7 +18,7 @@ let ChapterHeading = (props) => {
         </div>
         {open ? (
           <div className="chapter-toc">
-            <InlineTOC chapters={chapters} />
+            <InlineTOC chapters={chapters} slug={props.slug} />
             <div
               className="chapter-toc__close btn btn-outline-secondary"
               onClick={() => {
