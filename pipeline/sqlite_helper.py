@@ -1,5 +1,7 @@
 import sqlite3
 
+from helpers import join_path
+
 class sqlite_helper(object):
 
     def __init__(self, filename):
@@ -26,17 +28,17 @@ class sqlite_helper(object):
         self.con.commit()
 
 
-    def add_book(self, book):
+    def add_book(self, title, author, slug, description):
         cur = self.con.cursor()
         cur.execute(
-            '''INSERT INTO books (title, author, slug, description) VALUES (?, ?, ?, ?)''', book)
+            '''INSERT INTO books (title, author, slug, description) VALUES (?, ?, ?, ?)''', (title, author, slug, description))
         self.con.commit()
         return cur.lastrowid
 
 
-    def add_chapters(self, book_id, chapters):
+    def add_chapters(self, book_id, chapters, slug):
         cur = self.con.cursor()
-        for title, location in chapters:
+        for _, title, location, _ in chapters:
             cur.execute(
-                '''INSERT INTO chapters (book_id, title, location) VALUES (?, ?, ?)''', (book_id, title, location))
+                '''INSERT INTO chapters (book_id, title, location) VALUES (?, ?, ?)''', (book_id, title, join_path(slug, location)))
         self.con.commit()

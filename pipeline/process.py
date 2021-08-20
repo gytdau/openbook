@@ -1,5 +1,6 @@
 import sys
-from helpers import process_epubs
+from EPUB import EPUB
+from sqlite_helper import sqlite_helper
 import sqlite3
 import os
 import shutil
@@ -46,7 +47,6 @@ if not args.keep:
             os.remove(database_directory)
 
 os.makedirs(output_directory, exist_ok=True)
-con = sqlite3.connect(database_directory)
 
 if args.input_path:
     files = [args.input_path]
@@ -65,4 +65,20 @@ if args.dry_run:
         print(file)
 
 if not args.dry_run:
-    process_epubs(files, con, output_directory)
+    con = sqlite_helper(database_directory)
+    for file in files:
+        epub = EPUB(file)
+        if(not epub.is_valid()):
+            print(f"warning: ({file}) not a valid epub")
+
+    processed_epub_output = os.path.join(output_directory, epub.slug)
+    print(processed_epub_output)
+    for order, chapter_title, chapter_path, chapter_content in epub.get_chapters():
+        print(chapter_path)
+        final_chapter_path = os.path.join(processed_epub_output, chapter_path)
+        os.makedirs(os.path.dirname(final_chapter_path), exist_ok=True)
+        with open(os.path.join(processed_epub_output, chapter_path), "w", encoding="utf-8") as f:
+            f.write(chapter_content)
+    book_id = con.add_book(epub.title, epub.author, epub.slug, epub.description)
+    con.add_chapters(book_id, epub.get_chapters(), epub.slug)
+

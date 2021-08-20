@@ -7,7 +7,7 @@ from slugify import slugify
 from bs4 import BeautifulSoup
 
 import random
-
+from helpers import join_path
 
 class EPUB(object):
 
@@ -17,13 +17,6 @@ class EPUB(object):
         if elem and elem.text:
             return elem.text
         return ""
-
-    @staticmethod
-    def _join_path(path, filename):
-        """
-        epub path are unix based, we require this method for this to work correctly on windows
-        """
-        return '/'.join([path, filename])
 
     def _process_chapter(self, chapter: BeautifulSoup):
         body = chapter.find("body")
@@ -56,7 +49,7 @@ class EPUB(object):
 
         print(f"Reading: {self}")
 
-        ncx = self.get_file_content_xml(self._join_path(content_directory_path, content.select_one("#ncx").attrs["href"]))
+        ncx = self.get_file_content_xml(join_path(content_directory_path, content.select_one("#ncx").attrs["href"]))
 
         self.chapters = []
 
@@ -65,7 +58,7 @@ class EPUB(object):
 
             chapter_title = navpoint.find("text").text
             chapter_path = self._normalize_navlink_src(navpoint.find("content").attrs["src"])
-            chapter = self.get_file_content_xml(self._join_path(content_directory_path, chapter_path))
+            chapter = self.get_file_content_xml(join_path(content_directory_path, chapter_path))
 
             print(f"\t- Processing Chapter: {chapter_title}")
 
