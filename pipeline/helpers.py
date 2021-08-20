@@ -119,10 +119,12 @@ def add_chapters(book_id, chapters, con: sqlite3.Connection):
 
 
 def process_epubs(filenames, con: sqlite3.Connection, output):
-    os.makedirs("output", exist_ok=True)
     create_tables(con)
 
     for filename in filenames:
-        book, chapters = process_epub(filename, output)
+        print(".", end="")
+        book, chapters = process_epub(str(filename), output)
         book_id = add_book(book, con)
         add_chapters(book_id, chapters, con)
+
+    print("Done")

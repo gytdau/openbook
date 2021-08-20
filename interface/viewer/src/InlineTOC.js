@@ -6,7 +6,14 @@ let InlineTOC = (props) => {
       <ol>
         {props.chapters.map((chapter, index) => (
           <li>
-            <Link to={`/${props.slug}/${index}/test`}>{chapter.title}</Link>
+            <Link
+              to={`/${props.slug}/${index}/test`}
+              onClick={() => {
+                props.close()
+              }}
+            >
+              {chapter.title}
+            </Link>
           </li>
         ))}
       </ol>

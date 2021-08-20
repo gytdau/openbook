@@ -3,6 +3,7 @@ import InlineTOC from "./InlineTOC"
 
 let ChapterHeading = (props) => {
   let chapters = props.chapters
+  let chapterHeading = chapters[props.chapterId].title
   let [open, setOpen] = useState(false)
   let chevron = open ? "mdi mdi-chevron-up" : "mdi mdi-chevron-down"
   return (
@@ -14,11 +15,17 @@ let ChapterHeading = (props) => {
             setOpen(!open)
           }}
         >
-          Chapter 1 <i className={chevron}></i>
+          {chapterHeading} <i className={chevron}></i>
         </div>
         {open ? (
           <div className="chapter-toc">
-            <InlineTOC chapters={chapters} slug={props.slug} />
+            <InlineTOC
+              chapters={chapters}
+              slug={props.slug}
+              close={() => {
+                setOpen(false)
+              }}
+            />
             <div
               className="chapter-toc__close btn btn-outline-secondary"
               onClick={() => {

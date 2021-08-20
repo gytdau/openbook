@@ -13,6 +13,7 @@ function ChapterView(props) {
   let [chapterContent, setChapterContent] = useState(null)
   let location = chapters[chapterId].location
   useEffect(() => {
+    setChapterContent(null)
     axios.get(`${SERVER}/output/${location}`).then((response) => {
       console.log(response.data)
       setChapterContent(response.data)
