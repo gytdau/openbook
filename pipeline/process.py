@@ -72,9 +72,7 @@ if not args.dry_run:
             print(f"warning: ({file}) not a valid epub")
 
         processed_epub_output = os.path.join(output_directory, epub.slug)
-        print(processed_epub_output)
         for order, chapter_title, chapter_path, chapter_content in epub.get_chapters():
-            print(chapter_path)
             final_chapter_path = os.path.join(processed_epub_output, chapter_path)
             os.makedirs(os.path.dirname(final_chapter_path), exist_ok=True)
             with open(os.path.join(processed_epub_output, chapter_path), "w", encoding="utf-8") as f:
