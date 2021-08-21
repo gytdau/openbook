@@ -55,8 +55,7 @@ elif args.input_dir:
     if args.max:
         files = files[:args.max]
 else:
-    print("No input specified")
-    sys.exit()
+    parser.error("no input specified, you must specify one of the following arguments --input-dir or --input-path")
 
 print(f"Found {len(files)} files")
 
