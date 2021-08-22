@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 import random
 from helpers import join_path
 
-class EPUB(object):
+class EpubReader(object):
 
     @staticmethod
     def _try_get_text(content, selector):
@@ -101,4 +101,4 @@ class EPUB(object):
 import sys
 if __name__ == '__main__':
     filename = sys.argv[1]
-    epub = EPUB(filename)
+    epub = EpubReader(filename)

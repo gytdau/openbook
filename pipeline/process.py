@@ -1,5 +1,5 @@
 import sys
-from EPUB import EPUB
+from EpubReader import EpubReader
 from sqlite_helper import sqlite_helper
 import sqlite3
 import os
@@ -66,7 +66,7 @@ if args.dry_run:
 if not args.dry_run:
     con = sqlite_helper(database_directory)
     for file in files:
-        epub = EPUB(file)
+        epub = EpubReader(file)
         if(not epub.is_valid()):
             print(f"warning: ({file}) not a valid epub")
 
