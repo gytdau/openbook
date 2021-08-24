@@ -4,9 +4,11 @@ from helpers import join_path
 
 class sqlite_helper(object):
 
-    def __init__(self, filename):
+    def __init__(self, filename, create_tables=True):
         self.con = sqlite3.connect(filename)
-        self._create_tables()
+
+        if(create_tables):
+            self._create_tables()
 
 
     def _create_tables(self):

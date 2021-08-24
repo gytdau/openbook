@@ -4,11 +4,11 @@ from helpers import join_path
 
 class postgres_helper(object):
 
-    def __init__(self, dsn):
+    def __init__(self, dsn, create_tables=True):
         # dsn = "user={} password={} host={} port={} dbname={} sslmode=require"
         self.con = psycopg2.connect(dsn)
-        self._create_tables()
-
+        if(create_tables):
+            self._create_tables()
 
     def _create_tables(self):
         cur = self.con.cursor()

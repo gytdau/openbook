@@ -57,7 +57,7 @@ if not args.keep:
         if args.dry_run:
             print(f"Would delete {database_directory}")
         else:
-            database_helper(database_directory).drop_tables()
+            database_helper(database_directory, False).drop_tables()
 
 os.makedirs(output_directory, exist_ok=True)
 
