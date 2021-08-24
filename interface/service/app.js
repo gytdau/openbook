@@ -4,6 +4,7 @@ var path = require("path")
 var cookieParser = require("cookie-parser")
 var logger = require("morgan")
 var cors = require("cors")
+require("dotenv").config()
 
 var booksRouter = require("./routes/books")
 
