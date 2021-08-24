@@ -7,8 +7,6 @@ import Catalog from "./Catalog"
 import Search from "./Search"
 import Home from "./Home"
 
-axios.defaults.baseURL = "http://localhost:3000"
-
 function App() {
   return (
     <Router>
