@@ -18,6 +18,9 @@ app.use(express.static(path.join(__dirname, "public")))
 
 app.use("/books", booksRouter)
 
+// serve our React app
+app.use(express.static(path.join(__dirname, "build")))
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404))
