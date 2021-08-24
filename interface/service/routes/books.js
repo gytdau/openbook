@@ -2,8 +2,8 @@ var express = require("express")
 var router = express.Router()
 var { Client, Pool } = require("pg")
 
-if (process.env.DATABASE) {
-  var pool = new Pool(process.env.DATABASE)
+if (process.env.DATABASE_URL) {
+  var pool = new Pool(process.env.DATABASE_URL)
 } else {
   var pool = new Pool()
 }
