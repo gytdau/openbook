@@ -3,9 +3,9 @@ var router = express.Router()
 var { Client, Pool } = require("pg")
 
 if (process.env.DATABASE) {
-  const pool = new Pool(process.env.DATABASE)
+  var pool = new Pool(process.env.DATABASE)
 } else {
-  const pool = new Pool()
+  var pool = new Pool()
 }
 
 router.get("/get/:title", function (req, res, next) {
