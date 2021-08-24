@@ -12,13 +12,13 @@ router.get("/get/:title", function (req, res, next) {
   pool.query(
     `SELECT * FROM books WHERE slug = $1`,
     [req.params.title],
-    (err, res) => {
-      const book = res.rows[0]
+    (err, result) => {
+      const book = result.rows[0]
       pool.query(
         `SELECT * FROM chapters WHERE book_id = $1`,
         [req.params.query],
-        (err, res) => {
-          const chapters = res.rows
+        (err, result) => {
+          const chapters = result.rows
           book.chapters = chapters
           res.json(book)
         }
@@ -28,8 +28,8 @@ router.get("/get/:title", function (req, res, next) {
 })
 
 router.get("/catalog", function (req, res, next) {
-  pool.query("SELECT * FROM books", (err, res) => {
-    const books = res.rows
+  pool.query("SELECT * FROM books", (err, result) => {
+    const books = result.rows
     res.json(books)
   })
 })
@@ -38,8 +38,8 @@ router.get("/search/:query", function (req, res, next) {
   pool.query(
     `SELECT * FROM books WHERE title LIKE ('%' || ($1) || '%')`,
     [req.params.query],
-    (err, res) => {
-      const books = res.rows
+    (err, result) => {
+      const books = result.rows
       res.json(books)
     }
   )
