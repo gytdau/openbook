@@ -116,5 +116,8 @@ def test_parses_two_pages():
 
 
 if __name__ == "__main__":
+    # TODO: These tests are a little dumb because parsing the HTML takes whitespace into account, meaning that the expected
+    # output is finnicky to set up, and changing the whitespace of the input will make the tests fail.
+    # This may or may not be a problem
     test_parses_one_page()
     test_parses_two_pages()

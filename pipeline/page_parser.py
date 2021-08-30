@@ -64,6 +64,7 @@ class PageParser(object):
         if current_new_page:
             new_pages[self.targets[-1]] = current_new_page
 
+        # TODO: Remove unnecessary re-parsing to make the output look neat. This is just for the tests to pass
         for target in self.targets:
             new_pages[target] = BeautifulSoup(
                 str(new_pages[target]), 'lxml').select("body")
