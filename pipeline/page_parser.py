@@ -61,16 +61,16 @@ class PageParser(object):
             self.set_page(-1, current_new_page)
 
         # TODO: Remove unnecessary re-parsing to make the output look neat. This is just for the tests to pass
-        for target in self.targets:
+        for target in range(len(self.targets)):
             self.set_page(target, BeautifulSoup(
-                str(self.processed_pages[target]), 'lxml').select("body"))
+                str(self.processed_pages[self.targets[target]]), 'lxml').select("body"))
 
         return self.processed_pages
 
     def set_page(self, current_target, page):
-        self.processed_pages[self.targets[current_target], page]
+        self.processed_pages[self.targets[current_target]] = page
 
-    @staticmethod
+    @ staticmethod
     def add_into_tag(page, children):
         for child in children:
             page.append(child)
@@ -90,7 +90,7 @@ class PageParser(object):
 
         return (body, target, next_target)
 
-    @staticmethod
+    @ staticmethod
     def remove_all_previous(target):
         curr_target = target
         while curr_target is not None:
@@ -100,7 +100,7 @@ class PageParser(object):
             curr_target = curr_target.parent
         target.decompose()
 
-    @staticmethod
+    @ staticmethod
     def remove_all_next(target):
         curr_target = target
         while curr_target is not None:
