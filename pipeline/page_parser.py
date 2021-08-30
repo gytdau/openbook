@@ -14,7 +14,7 @@ class PageParser(object):
 
     def parse_into_pages(self):
         carry_over_page = None
-        current_target = 0
+        current_header_num = 0
         # Assume targets are in order of the pages
         for page in self.pages:
             page: BeautifulSoup
@@ -22,45 +22,46 @@ class PageParser(object):
             if carry_over_page:
                 print("Carrying over")
 
-            body, target, next_target = self.find_target(page, current_target)
+            body, header, next_header = self.find_headers(
+                page, current_header_num)
 
-            while target or carry_over_page:
+            while header or carry_over_page:
                 if carry_over_page:
-                    if next_target:
-                        PageParser.remove_all_next(next_target)
+                    if next_header:
+                        PageParser.remove_including_after(next_header)
                         self.merge(carry_over_page,
                                    body)
-                        self.set_page(current_target, carry_over_page)
+                        self.set_page(current_header_num, carry_over_page)
                         carry_over_page = None
-                        current_target += 1
-                        body, target, next_target = self.find_target(
-                            page, current_target)
+                        current_header_num += 1
+                        body, header, next_header = self.find_headers(
+                            page, current_header_num)
                         continue
                     else:
                         self.merge(carry_over_page, body)
                         break
 
-                PageParser.remove_all_previous(target)
+                PageParser.remove_including_before(header)
 
-                if next_target:
-                    PageParser.remove_all_next(next_target)
+                if next_header:
+                    PageParser.remove_including_after(next_header)
                 else:
                     carry_over_page = body
                     break
 
-                self.set_page(current_target, body)
+                self.set_page(current_header_num, body)
 
-                current_target += 1
-                body, target, next_target = self.find_target(
-                    page, current_target)
+                current_header_num += 1
+                body, header, next_header = self.find_headers(
+                    page, current_header_num)
 
         if carry_over_page:
             self.set_page(-1, carry_over_page)
 
         # TODO: Remove unnecessary re-parsing to make the output look neat. This is just for the tests to pass
-        for target in range(len(self.targets)):
-            self.set_page(target, BeautifulSoup(
-                str(self.processed_pages[self.targets[target]]), 'lxml').select("body"))
+        for header in range(len(self.targets)):
+            self.set_page(header, BeautifulSoup(
+                str(self.processed_pages[self.targets[header]]), 'lxml').select("body"))
 
         return self.processed_pages
 
@@ -72,7 +73,7 @@ class PageParser(object):
         for child in from_tag.find_all(recursive=False):
             target_tag.append(child)
 
-    def find_target(self, page: BeautifulSoup, current_target):
+    def find_headers(self, page: BeautifulSoup, current_target):
         if len(self.targets) == current_target:
             return (None, None, None)
 
@@ -88,7 +89,7 @@ class PageParser(object):
         return (body, target, next_target)
 
     @ staticmethod
-    def remove_all_previous(target):
+    def remove_including_before(target):
         curr_target = target
         while curr_target is not None:
             curr_target: bs4.Tag
@@ -98,7 +99,7 @@ class PageParser(object):
         target.decompose()
 
     @ staticmethod
-    def remove_all_next(target):
+    def remove_including_after(target):
         curr_target = target
         while curr_target is not None:
             target: bs4.Tag
