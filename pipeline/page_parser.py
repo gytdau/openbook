@@ -1,5 +1,3 @@
-from os import stat
-from collections import deque
 from bs4 import BeautifulSoup
 import copy
 
@@ -40,7 +38,6 @@ class PageParser(object):
                         continue
                     else:
                         self.merge(carry_over_page, body)
-                        current_target += 1
                         break
 
                 PageParser.remove_all_previous(target)
