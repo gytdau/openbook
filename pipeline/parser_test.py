@@ -29,7 +29,6 @@ def test_parses_one_page():
         't1':
             """<body>
             <div>
-            <h1 id="t1">Title 1</h1>
             </div>
             <div>
             <span>1.1</span>
@@ -41,7 +40,6 @@ def test_parses_one_page():
         't2':
             """<body>
             <div>
-            <h1 id="t2">Title 2</h1>
             </div>
             <div>
             <span>2.1</span>
@@ -50,7 +48,6 @@ def test_parses_one_page():
         't3':
             """<body>
             <div>
-            <h2 id="t3">Title 3</h2>
             <p>3.1</p>
             </div>
             <span>
@@ -71,7 +68,6 @@ def test_parses_two_pages():
         't1':
             """<body>
             <div>
-            <h1 id="t1">Title 1</h1>
             </div>
             <div>
             <span>1.1</span>
@@ -83,7 +79,6 @@ def test_parses_two_pages():
         't2':
             """<body>
             <div>
-            <h1 id="t2">Title 2</h1>
             </div>
             <div>
             <span>2.1</span>
@@ -92,7 +87,6 @@ def test_parses_two_pages():
         't3':
             """<body>
             <div>
-            <h2 id="t3">Title 3</h2>
             <p>3.1</p>
             </div>
             <span>
@@ -104,7 +98,6 @@ def test_parses_two_pages():
         't4':
             """<body>
             <div>
-            <h1 id="t4">Title 4</h1>
             </div>
             <div>
             <span>4.1</span>

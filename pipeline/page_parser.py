@@ -30,8 +30,7 @@ class PageParser(object):
             while target or current_new_page:
                 if current_new_page:
                     if next_target:
-                        PageParser.remove_all_next(body, next_target)
-                        next_target.decompose()
+                        PageParser.remove_all_next(next_target)
                         self.add_into_tag(current_new_page,
                                           body.find_all(recursive=False))
                         new_pages[self.targets[current_target]
@@ -46,11 +45,10 @@ class PageParser(object):
                         current_target += 1
                         break
 
-                PageParser.remove_all_previous(body, target)
+                PageParser.remove_all_previous(target)
 
                 if next_target:
-                    PageParser.remove_all_next(body, next_target)
-                    next_target.decompose()
+                    PageParser.remove_all_next(next_target)
                 else:
                     current_new_page = body
                     break
@@ -92,17 +90,21 @@ class PageParser(object):
         return (body, target, next_target)
 
     @staticmethod
-    def remove_all_previous(page, target):
-        while target is not None:
-            target: bs4.Tag
-            for prev_sibling in target.find_previous_siblings():
+    def remove_all_previous(target):
+        curr_target = target
+        while curr_target is not None:
+            curr_target: bs4.Tag
+            for prev_sibling in curr_target.find_previous_siblings():
                 prev_sibling.decompose()
-            target = target.parent
+            curr_target = curr_target.parent
+        target.decompose()
 
     @staticmethod
-    def remove_all_next(page, target):
-        while target is not None:
+    def remove_all_next(target):
+        curr_target = target
+        while curr_target is not None:
             target: bs4.Tag
-            for prev_sibling in target.find_next_siblings():
+            for prev_sibling in curr_target.find_next_siblings():
                 prev_sibling.decompose()
-            target = target.parent
+            curr_target = curr_target.parent
+        target.decompose()
