@@ -70,6 +70,7 @@ if not args.dry_run:
         epub = EpubParser.from_file(file)
         if(not epub):
             print(f"warning: ({file}) not a valid epub")
+            continue
 
         processed_epub_output = os.path.join(output_directory, epub.slug)
         for order, chapter_title, chapter_path, chapter_content in epub.get_chapters():
