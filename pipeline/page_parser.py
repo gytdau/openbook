@@ -10,12 +10,11 @@ class PageParser(object):
     def __init__(self, pages, targets):
         self.pages = pages
         self.targets = targets
+        self.processed_pages = {}
+        for target in self.targets:
+            self.processed_pages[target] = None
 
     def parse_into_pages(self):
-        new_pages = {}
-        for target in self.targets:
-            new_pages[target] = None
-
         current_new_page = None
         current_target = 0
         # Assume targets are in order of the pages
@@ -33,8 +32,7 @@ class PageParser(object):
                         PageParser.remove_all_next(next_target)
                         self.add_into_tag(current_new_page,
                                           body.find_all(recursive=False))
-                        new_pages[self.targets[current_target]
-                                  ] = current_new_page
+                        self.set_page(current_target, current_new_page)
                         current_new_page = None
                         current_target += 1
                         body, target, next_target = self.find_target(
@@ -53,21 +51,24 @@ class PageParser(object):
                     current_new_page = body
                     break
 
-                new_pages[self.targets[current_target]] = body
+                self.set_page(current_target, body)
 
                 current_target += 1
                 body, target, next_target = self.find_target(
                     page, current_target)
 
         if current_new_page:
-            new_pages[self.targets[-1]] = current_new_page
+            self.set_page(-1, current_new_page)
 
         # TODO: Remove unnecessary re-parsing to make the output look neat. This is just for the tests to pass
         for target in self.targets:
-            new_pages[target] = BeautifulSoup(
-                str(new_pages[target]), 'lxml').select("body")
+            self.set_page(target, BeautifulSoup(
+                str(self.processed_pages[target]), 'lxml').select("body"))
 
-        return new_pages
+        return self.processed_pages
+
+    def set_page(self, current_target, page):
+        self.processed_pages[self.targets[current_target], page]
 
     @staticmethod
     def add_into_tag(page, children):
