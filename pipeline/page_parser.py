@@ -71,9 +71,9 @@ class PageParser(object):
         self.processed_pages[self.targets[current_target]] = page
 
     @ staticmethod
-    def merge(page, body):
-        for child in body.find_all(recursive=False):
-            page.append(child)
+    def merge(target_tag, from_tag):
+        for child in from_tag.find_all(recursive=False):
+            target_tag.append(child)
 
     def find_target(self, page: BeautifulSoup, current_target):
         if len(self.targets) == current_target:
