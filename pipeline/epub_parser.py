@@ -53,6 +53,7 @@ class EpubParser(object):
             join_path(content_directory_path, content.select_one("#ncx").attrs["href"]))
 
         self.process_navpoints(ncx, content_directory_path)
+        return self
 
     def set_metadata_from_xml(self, content: BeautifulSoup):
         self.title = self._try_get_text(content, "dc:title")

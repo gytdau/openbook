@@ -68,7 +68,7 @@ if not args.dry_run:
     con = sqlite_helper(database_directory)
     for file in files:
         epub = EpubParser.from_file(file)
-        if(not epub.is_valid()):
+        if(not epub):
             print(f"warning: ({file}) not a valid epub")
 
         processed_epub_output = os.path.join(output_directory, epub.slug)
