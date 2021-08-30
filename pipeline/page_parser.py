@@ -15,31 +15,31 @@ class PageParser(object):
             self.processed_pages[target] = None
 
     def parse_into_pages(self):
-        current_new_page = None
+        carry_over_page = None
         current_target = 0
         # Assume targets are in order of the pages
         for page in self.pages:
             page: BeautifulSoup
             print("New page")
-            if current_new_page:
+            if carry_over_page:
                 print("Carrying over")
 
             body, target, next_target = self.find_target(page, current_target)
 
-            while target or current_new_page:
-                if current_new_page:
+            while target or carry_over_page:
+                if carry_over_page:
                     if next_target:
                         PageParser.remove_all_next(next_target)
-                        self.add_into_tag(current_new_page,
-                                          body.find_all(recursive=False))
-                        self.set_page(current_target, current_new_page)
-                        current_new_page = None
+                        self.merge(carry_over_page,
+                                   body)
+                        self.set_page(current_target, carry_over_page)
+                        carry_over_page = None
                         current_target += 1
                         body, target, next_target = self.find_target(
                             page, current_target)
                         continue
                     else:
-                        self.add_into_tag(current_new_page, body.children)
+                        self.merge(carry_over_page, body)
                         current_target += 1
                         break
 
@@ -48,7 +48,7 @@ class PageParser(object):
                 if next_target:
                     PageParser.remove_all_next(next_target)
                 else:
-                    current_new_page = body
+                    carry_over_page = body
                     break
 
                 self.set_page(current_target, body)
@@ -57,8 +57,8 @@ class PageParser(object):
                 body, target, next_target = self.find_target(
                     page, current_target)
 
-        if current_new_page:
-            self.set_page(-1, current_new_page)
+        if carry_over_page:
+            self.set_page(-1, carry_over_page)
 
         # TODO: Remove unnecessary re-parsing to make the output look neat. This is just for the tests to pass
         for target in range(len(self.targets)):
@@ -71,8 +71,8 @@ class PageParser(object):
         self.processed_pages[self.targets[current_target]] = page
 
     @ staticmethod
-    def add_into_tag(page, children):
-        for child in children:
+    def merge(page, body):
+        for child in body.find_all(recursive=False):
             page.append(child)
 
     def find_target(self, page: BeautifulSoup, current_target):
