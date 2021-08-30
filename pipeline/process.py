@@ -1,5 +1,5 @@
 import sys
-from EpubReader import EpubReader
+from epub_parser import EpubParser
 from sqlite_helper import sqlite_helper
 import sqlite3
 import os
@@ -55,7 +55,8 @@ elif args.input_dir:
     if args.max:
         files = files[:args.max]
 else:
-    parser.error("no input specified, you must specify one of the following arguments --input-dir or --input-path")
+    parser.error(
+        "no input specified, you must specify one of the following arguments --input-dir or --input-path")
 
 print(f"Found {len(files)} files")
 
@@ -66,16 +67,17 @@ if args.dry_run:
 if not args.dry_run:
     con = sqlite_helper(database_directory)
     for file in files:
-        epub = EpubReader(file)
+        epub = EpubParser.from_file(file)
         if(not epub.is_valid()):
             print(f"warning: ({file}) not a valid epub")
 
         processed_epub_output = os.path.join(output_directory, epub.slug)
         for order, chapter_title, chapter_path, chapter_content in epub.get_chapters():
-            final_chapter_path = os.path.join(processed_epub_output, chapter_path)
+            final_chapter_path = os.path.join(
+                processed_epub_output, chapter_path)
             os.makedirs(os.path.dirname(final_chapter_path), exist_ok=True)
             with open(os.path.join(processed_epub_output, chapter_path), "w", encoding="utf-8") as f:
                 f.write(chapter_content)
-        book_id = con.add_book(epub.title, epub.author, epub.slug, epub.description)
+        book_id = con.add_book(epub.title, epub.author,
+                               epub.slug, epub.description)
         con.add_chapters(book_id, epub.get_chapters(), epub.slug)
-

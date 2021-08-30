@@ -1,3 +1,4 @@
+import sys
 import os
 
 from zipfile import ZipFile
@@ -9,8 +10,8 @@ from bs4 import BeautifulSoup
 import random
 from helpers import join_path
 
-class EpubReader(object):
 
+class EpubParser(object):
     @staticmethod
     def _try_get_text(content, selector):
         elem = content.find(selector)
@@ -30,8 +31,10 @@ class EpubReader(object):
             filename = filename.split("#")[0]
         return filename
 
-    def __init__(self, filename):
+    @staticmethod
+    def from_file(filename):
         print(f"Processing: {filename}")
+        self = EpubParser()
 
         self.ezip = ZipFile(filename, 'r')
         if(not self.is_valid()):
@@ -42,23 +45,31 @@ class EpubReader(object):
         content_directory_path = os.path.dirname(content_path)
         content = self.get_file_content_xml(content_path)
 
+        self.set_metadata_from_xml(content)
+
+        print(f"Reading: {self}")
+
+        ncx = self.get_file_content_xml(
+            join_path(content_directory_path, content.select_one("#ncx").attrs["href"]))
+
+        self.process_navpoints(ncx, content_directory_path)
+
+    def set_metadata_from_xml(self, content: BeautifulSoup):
         self.title = self._try_get_text(content, "dc:title")
         self.description = self._try_get_text(content, "dc:description")
         self.author = self._try_get_text(content, "dc:creator")
         self.slug = f'{slugify(self.title)}_{random.randint(0, 1000)}'
 
-        print(f"Reading: {self}")
-
-        ncx = self.get_file_content_xml(join_path(content_directory_path, content.select_one("#ncx").attrs["href"]))
-
+    def process_navpoints(self, ncx: BeautifulSoup, content_directory_path):
         self.chapters = []
-
         for navpoint in ncx.find_all("navpoint"):
             navpoint: BeautifulSoup
 
             chapter_title = navpoint.find("text").text
-            chapter_path = self._normalize_navlink_src(navpoint.find("content").attrs["src"])
-            chapter = self.get_file_content_xml(join_path(content_directory_path, chapter_path))
+            chapter_path = self._normalize_navlink_src(
+                navpoint.find("content").attrs["src"])
+            chapter = self.get_file_content_xml(
+                join_path(content_directory_path, chapter_path))
 
             print(f"\t- Processing Chapter: {chapter_title}")
 
@@ -97,8 +108,6 @@ class EpubReader(object):
         return " - ".join(a)
 
 
-
-import sys
 if __name__ == '__main__':
     filename = sys.argv[1]
-    epub = EpubReader(filename)
+    epub = EpubParser(filename)
