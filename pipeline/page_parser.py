@@ -58,15 +58,10 @@ class PageParser(object):
         if carry_over_page:
             self.set_page(-1, carry_over_page)
 
-        # TODO: Remove unnecessary re-parsing to make the output look neat. This is just for the tests to pass
-        for header in range(len(self.targets)):
-            self.set_page(header, BeautifulSoup(
-                str(self.processed_pages[self.targets[header]]), 'lxml').select("body"))
-
         return self.processed_pages
 
-    def set_page(self, current_target, page):
-        self.processed_pages[self.targets[current_target]] = page
+    def set_page(self, current_target, page: BeautifulSoup):
+        self.processed_pages[self.targets[current_target]] = page.prettify()
 
     @ staticmethod
     def merge(target_tag, from_tag):
