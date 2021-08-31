@@ -22,89 +22,86 @@ class PageParser(object):
         self.file_order = file_order
         self.files = files
         self.navpoints = navpoints
-        self.processed_pages = {}
-        for target in self.targets:
-            self.processed_pages[target] = None
+        self.processed_pages = []
+        self.carry_over_page = None
 
     def parse_into_pages(self):
-        carry_over_page = None
-
         for file_id in self.file_order:
             file = self.files[file_id]
             navpoints = self.navpoints[file_id]
 
             if len(navpoints) == 0:
-                carry_over_page = file
+                self.merge_into_carry_over(None, copy.copy(file.find("body")))
+                continue
 
-        carry_over_page = None
-        current_header_num = 0
-        # Assume targets are in order of the pages
-        for page in self.pages:
-            page: BeautifulSoup
-            print("New page")
-            if carry_over_page:
-                print("Carrying over")
+            for navpoint_id, navpoint in enumerate(navpoints):
 
-            body, header, next_header = self.find_headers(
-                page, current_header_num)
+                body, header, next_header = self.find_headers(
+                    file, navpoint_id, navpoints)
 
-            while header or carry_over_page:
-                if carry_over_page:
-                    if next_header:
-                        PageParser.remove_including_after(next_header)
-                        self.merge(carry_over_page,
-                                   body)
-                        self.set_page(current_header_num, carry_over_page)
-                        carry_over_page = None
-                        current_header_num += 1
-                        body, header, next_header = self.find_headers(
-                            page, current_header_num)
-                        continue
-                    else:
-                        self.merge(carry_over_page, body)
-                        break
+                if header:
+                    if self.carry_over_page:
+                        remainder_of_body = copy.copy(body)
+                        PageParser.remove_including_after(
+                            remainder_of_body.find(f"#{header.id}"))
+                        self.merge_into_carry_over(None, remainder_of_body)
+                        self.commit_carry_over()
 
-                PageParser.remove_including_before(header)
+                    PageParser.remove_including_before(header)
 
                 if next_header:
                     PageParser.remove_including_after(next_header)
                 else:
-                    carry_over_page = body
-                    break
+                    self.merge_into_carry_over(navpoint.title, body)
+                    continue
 
-                self.set_page(current_header_num, body)
+                self.add_page(navpoint.title, body)
 
-                current_header_num += 1
-                body, header, next_header = self.find_headers(
-                    page, current_header_num)
-
-        if carry_over_page:
-            self.set_page(-1, carry_over_page)
+        if self.carry_over_page:
+            self.commit_carry_over()
 
         return self.processed_pages
 
-    def set_page(self, current_target, page: BeautifulSoup):
-        self.processed_pages[self.targets[current_target]] = page.prettify()
+    def add_page(self, title, page):
+        self.processed_pages.append((title, page.prettify()))
 
-    @ staticmethod
-    def merge(target_tag, from_tag):
-        for child in from_tag.find_all(recursive=False):
-            target_tag.append(child)
+    def merge_into_carry_over(self, title, to_merge):
+        if self.carry_over_page == None:
+            self.carry_over_page = (title, to_merge)
+            return
 
-    def find_headers(self, page: BeautifulSoup, current_target):
-        if len(self.targets) == current_target:
-            return (None, None, None)
+        for child in to_merge.find_all(recursive=False):
+            self.carry_over_page[1].append(child)
 
-        body = copy.copy(page.find("body"))
-        target = body.select_one(f"#{self.targets[current_target]}")
-
-        if len(self.targets) == current_target + 1:
-            next_target = None
+    def commit_carry_over(self):
+        if self.carry_over_page[0]:
+            title = self.carry_over_page[0]
         else:
-            next_target = body.select_one(
-                f"#{self.targets[current_target + 1]}")
+            title = "Other Content"
 
-        return (body, target, next_target)
+        self.add_page(title, self.carry_over_page[1])
+        self.carry_over_page = None
+
+    def find_headers(self, file: BeautifulSoup, navpoint_id, navpoints):
+        navpoint = navpoints[navpoint_id]
+
+        next_navpoint = None
+        if navpoint_id + 1 < len(navpoints):
+            next_navpoint = navpoints[navpoint_id+1]
+
+        body = copy.copy(file.find("body"))
+
+        if navpoint.selector:
+            header = body.select_one(f"#{navpoint.selector}")
+        else:
+            header = None
+
+        if next_navpoint and next_navpoint.selector:
+            next_header = body.select_one(f"#{next_navpoint.selector}")
+        else:
+            next_header = None
+
+        return (body, header, next_header)
 
     @ staticmethod
     def remove_including_before(target):
