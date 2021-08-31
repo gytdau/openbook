@@ -6,18 +6,18 @@ from unittest import TestCase
 import os
 
 
-def files_from_string(file_order: list, files_in_string: dict):
-    files = {}
-    for filename in file_order:
-        files[filename] = BeautifulSoup(
-            files_in_string[filename], features='lxml')
-
-    return files
-
-
 def print_result(result):
     for pair in result:
         print(pair)
+
+
+def scaffold(text):
+    return BeautifulSoup(f"""<head>
+    <title>Title</title>
+</head>
+<body>
+{text}
+</body>""")
 
 
 class Navpoint(NamedTuple):
@@ -28,13 +28,9 @@ class Navpoint(NamedTuple):
 class TestPageParser(TestCase):
     def test_parses_one_page(self):
         file_order = ["tests/parser_test.html"]
-        mocked_files = {
+        files = {
             "tests/parser_test.html":
-            """<head>
-    <title>Title</title>
-</head>
-
-<body>
+            scaffold("""
     <div>
         <span>Copyright Notice</span>
         <h1 id="t1">Title 1</h1>
@@ -54,9 +50,7 @@ class TestPageParser(TestCase):
     <span>
         <p>3.2</p>
     </span>
-</body>
-    """}
-        files = files_from_string(file_order, mocked_files)
+    """)}
         navpoints = {
             "tests/parser_test.html": [
                 Navpoint(title="My First Title", selector="t1"),
@@ -76,13 +70,9 @@ class TestPageParser(TestCase):
 
     def test_combines_unreferenced_page(self):
         file_order = ["one.html", "two.html", "three.html"]
-        mocked_files = {
+        files = {
             "one.html":
-            """<head>
-    <title>Title</title>
-</head>
-
-<body>
+            scaffold("""
     <div>
         <span>Copyright Notice</span>
         <h1 id="t1">Title 1</h1>
@@ -90,33 +80,21 @@ class TestPageParser(TestCase):
     <div>
         <span>1.1</span>
     </div>
-</body>
-    """,
+    """),
             "two.html":
-            """<head>
-    <title>Title</title>
-</head>
-
-<body>
+            scaffold("""
     <div>
         <span>2.1</span>
     </div>
-</body>
-    """,
+    """),
             "three.html":
-            """<head>
-    <title>Title</title>
-</head>
-
-<body>
+            scaffold("""
     <div>
         <span>2.2</span>
         <h2 id="t2">Title 2</h2>
         <span>3.1</span>
     </div>
-</body>
-    """}
-        files = files_from_string(file_order, mocked_files)
+    """)}
         navpoints = {
             "one.html": [
                 Navpoint(title="My First Title", selector="t1"),
@@ -137,13 +115,9 @@ class TestPageParser(TestCase):
 
     def test_combines_unreferenced_page_even_when_it_is_the_last_page(self):
         file_order = ["one.html", "two.html"]
-        mocked_files = {
+        files = {
             "one.html":
-            """<head>
-    <title>Title</title>
-</head>
-
-<body>
+            scaffold("""
     <div>
         <span>Copyright Notice</span>
         <h1 id="t1">Title 1</h1>
@@ -151,20 +125,13 @@ class TestPageParser(TestCase):
     <div>
         <span>1.1</span>
     </div>
-</body>
-    """,
+    """),
             "two.html":
-            """<head>
-    <title>Title</title>
-</head>
-
-<body>
+            scaffold("""
     <div>
         <span>2.1</span>
     </div>
-</body>
-    """}
-        files = files_from_string(file_order, mocked_files)
+    """)}
         navpoints = {
             "one.html": [
                 Navpoint(title="My First Title", selector="t1"),
@@ -175,6 +142,43 @@ class TestPageParser(TestCase):
         result = parser.parse_into_pages()
         expectation = [
             ('My First Title', '<body>\n <div>\n </div>\n <div>\n  <span>\n   1.1\n  </span>\n </div>\n <div>\n  <span>\n   2.1\n  </span>\n </div>\n</body>'),
+        ]
+        self.assertListEqual(result, expectation)
+
+    def test_without_any_selectors(self):
+        file_order = ["one.html", "two.html"]
+        files = {
+            "one.html":
+            scaffold("""
+    <div>
+        <span>Copyright Notice</span>
+        <h1>Title 1</h1>
+    </div>
+    <div>
+        <span>1.1</span>
+    </div>
+    """),
+            "two.html":
+            scaffold("""
+    <div>
+        <h1>Title 2</h1>
+        <span>2.1</span>
+    </div>
+    """)}
+        navpoints = {
+            "one.html": [
+                Navpoint(title="My First Title", selector=None),
+            ],
+            "two.html": [
+                Navpoint(title="My Second Title", selector=None),
+            ],
+        }
+        parser = PageParser(file_order, files, navpoints)
+
+        result = parser.parse_into_pages()
+        expectation = [
+            ('My First Title', '<body>\n <div>\n  <span>\n   Copyright Notice\n  </span>\n  <h1>\n   Title 1\n  </h1>\n </div>\n <div>\n  <span>\n   1.1\n  </span>\n </div>\n</body>'),
+            ('My Second Title', '<body>\n <div>\n  <h1>\n   Title 2\n  </h1>\n  <span>\n   2.1\n  </span>\n </div>\n</body>')
         ]
         self.assertListEqual(result, expectation)
 

@@ -40,6 +40,8 @@ class PageParser(object):
                 body, header, next_header = self.find_headers(
                     file, navpoint_id, navpoints)
 
+                navpoint_references_entire_page = navpoint.selector == None
+
                 if header:
                     if self.carry_over_page:
                         remainder_of_body = copy.copy(body)
@@ -53,8 +55,9 @@ class PageParser(object):
                 if next_header:
                     PageParser.remove_including_after(next_header)
                 else:
-                    self.merge_into_carry_over(navpoint.title, body)
-                    continue
+                    if not navpoint_references_entire_page:
+                        self.merge_into_carry_over(navpoint.title, body)
+                        continue
 
                 self.add_page(navpoint.title, body)
 
