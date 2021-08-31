@@ -1,9 +1,7 @@
-from typing import NamedTuple
 import unittest
 from bs4 import BeautifulSoup
 from page_parser import PageParser, Navpoint
 from unittest import TestCase
-import os
 
 
 def print_result(result):
@@ -18,11 +16,6 @@ def scaffold(text):
 <body>
 {text}
 </body>""", features="lxml")
-
-
-class Navpoint(NamedTuple):
-    title: str
-    selector: str
 
 
 class TestPageParser(TestCase):
