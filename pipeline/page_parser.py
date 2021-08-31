@@ -45,8 +45,10 @@ class PageParser(object):
                 if header:
                     if self.carry_over_page:
                         remainder_of_body = copy.copy(body)
-                        PageParser.remove_including_after(
-                            remainder_of_body.select_one(f"#{header.attrs['id']}"))
+                        # `header` references the header in `body`, `header_in_remainder` references the same header but in the `remainder_of_body` object instead
+                        header_in_remainder = remainder_of_body.select_one(
+                            f"#{header.attrs['id']}")
+                        PageParser.remove_including_after(header_in_remainder)
                         self.merge_into_carry_over(None, remainder_of_body)
                         self.commit_carry_over()
 
@@ -56,6 +58,7 @@ class PageParser(object):
                     PageParser.remove_including_after(next_header)
                 else:
                     if not navpoint_references_entire_page:
+                        # No next_header in this page. Merge into the carry over and look at the next page
                         self.merge_into_carry_over(navpoint.title, body)
                         continue
 

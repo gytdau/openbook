@@ -17,7 +17,7 @@ def scaffold(text):
 </head>
 <body>
 {text}
-</body>""")
+</body>""", features="lxml")
 
 
 class Navpoint(NamedTuple):
