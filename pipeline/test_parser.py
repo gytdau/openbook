@@ -1,7 +1,7 @@
 from typing import NamedTuple
 import unittest
 from bs4 import BeautifulSoup
-from page_parser import PageParser
+from page_parser import PageParser, Navpoint
 from unittest import TestCase
 import os
 

@@ -1,3 +1,5 @@
+from bs4.element import NavigableString
+from page_parser import Navpoint, PageParser
 import sys
 import os
 
@@ -12,6 +14,13 @@ from helpers import join_path
 
 
 class EpubParser(object):
+    def __init__(self):
+        self.file_order = []
+        self.files = {}
+        self.navpoints = {}
+        self.chapters = None
+        self.ezip = None
+
     @staticmethod
     def _try_get_text(content, selector):
         elem = content.find(selector)
@@ -19,25 +28,16 @@ class EpubParser(object):
             return elem.text
         return ""
 
-    def _process_chapter(self, chapter: BeautifulSoup):
-        body = chapter.find("body")
-        body.name = "div"
-        body = str(body)
-        return body
-
     def _normalize_navlink_src(self, filename):
         if "#" in filename:
-            # A selector is at the end. Remove it. TODO: Figure out why?
-            filename = filename.split("#")[0]
-        return filename
+            return filename.split("#")
+        return (filename, None)
 
-    @staticmethod
-    def from_file(filename):
+    def from_file(self, filename):
         print(f"Processing: {filename}")
-        self = EpubParser()
 
         self.ezip = ZipFile(filename, 'r')
-        if(not self.is_valid()):
+        if not self.can_be_unzipped():
             return
 
         container = self.get_file_content_xml("META-INF/container.xml")
@@ -52,7 +52,14 @@ class EpubParser(object):
         ncx = self.get_file_content_xml(
             join_path(content_directory_path, content.select_one("#ncx").attrs["href"]))
 
+        self.populate_self_from_spine(content, content_directory_path)
+
         self.process_navpoints(ncx, content_directory_path)
+
+        print(PageParser(self.file_order, self.files,
+                         self.navpoints).parse_into_pages())
+
+        return self
 
     def set_metadata_from_xml(self, content: BeautifulSoup):
         self.title = self._try_get_text(content, "dc:title")
@@ -62,28 +69,28 @@ class EpubParser(object):
 
     def process_navpoints(self, ncx: BeautifulSoup, content_directory_path):
         self.chapters = []
-        for navpoint in ncx.find_all("navpoint"):
+        navpoints = ncx.find_all("navpoint")
+
+        # sort them by playorder
+        navpoints = sorted(
+            navpoints, key=lambda elem: int(elem.attrs["playorder"]))
+
+        for navpoint in navpoints:
             navpoint: BeautifulSoup
 
-            chapter_title = navpoint.find("text").text
-            chapter_path = self._normalize_navlink_src(
+            title = navpoint.find("text").text
+            filename, selector = self._normalize_navlink_src(
                 navpoint.find("content").attrs["src"])
-            chapter = self.get_file_content_xml(
-                join_path(content_directory_path, chapter_path))
 
-            print(f"\t- Processing Chapter: {chapter_title}")
+            navpoint_to_add = Navpoint(title=title, selector=selector)
 
-            chapter_content = self._process_chapter(chapter)
+            if filename in self.navpoints:
+                self.navpoints[filename].append(
+                    navpoint_to_add)
+            else:
+                self.navpoints[filename] = [navpoint_to_add]
 
-            self.chapters.append((
-                int(navpoint['playorder']),
-                chapter_title,
-                chapter_path,
-                chapter_content
-            ))
-        self.chapters.sort()
-
-    def is_valid(self):
+    def can_be_unzipped(self):
         return not self.ezip.testzip()
 
     def list_files(self):
@@ -99,8 +106,22 @@ class EpubParser(object):
         with self.ezip.open(filename) as f:
             return BeautifulSoup(f, features="lxml")
 
-    def get_chapters(self):
-        return self.chapters
+    def populate_self_from_spine(self, content: BeautifulSoup, content_directory_path):
+        spine_tag = content.find('spine')
+        for spine_item_tag in spine_tag.children:
+            spine_item_tag: BeautifulSoup
+            if type(spine_item_tag) == NavigableString:
+                continue
+
+            idref = spine_item_tag.attrs['idref']
+            corresponding_item = content.select_one(f"#{idref}")
+            filename = corresponding_item.attrs['href']
+
+            file_content = self.get_file_content_xml(
+                join_path(content_directory_path, filename))
+
+            self.files[filename] = file_content
+            self.file_order.append(filename)
 
     def __str__(self):
         a = [self.title, self.slug, self.author, self.description]

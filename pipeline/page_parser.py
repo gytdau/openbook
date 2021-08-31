@@ -5,8 +5,13 @@ import copy
 import bs4
 
 
+class Navpoint(NamedTuple):
+    title: str
+    selector: str
+
+
 class PageParser(object):
-    def __init__(self, file_order: List[str], files: Dict[str, BeautifulSoup], navpoints: Dict[str, List[NamedTuple('Navpoint', title=str, selector=str)]]):
+    def __init__(self, file_order: List[str], files: Dict[str, BeautifulSoup], navpoints: Dict[str, List[Navpoint]]):
         # file_order: [file_id, ...]
         # File order is derived from the spine of content.opf
 
