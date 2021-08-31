@@ -14,7 +14,8 @@ from helpers import join_path
 
 
 class EpubParser(object):
-    def __init__(self):
+    def __init__(self, filename):
+        self.filename = filename
         self.file_order = []
         self.files = {}
         self.navpoints = {}
@@ -33,10 +34,10 @@ class EpubParser(object):
             return filename.split("#")
         return (filename, None)
 
-    def from_file(self, filename):
-        print(f"Processing: {filename}")
+    def parse(self):
+        print(f"Processing: {self.filename}")
 
-        self.ezip = ZipFile(filename, 'r')
+        self.ezip = ZipFile(self.filename, 'r')
         if not self.can_be_unzipped():
             return
 
@@ -54,7 +55,7 @@ class EpubParser(object):
 
         self.populate_self_from_spine(content, content_directory_path)
 
-        self.process_navpoints(ncx, content_directory_path)
+        self.process_navpoints(ncx)
 
         print(PageParser(self.file_order, self.files,
                          self.navpoints).parse_into_pages())
@@ -67,7 +68,7 @@ class EpubParser(object):
         self.author = self._try_get_text(content, "dc:creator")
         self.slug = f'{slugify(self.title)}_{random.randint(0, 1000)}'
 
-    def process_navpoints(self, ncx: BeautifulSoup, content_directory_path):
+    def process_navpoints(self, ncx: BeautifulSoup):
         self.chapters = []
         navpoints = ncx.find_all("navpoint")
 
@@ -131,4 +132,4 @@ class EpubParser(object):
 
 if __name__ == '__main__':
     filename = sys.argv[1]
-    epub = EpubParser(filename)
+    epub = EpubParser(filename).parse()
