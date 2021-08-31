@@ -1,18 +1,41 @@
 from bs4 import BeautifulSoup
+from typing import List, Dict, NamedTuple, Tuple
 import copy
 
 import bs4
 
 
 class PageParser(object):
-    def __init__(self, pages, targets):
-        self.pages = pages
-        self.targets = targets
+    def __init__(self, file_order: List[str], files: Dict[str, BeautifulSoup], navpoints: Dict[str, List[NamedTuple('Navpoint', title=str, selector=str)]]):
+        # file_order: [file_id, ...]
+        # File order is derived from the spine of content.opf
+
+        # files: { file_id: BeautifulSoup_page }
+        # Contains the HTML files as BS4 classes
+
+        # navpoints: { file_id: [{title, selector}, {title, selector}, ...] }
+        # Navpoints are sorted into their files in this dictionary. Each navpoint is represented as a named tuple
+        # navpoint.selector can be None to mean it begins at the top of the page
+
+        # TODO: Process links in files
+        # TODO: Process images in files
+        self.file_order = file_order
+        self.files = files
+        self.navpoints = navpoints
         self.processed_pages = {}
         for target in self.targets:
             self.processed_pages[target] = None
 
     def parse_into_pages(self):
+        carry_over_page = None
+
+        for file_id in self.file_order:
+            file = self.files[file_id]
+            navpoints = self.navpoints[file_id]
+
+            if len(navpoints) == 0:
+                carry_over_page = file
+
         carry_over_page = None
         current_header_num = 0
         # Assume targets are in order of the pages
