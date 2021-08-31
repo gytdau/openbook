@@ -15,6 +15,11 @@ def files_from_string(file_order: list, files_in_string: dict):
     return files
 
 
+def print_result(result):
+    for pair in result:
+        print(pair)
+
+
 class Navpoint(NamedTuple):
     title: str
     selector: str
@@ -66,6 +71,110 @@ class TestPageParser(TestCase):
             ('My First Title', '<body>\n <div>\n </div>\n <div>\n  <span>\n   1.1\n  </span>\n  <div>\n   <span>\n    1.2\n   </span>\n  </div>\n </div>\n</body>'),
             ('My Second Title', '<body>\n <div>\n </div>\n <div>\n  <span>\n   2.1\n  </span>\n </div>\n</body>'),
             ('My Third Title', '<body>\n <div>\n  <p>\n   3.1\n  </p>\n </div>\n <span>\n  <p>\n   3.2\n  </p>\n </span>\n</body>')
+        ]
+        self.assertListEqual(result, expectation)
+
+    def test_combines_unreferenced_page(self):
+        file_order = ["one.html", "two.html", "three.html"]
+        mocked_files = {
+            "one.html":
+            """<head>
+    <title>Title</title>
+</head>
+
+<body>
+    <div>
+        <span>Copyright Notice</span>
+        <h1 id="t1">Title 1</h1>
+    </div>
+    <div>
+        <span>1.1</span>
+    </div>
+</body>
+    """,
+            "two.html":
+            """<head>
+    <title>Title</title>
+</head>
+
+<body>
+    <div>
+        <span>2.1</span>
+    </div>
+</body>
+    """,
+            "three.html":
+            """<head>
+    <title>Title</title>
+</head>
+
+<body>
+    <div>
+        <span>2.2</span>
+        <h2 id="t2">Title 2</h2>
+        <span>3.1</span>
+    </div>
+</body>
+    """}
+        files = files_from_string(file_order, mocked_files)
+        navpoints = {
+            "one.html": [
+                Navpoint(title="My First Title", selector="t1"),
+            ],
+            "three.html": [
+                Navpoint(title="My Second Title", selector="t2"),
+            ]
+        }
+        parser = PageParser(file_order, files, navpoints)
+
+        result = parser.parse_into_pages()
+        expectation = [
+            ('My First Title', '<body>\n <div>\n </div>\n <div>\n  <span>\n   1.1\n  </span>\n </div>\n <div>\n  <span>\n   2.1\n  </span>\n </div>\n <div>\n  <span>\n   2.2\n  </span>\n </div>\n</body>'),
+            ('My Second Title',
+             '<body>\n <div>\n  <span>\n   3.1\n  </span>\n </div>\n</body>')
+        ]
+        self.assertListEqual(result, expectation)
+
+    def test_combines_unreferenced_page_even_when_it_is_the_last_page(self):
+        file_order = ["one.html", "two.html"]
+        mocked_files = {
+            "one.html":
+            """<head>
+    <title>Title</title>
+</head>
+
+<body>
+    <div>
+        <span>Copyright Notice</span>
+        <h1 id="t1">Title 1</h1>
+    </div>
+    <div>
+        <span>1.1</span>
+    </div>
+</body>
+    """,
+            "two.html":
+            """<head>
+    <title>Title</title>
+</head>
+
+<body>
+    <div>
+        <span>2.1</span>
+    </div>
+</body>
+    """}
+        files = files_from_string(file_order, mocked_files)
+        navpoints = {
+            "one.html": [
+                Navpoint(title="My First Title", selector="t1"),
+            ],
+        }
+        parser = PageParser(file_order, files, navpoints)
+
+        result = parser.parse_into_pages()
+        expectation = [
+            ('My First Title', '<body>\n <div>\n </div>\n <div>\n  <span>\n   1.1\n  </span>\n </div>\n <div>\n  <span>\n   2.1\n  </span>\n </div>\n</body>'),
         ]
         self.assertListEqual(result, expectation)
 

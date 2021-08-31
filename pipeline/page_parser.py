@@ -28,9 +28,10 @@ class PageParser(object):
     def parse_into_pages(self):
         for file_id in self.file_order:
             file = self.files[file_id]
-            navpoints = self.navpoints[file_id]
 
-            if len(navpoints) == 0:
+            if file_id in self.navpoints:
+                navpoints = self.navpoints[file_id]
+            else:
                 self.merge_into_carry_over(None, copy.copy(file.find("body")))
                 continue
 
@@ -43,7 +44,7 @@ class PageParser(object):
                     if self.carry_over_page:
                         remainder_of_body = copy.copy(body)
                         PageParser.remove_including_after(
-                            remainder_of_body.find(f"#{header.id}"))
+                            remainder_of_body.select_one(f"#{header.attrs['id']}"))
                         self.merge_into_carry_over(None, remainder_of_body)
                         self.commit_carry_over()
 
