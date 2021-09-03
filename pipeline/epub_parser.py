@@ -58,8 +58,8 @@ class EpubParser(object):
 
         self.process_navpoints(ncx)
 
-        print(PageParser(self.file_order, self.files,
-                         self.navpoints).parse_into_pages())
+        self.chapters = PageParser(self.file_order, self.files,
+                                   self.navpoints).parse_into_pages()
 
         return self
 
@@ -81,7 +81,6 @@ class EpubParser(object):
             navpoint: BeautifulSoup
 
             title = navpoint.find("text").text
-            title = titlecase(title)
             filename, selector = self._normalize_navlink_src(
                 navpoint.find("content").attrs["src"])
 

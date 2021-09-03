@@ -26,26 +26,10 @@ parser.add_argument('--dry-run', action='store_true',
                     help="Do not make any changes, simply list stats about what you will change")
 
 args = parser.parse_args()
+db_connection = config['DB_CONNECTION']
 
-output_directory = args.output
-database_connection_string = config.DB_CONNECTION
-
-
-# TODO: make this script support continuing a previously stopped job
 if not args.keep:
-    if os.path.exists(output_directory):
-        if args.dry_run:
-            print(f"Would delete {output_directory}")
-        else:
-            shutil.rmtree(output_directory)
-
-    if os.path.exists(database_directory):
-        if args.dry_run:
-            print(f"Would delete {database_directory}")
-        else:
-            db(database_directory, False).drop_tables()
-
-os.makedirs(output_directory, exist_ok=True)
+    db(db_connection, False).drop_tables()
 
 if args.input_path:
     files = [args.input_path]
@@ -64,19 +48,15 @@ if args.dry_run:
         print(file)
 
 if not args.dry_run:
-    con = db(database_directory)
+    con = db(db_connection)
     for file in files:
         epub = EpubParser(file).parse()
-        if(not epub.is_valid()):
-            print(f"warning: ({file}) not a valid epub")
 
-        processed_epub_output = os.path.join(output_directory, epub.slug)
-        for order, chapter_title, chapter_path, chapter_content in epub.get_chapters():
-            final_chapter_path = os.path.join(
-                processed_epub_output, chapter_path)
-            os.makedirs(os.path.dirname(final_chapter_path), exist_ok=True)
-            with open(os.path.join(processed_epub_output, chapter_path), "w", encoding="utf-8") as f:
-                f.write(chapter_content)
+        if not epub:
+            print(f"warning: ({file}) not a valid epub")
+            continue
+
         book_id = con.add_book(epub.title, epub.author,
                                epub.slug, epub.description)
-        con.add_chapters(book_id, epub.get_chapters(), epub.slug)
+
+        con.add_chapters(book_id, epub.chapters)

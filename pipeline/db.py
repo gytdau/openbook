@@ -24,7 +24,8 @@ class db(object):
             id SERIAL PRIMARY KEY,
             book_id integer NOT NULL,
             title text,
-            location text,
+            slug text,
+            content text,
             FOREIGN KEY (book_id) REFERENCES books (id)
         )''')
         self.con.commit()
@@ -42,9 +43,9 @@ class db(object):
         self.con.commit()
         return cur.fetchone()[0]
 
-    def add_chapters(self, book_id, chapters, slug):
+    def add_chapters(self, book_id, chapters):
         cur = self.con.cursor()
-        for _, title, location, _ in chapters:
+        for chapter in chapters:
             cur.execute(
-                '''INSERT INTO chapters (book_id, title, location) VALUES (%s, %s, %s)''', (book_id, title, join_path(slug, location)))
+                '''INSERT INTO chapters (book_id, title, slug, content) VALUES (%s, %s, %s, %s)''', (book_id, chapter.title, chapter.slug, chapter.content))
         self.con.commit()

@@ -1,13 +1,25 @@
 from bs4 import BeautifulSoup
+from slugify import slugify
 from typing import List, Dict, NamedTuple, Tuple
 import copy
 
+from titlecase import titlecase
 import bs4
 
 
 class Navpoint(NamedTuple):
     title: str
     selector: str
+
+
+class Chapter(NamedTuple):
+    title: str
+    slug: str
+    content: str
+
+
+def title_to_slug(title):
+    return slugify(title)
 
 
 class PageParser(object):
@@ -74,8 +86,13 @@ class PageParser(object):
 
         return self.processed_pages
 
+    def title_to_slug(self, title):
+        return slugify(title)
+
     def add_page(self, title, page):
-        self.processed_pages.append((title, page.prettify()))
+        title = titlecase(title)
+        self.processed_pages.append(
+            Chapter(title, title_to_slug(title), str(page.prettify())))
 
     def merge_into_carry_over(self, title, to_merge):
         if self.carry_over_page == None:
