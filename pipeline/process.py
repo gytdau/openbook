@@ -1,26 +1,19 @@
 import sys
 from epub_parser import EpubParser
-from sqlite_helper import sqlite_helper
-from postgres_helper import postgres_helper
-import sqlite3
+from db import db
 import os
 import shutil
 import argparse
 from pathlib import Path
+from dotenv import dotenv_values
 
-default_output_directory = "../interface/service/public/output"
-default_database_connection = 'sqlite3'
-default_database_directory = '../interface/service/database.sqlite3'
+config = {
+    **dotenv_values(".env"),  # load sensitive variables
+    **os.environ,  # override loaded values with environment variables
+}
 
 parser = argparse.ArgumentParser(description='Process ebook or ebooks')
 
-parser.add_argument('--output', default=default_output_directory,
-                    help="Folder where the resulting files go")
-parser.add_argument('--database', default=default_database_directory,
-                    help="Location/Connection string to database")
-parser.add_argument('--database-connection', default=default_database_connection,
-                    choices=['sqlite3', 'postgres'],
-                    help="Type of database connection [default: sqlite3]")
 parser.add_argument('--keep', action='store_true',
                     help="Do not delete the database and output before starting")
 parser.add_argument('--input-dir', default=None,
@@ -35,14 +28,7 @@ parser.add_argument('--dry-run', action='store_true',
 args = parser.parse_args()
 
 output_directory = args.output
-database_directory = args.database
-
-if(args.database_connection == 'sqlite3'):
-    database_helper = sqlite_helper
-elif(args.database_connection == 'postgres'):
-    database_helper = postgres_helper
-else:
-    parser.error("invalid or no connection specified")
+database_connection_string = config.DB_CONNECTION
 
 
 # TODO: make this script support continuing a previously stopped job
@@ -57,7 +43,7 @@ if not args.keep:
         if args.dry_run:
             print(f"Would delete {database_directory}")
         else:
-            database_helper(database_directory, False).drop_tables()
+            db(database_directory, False).drop_tables()
 
 os.makedirs(output_directory, exist_ok=True)
 
@@ -78,7 +64,7 @@ if args.dry_run:
         print(file)
 
 if not args.dry_run:
-    con = database_helper(database_directory)
+    con = db(database_directory)
     for file in files:
         epub = EpubParser(file).parse()
         if(not epub.is_valid()):
