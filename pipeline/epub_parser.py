@@ -5,6 +5,7 @@ import os
 
 from zipfile import ZipFile
 from zipfile import is_zipfile
+from titlecase import titlecase
 
 from slugify import slugify
 from bs4 import BeautifulSoup
@@ -80,6 +81,7 @@ class EpubParser(object):
             navpoint: BeautifulSoup
 
             title = navpoint.find("text").text
+            title = titlecase(title)
             filename, selector = self._normalize_navlink_src(
                 navpoint.find("content").attrs["src"])
 
