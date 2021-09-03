@@ -1,6 +1,7 @@
 beautifulsoup4==4.9.3
 bs4==0.0.1
 lxml==4.6.3
+psycopg2==2.9.1
 python-slugify==5.0.2
 requests==2.25.1
 titlecase==2.3.0

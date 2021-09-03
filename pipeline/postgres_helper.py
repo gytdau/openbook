@@ -1,27 +1,26 @@
-import sqlite3
+import psycopg2
 
 from helpers import join_path
 
-class sqlite_helper(object):
+class postgres_helper(object):
 
-    def __init__(self, filename, create_tables=True):
-        self.con = sqlite3.connect(filename)
-
+    def __init__(self, dsn, create_tables=True):
+        # dsn = "user={} password={} host={} port={} dbname={} sslmode=require"
+        self.con = psycopg2.connect(dsn)
         if(create_tables):
             self._create_tables()
-
 
     def _create_tables(self):
         cur = self.con.cursor()
         cur.execute('''CREATE TABLE IF NOT EXISTS books (
-                id integer PRIMARY KEY,
+                id SERIAL PRIMARY KEY,
                 title text NOT NULL,
                 author text,
                 slug text,
                 description text
             )''')
         cur.execute('''CREATE TABLE IF NOT EXISTS chapters (
-            id integer PRIMARY KEY,
+            id SERIAL PRIMARY KEY,
             book_id integer NOT NULL,
             title text,
             location text,
@@ -38,14 +37,14 @@ class sqlite_helper(object):
     def add_book(self, title, author, slug, description):
         cur = self.con.cursor()
         cur.execute(
-            '''INSERT INTO books (title, author, slug, description) VALUES (?, ?, ?, ?)''', (title, author, slug, description))
+            '''INSERT INTO books (title, author, slug, description) VALUES (%s, %s, %s, %s) RETURNING id''', (title, author, slug, description))
         self.con.commit()
-        return cur.lastrowid
+        return cur.fetchone()[0]
 
 
     def add_chapters(self, book_id, chapters, slug):
         cur = self.con.cursor()
         for _, title, location, _ in chapters:
             cur.execute(
-                '''INSERT INTO chapters (book_id, title, location) VALUES (?, ?, ?)''', (book_id, title, join_path(slug, location)))
+                '''INSERT INTO chapters (book_id, title, location) VALUES (%s, %s, %s)''', (book_id, title, join_path(slug, location)))
         self.con.commit()
