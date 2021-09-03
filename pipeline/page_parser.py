@@ -22,6 +22,16 @@ def title_to_slug(title):
     return slugify(title)
 
 
+def latin_numerals(word, **kwargs):
+    if all(c in 'LXIV' for c in word.upper()):
+        # It's a Latin numeral
+        return word.upper()
+
+
+def titlecase_chapter(title):
+    return titlecase(title, callback=latin_numerals)
+
+
 class PageParser(object):
     def __init__(self, file_order: List[str], files: Dict[str, BeautifulSoup], navpoints: Dict[str, List[Navpoint]]):
         # file_order: [file_id, ...]
@@ -90,7 +100,7 @@ class PageParser(object):
         return slugify(title)
 
     def add_page(self, title, page):
-        title = titlecase(title)
+        title = titlecase_chapter(title)
         self.processed_pages.append(
             Chapter(title, title_to_slug(title), str(page.prettify())))
 
