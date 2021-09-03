@@ -3,7 +3,8 @@ import InlineTOC from "./InlineTOC"
 
 let ChapterHeading = (props) => {
   let chapters = props.chapters
-  let chapterHeading = chapters[props.chapterId].title
+  console.log("Chapters", chapters)
+  let chapterHeading = props.chapterContent.title
   let [open, setOpen] = useState(false)
   let chevron = open ? "mdi mdi-chevron-up" : "mdi mdi-chevron-down"
   return (

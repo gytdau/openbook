@@ -7,7 +7,7 @@ let InlineTOC = (props) => {
         {props.chapters.map((chapter, index) => (
           <li>
             <Link
-              to={`/${props.slug}/${index}/test`}
+              to={`/${props.slug}/${chapter.id}/${chapter.slug}`}
               onClick={() => {
                 props.close()
               }}

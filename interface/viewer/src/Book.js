@@ -22,7 +22,7 @@ function Book() {
     return <p>Loading</p>
   } else {
     if (chapterId == null) {
-      return <Redirect to={`${slug}/0/test`} />
+      return <Redirect to={`${slug}/1/test`} />
     }
     return <BookView book={book} chapterId={chapterId} />
   }

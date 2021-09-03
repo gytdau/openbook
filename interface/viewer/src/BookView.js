@@ -16,7 +16,7 @@ function BookView(props) {
     setRenderedChapters([parseInt(props.chapterId)])
   }, [props.chapterId])
 
-  let isHeaderHidden = parseInt(props.chapterId) != 0
+  let isHeaderHidden = parseInt(props.chapterId) != 1
 
   let last = renderedChapters[renderedChapters.length - 1]
   let isLast = last == props.book.chapters.length - 1

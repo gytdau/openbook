@@ -30,7 +30,7 @@ function Search() {
   } else {
     resultsDisplay = results.map((result) => {
       return (
-        <Link to={`/${result.slug}/0/test`} className="search-result">
+        <Link to={`/${result.slug}`} className="search-result">
           <div>
             <h2>{result.title}</h2>
             <span>{result.author}</span>

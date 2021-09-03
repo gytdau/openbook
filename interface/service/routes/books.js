@@ -16,14 +16,25 @@ router.get("/get/:title", function (req, res, next) {
     (err, result) => {
       const book = result.rows[0]
       pool.query(
-        `SELECT * FROM chapters WHERE book_id = $1`,
-        [req.params.query],
+        `SELECT id, book_id, title, slug FROM chapters WHERE book_id = $1`,
+        [book.id],
         (err, result) => {
           const chapters = result.rows
           book.chapters = chapters
           res.json(book)
         }
       )
+    }
+  )
+})
+
+router.get("/chapter/:id", function (req, res, next) {
+  pool.query(
+    `SELECT * FROM chapters WHERE id = $1`,
+    [req.params.id],
+    (err, result) => {
+      const chapter = result.rows[0]
+      res.json(chapter)
     }
   )
 })

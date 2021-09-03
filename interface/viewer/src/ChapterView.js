@@ -9,25 +9,27 @@ function ChapterView(props) {
   let chapterId = props.chapterId
   let chapters = props.book.chapters
   let [chapterContent, setChapterContent] = useState(null)
-  let location = chapters[chapterId].location
   useEffect(() => {
     setChapterContent(null)
-    axios.get(`/output/${location}`).then((response) => {
+    axios.get(`/books/chapter/${chapterId}`).then((response) => {
       console.log(response.data)
       setChapterContent(response.data)
     })
-  }, [location, setChapterContent])
+  }, [chapterId, setChapterContent])
+  if (!chapterContent) {
+    return null
+  }
   return (
     <div className="container">
       <ChapterHeading
-        chapterId={chapterId}
+        chapterContent={chapterContent}
         chapters={chapters}
         slug={props.book.slug}
       />
       <div className="row">
         <div
           className="col-md-8 offset-md-2 calibre"
-          dangerouslySetInnerHTML={{ __html: chapterContent }}
+          dangerouslySetInnerHTML={{ __html: chapterContent.content }}
         />
       </div>
     </div>
