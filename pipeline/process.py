@@ -1,5 +1,7 @@
 import sys
 from epub_parser import EpubParser
+from itertools import chain
+from glob import glob
 from db import db
 import os
 import shutil
@@ -34,14 +36,12 @@ if not args.keep:
 if args.input_path:
     files = [args.input_path]
 elif args.input_dir:
-    files = tuple(Path(args.input_dir).rglob("*.epub"))
-    if args.max:
-        files = files[:args.max]
+    files = (chain.from_iterable(
+        glob(os.path.join(x[0], '*.epub')) for x in os.walk(args.input_dir)))
 else:
     parser.error(
         "no input specified, you must specify one of the following arguments --input-dir or --input-path")
 
-print(f"Found {len(files)} files")
 
 if args.dry_run:
     for file in files:
@@ -49,7 +49,12 @@ if args.dry_run:
 
 if not args.dry_run:
     con = db(db_connection)
+    processed = 0
     for file in files:
+        processed += 1
+        if args.max and processed >= args.max:
+            break
+
         epub = EpubParser(file).parse()
 
         if not epub:
