@@ -6,16 +6,16 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 
 function ChapterView(props) {
-  let chapterId = props.chapterId
+  let chapter = props.chapter
   let chapters = props.book.chapters
   let [chapterContent, setChapterContent] = useState(null)
   useEffect(() => {
     setChapterContent(null)
-    axios.get(`/books/chapter/${chapterId}`).then((response) => {
+    axios.get(`/api/books/chapter/${chapter.id}`).then((response) => {
       console.log(response.data)
       setChapterContent(response.data)
     })
-  }, [chapterId, setChapterContent])
+  }, [chapter, setChapterContent])
   if (!chapterContent) {
     return null
   }

@@ -15,13 +15,13 @@ import { useEffect, useState } from "react"
 import SearchBar from "./SearchBar"
 
 function Search() {
-  let { search } = useParams()
+  let { query } = useParams()
   let [results, setResults] = useState(null)
   useEffect(() => {
-    axios.get(`/books/search/${search}`).then((res) => {
+    axios.get(`/api/books/search/${query}`).then((res) => {
       setResults(res.data)
     })
-  }, [setResults, search])
+  }, [setResults, query])
   let resultsDisplay = null
   if (results === null) {
     resultsDisplay = <p>Loading....</p>

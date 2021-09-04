@@ -14,13 +14,13 @@ function App() {
         <Route path="/" exact>
           <Home />
         </Route>
-        <Route path="/search/:search" exact>
+        <Route path="/search/:query" exact>
           <Search />
         </Route>
         <Route path="/catalog">
           <Catalog />
         </Route>
-        <Route path="/:slug/:chapterId/:chapterSlug">
+        <Route path="/:slug/:chapterSlug">
           <Book />
         </Route>
         <Route path="/:slug">

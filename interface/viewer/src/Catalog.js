@@ -8,7 +8,7 @@ import BookView from "./BookView"
 function Catalog() {
   let [catalog, setCatalog] = useState(null)
   useEffect(() => {
-    axios.get("/books/catalog").then((res) => {
+    axios.get("/api/books/catalog").then((res) => {
       setCatalog(res.data)
     })
   }, [setCatalog])
@@ -22,7 +22,7 @@ function Catalog() {
         <div className="col-md-8 offset-2">
           {catalog.map((book) => (
             <li>
-              <Link to={`/${book.slug}/0/test`}>{book.title}</Link>
+              <Link to={`/${book.slug}`}>{book.title}</Link>
             </li>
           ))}
         </div>

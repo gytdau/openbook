@@ -8,24 +8,23 @@ import BookView from "./BookView"
 import { Redirect, useParams } from "react-router-dom"
 
 function Book() {
-  let { slug, chapterId } = useParams()
+  let { slug, chapterSlug } = useParams()
 
   let [book, setBook] = useState(null)
 
   useEffect(() => {
-    axios.get(`/books/get/${slug}`).then((value) => {
+    axios.get(`/api/books/get/${slug}`).then((value) => {
       setBook(value.data)
     })
   }, [slug, setBook])
 
   if (book == null) {
     return <p>Loading</p>
-  } else {
-    if (chapterId == null) {
-      return <Redirect to={`${slug}/1/test`} />
-    }
-    return <BookView book={book} chapterId={chapterId} />
   }
+  if (chapterSlug == null) {
+    return <Redirect to={`${slug}/${book.chapters[0].slug}`} />
+  }
+  return <BookView book={book} chapterSlug={chapterSlug} />
 }
 
 export default Book

@@ -7,22 +7,45 @@ import ChapterView from "./ChapterView"
 import { Link } from "react-router-dom"
 import { useEffect, useState } from "react"
 
+function getChapterFromSlug(book, chapterSlug) {
+  let found = book.chapters.find((chapter, index) => {
+    if (chapter.slug === chapterSlug) {
+      console.log("Chapter found from slug", chapter)
+      return true
+    }
+  })
+  if (found) {
+    return found
+  }
+  return book.chapters[0]
+}
+
 function BookView(props) {
-  let book = props.book
-  let [renderedChapters, setRenderedChapters] = useState([
-    parseInt(props.chapterId),
-  ])
+  let { book, chapterSlug } = props
+  let [renderedChapters, setRenderedChapters] = useState([])
+
   useEffect(() => {
-    setRenderedChapters([parseInt(props.chapterId)])
-  }, [props.chapterId])
+    setRenderedChapters([getChapterFromSlug(book, chapterSlug)])
+  }, [book, chapterSlug])
 
-  let isHeaderHidden = parseInt(props.chapterId) != 1
+  if (renderedChapters.length == 0) {
+    return null
+  }
 
-  let last = renderedChapters[renderedChapters.length - 1]
-  let isLast = last == props.book.chapters.length - 1
-  let fetchData = () => {
-    let newRenderedChapters = [...renderedChapters, last + 1]
-    console.log(newRenderedChapters)
+  let isHeaderHidden = book.chapters.indexOf(renderedChapters[0]) > 0
+
+  let lastRenderedChapterIndex = book.chapters.indexOf(
+    renderedChapters[renderedChapters.length - 1]
+  )
+
+  let noMoreChaptersRemaining =
+    lastRenderedChapterIndex == book.chapters.length - 1
+
+  let renderNewChapter = () => {
+    let newRenderedChapters = [
+      ...renderedChapters,
+      book.chapters[lastRenderedChapterIndex + 1],
+    ]
     setRenderedChapters(newRenderedChapters)
   }
   return (
@@ -65,13 +88,13 @@ function BookView(props) {
       )}
       <InfiniteScroll
         dataLength={renderedChapters.length}
-        next={fetchData}
-        hasMore={!isLast}
+        next={renderNewChapter}
+        hasMore={!noMoreChaptersRemaining}
         loader={<p>Loading...</p>}
         endMessage={<p>End of book</p>}
       >
-        {renderedChapters.map((chapterId) => (
-          <ChapterView chapterId={chapterId} book={book} />
+        {renderedChapters.map((chapter) => (
+          <ChapterView chapter={chapter} book={book} key={chapter.id} />
         ))}
       </InfiniteScroll>
     </div>
