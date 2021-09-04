@@ -1,11 +1,7 @@
-import logo from "./logo.svg"
-import InfiniteScroll from "react-infinite-scroll-component"
-import "./App.scss"
-import InlineTOC from "./InlineTOC"
-import ChapterHeading from "./ChapterHeading"
-import ChapterView from "./ChapterView"
-import { Link } from "react-router-dom"
 import { useEffect, useState } from "react"
+import InfiniteScroll from "react-infinite-scroll-component"
+import { Link } from "react-router-dom"
+import ChapterView from "./ChapterView"
 
 function getChapterFromSlug(book, chapterSlug) {
   let found = book.chapters.find((chapter, index) => {

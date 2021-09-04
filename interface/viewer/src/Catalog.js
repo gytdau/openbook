@@ -1,9 +1,6 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom"
-import "./App.scss"
-import Book from "./Book"
-import BookView from "./BookView"
+import { Link } from "react-router-dom"
 
 function Catalog() {
   let [catalog, setCatalog] = useState(null)

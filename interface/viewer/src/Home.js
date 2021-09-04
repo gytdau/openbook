@@ -1,16 +1,3 @@
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  useHistory,
-} from "react-router-dom"
-import "./App.scss"
-import Book from "./Book"
-import BookView from "./BookView"
-import axios from "axios"
-import Catalog from "./Catalog"
-import { useState } from "react"
 import SearchBar from "./SearchBar"
 
 function Home() {

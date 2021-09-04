@@ -1,9 +1,6 @@
-import logo from "./logo.svg"
-import "./App.scss"
-import InlineTOC from "./InlineTOC"
-import ChapterHeading from "./ChapterHeading"
-import { useEffect, useState } from "react"
 import axios from "axios"
+import { useEffect, useState } from "react"
+import ChapterHeading from "./ChapterHeading"
 
 function ChapterView(props) {
   let chapter = props.chapter

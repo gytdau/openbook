@@ -1,11 +1,7 @@
-import logo from "./logo.svg"
-import "./App.scss"
-import InlineTOC from "./InlineTOC"
-import ChapterHeading from "./ChapterHeading"
 import axios from "axios"
 import { useEffect, useState } from "react"
-import BookView from "./BookView"
 import { Redirect, useParams } from "react-router-dom"
+import BookView from "./BookView"
 
 function Book() {
   let { slug, chapterSlug } = useParams()

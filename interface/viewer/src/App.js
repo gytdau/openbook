@@ -1,11 +1,9 @@
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom"
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 import "./App.scss"
 import Book from "./Book"
-import BookView from "./BookView"
-import axios from "axios"
 import Catalog from "./Catalog"
-import Search from "./Search"
 import Home from "./Home"
+import Search from "./Search"
 
 function App() {
   return (

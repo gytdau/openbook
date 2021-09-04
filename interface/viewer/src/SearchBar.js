@@ -1,26 +1,14 @@
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  useHistory,
-  useParams,
-} from "react-router-dom"
-import "./App.scss"
-import Book from "./Book"
-import BookView from "./BookView"
-import axios from "axios"
-import Catalog from "./Catalog"
 import { useEffect, useState } from "react"
+import { useHistory, useParams } from "react-router-dom"
 
 function SearchBar() {
-  let [searchString, setSearchString] = useState("")
+  let [query, setQuery] = useState("")
   let { search } = useParams()
   useEffect(() => {
     if (search) {
-      setSearchString(search)
+      setQuery(search)
     }
-  }, [search, setSearchString])
+  }, [search, setQuery])
   const history = useHistory()
 
   return (
@@ -33,13 +21,13 @@ function SearchBar() {
             </button>
           </span>
           <input
-            value={searchString}
+            value={query}
             onChange={(event) => {
-              setSearchString(event.target.value)
+              setQuery(event.target.value)
             }}
             onKeyPress={(event) => {
               if (event.key == "Enter") {
-                history.push(`/search/${searchString}`)
+                history.push(`/search/${query}`)
                 event.preventDefault()
               }
             }}
