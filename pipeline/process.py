@@ -16,8 +16,8 @@ config = {
 
 parser = argparse.ArgumentParser(description='Process ebook or ebooks')
 
-parser.add_argument('--keep', action='store_true',
-                    help="Do not delete the database and output before starting")
+parser.add_argument('--drop', action='store_true',
+                    help="Delete the database and output before starting")
 parser.add_argument('--input-dir', default=None,
                     help="Gutenberg archive directory to convert")
 parser.add_argument('--input-path', default=None,
@@ -30,7 +30,7 @@ parser.add_argument('--dry-run', action='store_true',
 args = parser.parse_args()
 db_connection = config['DB_CONNECTION']
 
-if not args.keep:
+if args.drop:
     db(db_connection, False).drop_tables()
 
 if args.input_path:
