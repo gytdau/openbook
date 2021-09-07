@@ -22,12 +22,10 @@ app.use("/api/books", booksRouter)
 // serve our React app
 app.use(express.static(path.join(__dirname, "build")))
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404))
+app.get("*", (req, res) => {
+  console.log("Serve static")
+  res.sendFile(path.join(__dirname, "./build/index.html"))
 })
-
-app.get("*", (req, res) => res.sendFile(resolve("build", "index.html")))
 
 // error handler
 app.use(function (err, req, res, next) {
