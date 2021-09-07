@@ -20,22 +20,13 @@ function BookView(props) {
   let { book, chapterSlug } = props
   let [renderedChapters, setRenderedChapters] = useState([])
 
-  useEffect(() => {
-    setRenderedChapters([getChapterFromSlug(book, chapterSlug)])
-  }, [book, chapterSlug])
-
-  if (renderedChapters.length == 0) {
-    return null
-  }
-
-  let isHeaderHidden = book.chapters.indexOf(renderedChapters[0]) > 0
-
   let lastRenderedChapterIndex = book.chapters.indexOf(
     renderedChapters[renderedChapters.length - 1]
   )
 
   let noMoreChaptersRemaining =
     lastRenderedChapterIndex == book.chapters.length - 1
+  let isHeaderHidden = book.chapters.indexOf(renderedChapters[0]) > 0
 
   let renderNewChapter = () => {
     let newRenderedChapters = [
@@ -44,8 +35,28 @@ function BookView(props) {
     ]
     setRenderedChapters(newRenderedChapters)
   }
+
+  useEffect(() => {
+    let chapters = [getChapterFromSlug(book, chapterSlug)]
+    let chapter_index = book.chapters.indexOf(chapters[0])
+    if (chapter_index + 1 < book.chapters.length) {
+      chapters.push(book.chapters[chapter_index + 1])
+    }
+    if (chapter_index + 2 < book.chapters.length) {
+      chapters.push(book.chapters[chapter_index + 2])
+    }
+    if (chapter_index + 3 < book.chapters.length) {
+      chapters.push(book.chapters[chapter_index + 3])
+    }
+    setRenderedChapters(chapters)
+  }, [book, chapterSlug])
+
+  if (renderedChapters.length == 0) {
+    return null
+  }
+
   return (
-    <div className="App">
+    <div className="App" id="#react-scroller">
       <nav class="navbar navbar-expand-md mb-4">
         <div class="container-fluid">
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -87,6 +98,7 @@ function BookView(props) {
         next={renderNewChapter}
         hasMore={!noMoreChaptersRemaining}
         loader={<p>Loading...</p>}
+        scrollThreshold={0.8}
         endMessage={<p>End of book</p>}
       >
         {renderedChapters.map((chapter) => (
