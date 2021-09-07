@@ -57,7 +57,7 @@ function BookView(props) {
 
   return (
     <div className="App" id="#react-scroller">
-      <nav class="navbar navbar-expand-md mb-4">
+      <nav class="navbar navbar-expand mb-4">
         <div class="container-fluid">
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav me-auto mb-2 mb-md-0">

@@ -116,6 +116,7 @@ class EpubParser(object):
                 continue
 
             idref = spine_item_tag.attrs['idref']
+            idref = idref.replace(".", "\.")
             corresponding_item = content.select_one(f"#{idref}")
             filename = corresponding_item.attrs['href']
 
