@@ -2,12 +2,7 @@ var express = require("express")
 var router = express.Router()
 var { Client, Pool } = require("pg")
 
-if (process.env.DATABASE_URL) {
-  var pool = new Client(process.env.DATABASE_URL)
-  pool.connect()
-} else {
-  var pool = new Pool()
-}
+var pool = new Pool()
 
 router.get("/get/:title", function (req, res, next) {
   pool.query(
