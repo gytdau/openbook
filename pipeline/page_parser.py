@@ -1,3 +1,4 @@
+import re
 from bs4 import BeautifulSoup
 from slugify import slugify
 from typing import List, Dict, NamedTuple, Tuple
@@ -41,6 +42,12 @@ def latin_numerals(word, **kwargs):
 
 def titlecase_chapter(title):
     return titlecase(title, callback=latin_numerals)
+
+
+def content_into_stripped_text(content):
+    text = content.text
+    rex = re.compile(r'\s+')
+    return rex.sub(' ', text)
 
 
 class PageParser(object):
@@ -120,7 +127,7 @@ class PageParser(object):
             title=title,
             slug=title_to_slug(title),
             content=str(chapter.content.prettify()),
-            content_stripped=chapter.content.text,
+            content_stripped=content_into_stripped_text(chapter.content),
             order=self.current_order
         )
         self.processed_pages.append(new_chapter)

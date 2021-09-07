@@ -20,6 +20,10 @@ function Search() {
     resultsDisplay = results.map((result) => {
       return (
         <Link to={`/${result.slug}`} className="search-result">
+          <div className="sample">
+            <div className="fadeout"> </div>
+            <span> {result.sample} </span>
+          </div>
           <div>
             <h2>{result.title}</h2>
             <span>{result.author}</span>

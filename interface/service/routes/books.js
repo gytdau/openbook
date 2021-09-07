@@ -11,7 +11,7 @@ router.get("/get/:title", function (req, res, next) {
     (err, result) => {
       const book = result.rows[0]
       pool.query(
-        `SELECT id, book_id, title, slug FROM chapters WHERE book_id = $1`,
+        `SELECT id, book_id, title, slug FROM chapters WHERE book_id = $1 ORDER BY chapter_order`,
         [book.id],
         (err, result) => {
           const chapters = result.rows
@@ -43,7 +43,7 @@ router.get("/catalog", function (req, res, next) {
 
 router.get("/search/:query", function (req, res, next) {
   pool.query(
-    `SELECT * FROM books WHERE title LIKE ('%' || ($1) || '%')`,
+    `SELECT books.id, books.title, books.author, books.slug, books.description, LEFT(chapters.content_stripped, 500) AS sample FROM books LEFT JOIN chapters ON books.id = chapters.book_id WHERE books.title LIKE ('%' || ($1) || '%')  AND chapters.chapter_order = 2`,
     [req.params.query],
     (err, result) => {
       const books = result.rows
