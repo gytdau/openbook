@@ -61,14 +61,11 @@ function BookView(props) {
         <div class="container-fluid">
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav me-auto mb-2 mb-md-0">
-              <Link to="/" className="nav-item m-4">
+              <Link to="/" className="nav-item back-button">
                 <i className="mdi mdi-chevron-left"></i>
               </Link>
               <li class="nav-item book-title">
                 <span>{book.title}</span>
-                <a class="nav-link active" aria-current="page" href="#">
-                  Chapter 1 <i class="mdi mdi-chevron-down"></i>
-                </a>
               </li>
             </ul>
           </div>
