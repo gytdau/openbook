@@ -26,6 +26,8 @@ class db(object):
             title text,
             slug text,
             content text,
+            content_stripped text,
+            chapter_order integer,
             FOREIGN KEY (book_id) REFERENCES books (id)
         )''')
         self.con.commit()
@@ -47,5 +49,5 @@ class db(object):
         cur = self.con.cursor()
         for chapter in chapters:
             cur.execute(
-                '''INSERT INTO chapters (book_id, title, slug, content) VALUES (%s, %s, %s, %s)''', (book_id, chapter.title, chapter.slug, chapter.content))
+                '''INSERT INTO chapters (book_id, title, slug, content, content_stripped, chapter_order) VALUES (%s, %s, %s, %s, %s, %s)''', (book_id, chapter.title, chapter.slug, chapter.content, chapter.content_stripped, chapter.order))
         self.con.commit()

@@ -2,20 +2,31 @@ from bs4 import BeautifulSoup
 from slugify import slugify
 from typing import List, Dict, NamedTuple, Tuple
 import copy
+from dataclasses import dataclass
 
 from titlecase import titlecase
 import bs4
 
 
-class Navpoint(NamedTuple):
+@dataclass
+class Navpoint:
     title: str
     selector: str
 
 
-class Chapter(NamedTuple):
+@dataclass
+class Chapter:
     title: str
     slug: str
     content: str
+    content_stripped: str
+    order: int
+
+
+@dataclass
+class RawChapter:
+    title: str
+    content: BeautifulSoup
 
 
 def title_to_slug(title):
@@ -50,7 +61,8 @@ class PageParser(object):
         self.files = files
         self.navpoints = navpoints
         self.processed_pages = []
-        self.carry_over_page = None
+        self.chapter_carry_over = None
+        self.current_order = 0
 
     def parse_into_pages(self):
         for file_id in self.file_order:
@@ -59,7 +71,7 @@ class PageParser(object):
             if file_id in self.navpoints:
                 navpoints = self.navpoints[file_id]
             else:
-                self.merge_into_carry_over(None, copy.copy(file.find("body")))
+                self.carry_over(None, copy.copy(file.find("body")))
                 continue
 
             for navpoint_id, navpoint in enumerate(navpoints):
@@ -70,14 +82,15 @@ class PageParser(object):
                 navpoint_references_entire_page = navpoint.selector == None
 
                 if header:
-                    if self.carry_over_page:
+                    if self.chapter_carry_over:
                         remainder_of_body = copy.copy(body)
                         # `header` references the header in `body`, `header_in_remainder` references the same header but in the `remainder_of_body` object instead
                         header_in_remainder = remainder_of_body.select_one(
                             f"#{header.attrs['id']}")
                         PageParser.remove_including_after(header_in_remainder)
-                        self.merge_into_carry_over(None, remainder_of_body)
-                        self.commit_carry_over()
+                        self.carry_over(
+                            None, remainder_of_body)
+                        self.push_carry_over()
 
                     PageParser.remove_including_before(header)
 
@@ -86,40 +99,48 @@ class PageParser(object):
                 else:
                     if not navpoint_references_entire_page:
                         # No next_header in this page. Merge into the carry over and look at the next page
-                        self.merge_into_carry_over(navpoint.title, body)
+                        self.carry_over(
+                            navpoint.title, body)
                         continue
 
-                self.add_page(navpoint.title, body)
+                self.add_chapter(RawChapter(
+                    title=navpoint.title, content=body))
 
-        if self.carry_over_page:
-            self.commit_carry_over()
+        if self.chapter_carry_over:
+            self.push_carry_over()
 
         return self.processed_pages
 
     def title_to_slug(self, title):
         return slugify(title)
 
-    def add_page(self, title, page):
-        title = titlecase_chapter(title)
-        self.processed_pages.append(
-            Chapter(title, title_to_slug(title), str(page.prettify())))
+    def add_chapter(self, chapter: RawChapter):
+        title = titlecase_chapter(chapter.title)
+        new_chapter = Chapter(
+            title=title,
+            slug=title_to_slug(title),
+            content=str(chapter.content.prettify()),
+            content_stripped=chapter.content.text,
+            order=self.current_order
+        )
+        self.processed_pages.append(new_chapter)
+        self.current_order += 1
 
-    def merge_into_carry_over(self, title, to_merge):
-        if self.carry_over_page == None:
-            self.carry_over_page = (title, to_merge)
+    def carry_over(self, title, to_merge):
+        if self.chapter_carry_over is None:
+            self.chapter_carry_over = RawChapter(
+                title=title, content=to_merge)
             return
 
         for child in to_merge.find_all(recursive=False):
-            self.carry_over_page[1].append(child)
+            self.chapter_carry_over.content.append(child)
 
-    def commit_carry_over(self):
-        if self.carry_over_page[0]:
-            title = self.carry_over_page[0]
-        else:
-            title = "Other Content"
+    def push_carry_over(self):
+        if self.chapter_carry_over.title is None:
+            self.chapter_carry_over.title = "Other Content"
 
-        self.add_page(title, self.carry_over_page[1])
-        self.carry_over_page = None
+        self.add_chapter(self.chapter_carry_over)
+        self.chapter_carry_over = None
 
     def find_headers(self, file: BeautifulSoup, navpoint_id, navpoints):
         navpoint = navpoints[navpoint_id]
