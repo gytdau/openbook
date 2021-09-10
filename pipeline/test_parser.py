@@ -1,6 +1,6 @@
 import unittest
 from bs4 import BeautifulSoup
-from page_parser import PageParser, Navpoint
+from content_parser import ContentParser, Navpoint
 from unittest import TestCase
 
 
@@ -18,7 +18,7 @@ def scaffold(text):
 </body>""", features="lxml")
 
 
-class TestPageParser(TestCase):
+class TestContentParser(TestCase):
     def test_parses_one_page(self):
         file_order = ["tests/parser_test.html"]
         files = {
@@ -51,9 +51,12 @@ class TestPageParser(TestCase):
                 Navpoint(title="My Third Title", selector="t3"),
             ]
         }
-        parser = PageParser(file_order, files, navpoints)
+        parser = ContentParser(file_order, files, {}, navpoints)
 
-        result = parser.parse_into_pages()
+        chapters = parser.chapters
+        result = []
+        for chapter in chapters:
+            result.append((chapter.title, chapter.content))
         expectation = [
             ('My First Title', '<body>\n <div>\n </div>\n <div>\n  <span>\n   1.1\n  </span>\n  <div>\n   <span>\n    1.2\n   </span>\n  </div>\n </div>\n</body>'),
             ('My Second Title', '<body>\n <div>\n </div>\n <div>\n  <span>\n   2.1\n  </span>\n </div>\n</body>'),
@@ -96,9 +99,12 @@ class TestPageParser(TestCase):
                 Navpoint(title="My Second Title", selector="t2"),
             ]
         }
-        parser = PageParser(file_order, files, navpoints)
+        parser = ContentParser(file_order, files, {}, navpoints)
 
-        result = parser.parse_into_pages()
+        chapters = parser.chapters
+        result = []
+        for chapter in chapters:
+            result.append((chapter.title, chapter.content))
         expectation = [
             ('My First Title', '<body>\n <div>\n </div>\n <div>\n  <span>\n   1.1\n  </span>\n </div>\n <div>\n  <span>\n   2.1\n  </span>\n </div>\n <div>\n  <span>\n   2.2\n  </span>\n </div>\n</body>'),
             ('My Second Title',
@@ -130,9 +136,12 @@ class TestPageParser(TestCase):
                 Navpoint(title="My First Title", selector="t1"),
             ],
         }
-        parser = PageParser(file_order, files, navpoints)
+        parser = ContentParser(file_order, files, {}, navpoints)
 
-        result = parser.parse_into_pages()
+        chapters = parser.chapters
+        result = []
+        for chapter in chapters:
+            result.append((chapter.title, chapter.content))
         expectation = [
             ('My First Title', '<body>\n <div>\n </div>\n <div>\n  <span>\n   1.1\n  </span>\n </div>\n <div>\n  <span>\n   2.1\n  </span>\n </div>\n</body>'),
         ]
@@ -166,12 +175,48 @@ class TestPageParser(TestCase):
                 Navpoint(title="My Second Title", selector=None),
             ],
         }
-        parser = PageParser(file_order, files, navpoints)
+        parser = ContentParser(file_order, files, {}, navpoints)
 
-        result = parser.parse_into_pages()
+        chapters = parser.chapters
+        result = []
+        for chapter in chapters:
+            result.append((chapter.title, chapter.content))
         expectation = [
             ('My First Title', '<body>\n <div>\n  <span>\n   Copyright Notice\n  </span>\n  <h1>\n   Title 1\n  </h1>\n </div>\n <div>\n  <span>\n   1.1\n  </span>\n </div>\n</body>'),
             ('My Second Title', '<body>\n <div>\n  <h1>\n   Title 2\n  </h1>\n  <span>\n   2.1\n  </span>\n </div>\n</body>')
+        ]
+        self.assertListEqual(result, expectation)
+
+    def test_changes_image(self):
+        file_order = ["one.html"]
+        files = {
+            "one.html":
+            scaffold("""
+    <div>
+        <span>Copyright Notice</span>
+        <h1 id="t1">Title 1</h1>
+    </div>
+    <div>
+        <span>1.1</span>
+        <img src="foo.jpg"/>
+    </div>""")
+        }
+        image_files = {
+            "foo.jpg": "foobar"
+        }
+        navpoints = {
+            "one.html": [
+                Navpoint(title="My First Title", selector="t1"),
+            ],
+        }
+        parser = ContentParser(file_order, files, image_files, navpoints)
+
+        chapters = parser.chapters
+        result = []
+        for chapter in chapters:
+            result.append((chapter.title, chapter.content))
+        expectation = [
+            ('My First Title', '<body>\n <div>\n </div>\n <div>\n  <span>\n   1.1\n  </span>\n  <img src="image-0.jpg"/>\n </div>\n</body>'),
         ]
         self.assertListEqual(result, expectation)
 

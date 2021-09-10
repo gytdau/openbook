@@ -55,7 +55,7 @@ if not args.dry_run:
         if args.max and processed >= args.max:
             break
 
-        epub = EpubParser(file).parse()
+        epub = EpubParser(file)
 
         if not epub:
             print(f"warning: ({file}) not a valid epub")
@@ -64,4 +64,5 @@ if not args.dry_run:
         book_id = con.add_book(epub.title, epub.author,
                                epub.slug, epub.description)
 
-        con.add_chapters(book_id, epub.chapters)
+        con.add_chapters(book_id, epub.content.chapters)
+        con.add_images(book_id, epub.content.images)

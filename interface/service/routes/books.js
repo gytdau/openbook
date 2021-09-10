@@ -23,6 +23,18 @@ router.get("/get/:title", function (req, res, next) {
   )
 })
 
+router.get("/image/:bookId/:location", function (req, res, next) {
+      pool.query(
+        `SELECT content FROM images WHERE book_id = $1 AND location = $2`,
+        [req.params.bookId, req.params.location],
+        (err, result) => {
+            res.contentType("image/png")
+          const image = result.rows[0]
+          res.end(image.content)
+        }
+      )
+})
+
 router.get("/chapter/:id", function (req, res, next) {
   pool.query(
     `SELECT * FROM chapters WHERE id = $1`,

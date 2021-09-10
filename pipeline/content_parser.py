@@ -1,6 +1,7 @@
+import typing
 from bs4 import BeautifulSoup
 from slugify import slugify
-from typing import List, Dict, NamedTuple, Tuple
+from typing import ByteString, List, Dict, NamedTuple, Tuple
 import copy
 from dataclasses import dataclass
 
@@ -27,6 +28,13 @@ class Chapter:
 class RawChapter:
     title: str
     content: BeautifulSoup
+    order: int = None
+
+@dataclass
+class Image:
+    location: str
+    content: ByteString
+
 
 
 def title_to_slug(title):
@@ -43,8 +51,8 @@ def titlecase_chapter(title):
     return titlecase(title, callback=latin_numerals)
 
 
-class PageParser(object):
-    def __init__(self, file_order: List[str], files: Dict[str, BeautifulSoup], navpoints: Dict[str, List[Navpoint]]):
+class ContentParser(object):
+    def __init__(self, file_order: List[str], html_files: Dict[str, BeautifulSoup], image_files: Dict[str, typing.Any], navpoints: Dict[str, List[Navpoint]]):
         # file_order: [file_id, ...]
         # File order is derived from the spine of content.opf
 
@@ -55,23 +63,81 @@ class PageParser(object):
         # Navpoints are sorted into their files in this dictionary. Each navpoint is represented as a named tuple
         # navpoint.selector can be None to mean it begins at the top of the page
 
-        # TODO: Process links in files
-        # TODO: Process images in files
+        # Input
         self.file_order = file_order
-        self.files = files
+        self.html_files = html_files
+        self.image_files = image_files
         self.navpoints = navpoints
-        self.processed_pages = []
+
+        # Output
+        self.chapters = []
+        self.images = []
+
+        # Helpers
         self.chapter_carry_over = None
         self.current_order = 0
+        self.location_mapping = {}
+        self.raw_chapters = []
 
-    def parse_into_pages(self):
+        self.allocate_locations()
+        self.parse_chapters()
+        self.swap_locations_in_parsed_chapters()
+        self.convert_raws_to_output()
+    
+    def allocate_locations(self):
+        for index, html_file in enumerate(self.file_order):
+            self.location_mapping[html_file] = f"part-{index}.html"
+
+        for index, image_file in enumerate(self.image_files.keys()):
+            directoryless_image_file = image_file.split("/")[-1]
+            image_format = directoryless_image_file.split(".")[-1]
+            new_image_location = f"image-{index}.{image_format}"
+            self.location_mapping[directoryless_image_file] = new_image_location
+            image_content = self.image_files[image_file]
+            self.images.append(Image(location=new_image_location, content=image_content))
+
+    
+    def swap_locations_in_parsed_chapters(self):
+        for chapter in self.raw_chapters:
+            chapter: RawChapter
+            items = chapter.content.find_all("img")
+            for item in items:
+                src = item.attrs["src"].split("/")[-1]
+                print("found image")
+                if src not in self.location_mapping:
+                    continue
+                print("replacing image")
+
+                new_src = self.location_mapping[src]
+                item.attrs["src"] = new_src
+        
+        # TODO: This is where we'd swap the links too. Theoretically, this is the only thing left
+        # to implement.
+
+
+
+    def convert_raws_to_output(self):
+        for chapter in self.raw_chapters:
+            chapter: RawChapter
+            title = titlecase_chapter(chapter.title)
+            new_chapter = Chapter(
+                title=title,
+                slug=title_to_slug(title),
+                content=str(chapter.content.prettify()),
+                content_stripped=chapter.content.text,
+                order=chapter.order
+            )
+            self.chapters.append(new_chapter)
+
+
+    def parse_chapters(self):
         for file_id in self.file_order:
-            file = self.files[file_id]
+            file = self.html_files[file_id]
 
             if file_id in self.navpoints:
                 navpoints = self.navpoints[file_id]
             else:
-                self.carry_over(None, copy.copy(file.find("body")))
+                self.carry_over(None, copy.copy(file.find("body")), file_id)
                 continue
 
             for navpoint_id, navpoint in enumerate(navpoints):
@@ -87,53 +153,59 @@ class PageParser(object):
                         # `header` references the header in `body`, `header_in_remainder` references the same header but in the `remainder_of_body` object instead
                         header_in_remainder = remainder_of_body.select_one(
                             f"#{header.attrs['id']}")
-                        PageParser.remove_including_after(header_in_remainder)
+                        ContentParser.remove_including_after(header_in_remainder)
                         self.carry_over(
-                            None, remainder_of_body)
+                            None, remainder_of_body, file_id)
                         self.push_carry_over()
 
-                    PageParser.remove_including_before(header)
+                    ContentParser.remove_including_before(header)
 
                 if next_header:
-                    PageParser.remove_including_after(next_header)
+                    ContentParser.remove_including_after(next_header)
                 else:
                     if not navpoint_references_entire_page:
                         # No next_header in this page. Merge into the carry over and look at the next page
                         self.carry_over(
-                            navpoint.title, body)
+                            navpoint.title, body, file_id)
                         continue
-
-                self.add_chapter(RawChapter(
-                    title=navpoint.title, content=body))
+                
+                self.carry_over(navpoint.title, body, file_id)
+                self.push_carry_over()
 
         if self.chapter_carry_over:
             self.push_carry_over()
 
-        return self.processed_pages
-
     def title_to_slug(self, title):
         return slugify(title)
+    
+    def add_ids_to_location_map(self, chapter: RawChapter, filename):
+        content = chapter.content
+        tags_with_an_id = content.find_all(id=True)
+        for tag in tags_with_an_id:
+            tag_id = tag.attrs["id"]
+            ref = f"{filename}#{tag_id}"
+            new_ref = f"part-{self.current_order}.html#{tag_id}"
+            self.location_mapping[ref] = new_ref
 
     def add_chapter(self, chapter: RawChapter):
-        title = titlecase_chapter(chapter.title)
-        new_chapter = Chapter(
-            title=title,
-            slug=title_to_slug(title),
-            content=str(chapter.content.prettify()),
-            content_stripped=chapter.content.text,
+        new_chapter = RawChapter(
+            title=chapter.title,
+            content=chapter.content,
             order=self.current_order
         )
-        self.processed_pages.append(new_chapter)
+        self.raw_chapters.append(new_chapter)
         self.current_order += 1
 
-    def carry_over(self, title, to_merge):
+    def carry_over(self, title, to_merge, filename):
         if self.chapter_carry_over is None:
             self.chapter_carry_over = RawChapter(
                 title=title, content=to_merge)
+            self.add_ids_to_location_map(self.chapter_carry_over, filename)
             return
 
         for child in to_merge.find_all(recursive=False):
             self.chapter_carry_over.content.append(child)
+        self.add_ids_to_location_map(self.chapter_carry_over, filename)
 
     def push_carry_over(self):
         if self.chapter_carry_over.title is None:

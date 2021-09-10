@@ -1,5 +1,5 @@
-from bs4.element import NavigableString
-from page_parser import Navpoint, PageParser
+from bs4.element import Comment, NavigableString
+from content_parser import Navpoint, ContentParser
 import sys
 import os
 
@@ -17,11 +17,12 @@ from helpers import join_path
 class EpubParser(object):
     def __init__(self, filename):
         self.filename = filename
-        self.file_order = []
-        self.files = {}
+        self.html_file_order = []
+        self.html_files = {}
+        self.image_files = {}
         self.navpoints = {}
-        self.chapters = None
         self.ezip = None
+        self.parse()
 
     @staticmethod
     def _try_get_text(content, selector):
@@ -54,12 +55,13 @@ class EpubParser(object):
         ncx = self.get_file_content_xml(
             join_path(content_directory_path, content.select_one("#ncx").attrs["href"]))
 
-        self.populate_self_from_spine(content, content_directory_path)
+        self.populate_html_page_list(content, content_directory_path)
+        self.populate_image_list(content, content_directory_path)
 
         self.process_navpoints(ncx)
 
-        self.chapters = PageParser(self.file_order, self.files,
-                                   self.navpoints).parse_into_pages()
+        self.content = ContentParser(self.html_file_order, self.html_files, self.image_files,
+                                   self.navpoints)
 
         return self
 
@@ -70,7 +72,6 @@ class EpubParser(object):
         self.slug = f'{slugify(self.title)}_{random.randint(0, 1000)}'
 
     def process_navpoints(self, ncx: BeautifulSoup):
-        self.chapters = []
         navpoints = ncx.find_all("navpoint")
 
         # sort them by playorder
@@ -91,12 +92,21 @@ class EpubParser(object):
                     navpoint_to_add)
             else:
                 self.navpoints[filename] = [navpoint_to_add]
+        
+        self.add_navpoint_to_start_of_book()
+        
+    def add_navpoint_to_start_of_book(self):
+        first_html_page = self.html_file_order[0]
+        new_navpoint = Navpoint(title=self.title, selector=None)
+
+        if first_html_page in self.navpoints:
+            self.navpoints[first_html_page].append(new_navpoint
+                )
+        else:
+            self.navpoints[first_html_page] = [new_navpoint]
 
     def can_be_unzipped(self):
         return not self.ezip.testzip()
-
-    def list_files(self):
-        return self.ezip.namelist()
 
     def get_file_content(self, filename):
         data = None
@@ -107,8 +117,8 @@ class EpubParser(object):
     def get_file_content_xml(self, filename):
         with self.ezip.open(filename) as f:
             return BeautifulSoup(f, features="lxml")
-
-    def populate_self_from_spine(self, content: BeautifulSoup, content_directory_path):
+    
+    def populate_html_page_list(self, content: BeautifulSoup, content_directory_path):
         spine_tag = content.find('spine')
         for spine_item_tag in spine_tag.children:
             spine_item_tag: BeautifulSoup
@@ -116,16 +126,37 @@ class EpubParser(object):
                 continue
 
             idref = spine_item_tag.attrs['idref']
-            idref = idref.replace(".", "\.")
+            idref = idref.replace(".", "\.") # Dots are valid in IDs, but they must be escaped for us to use them in a selector 
             corresponding_item = content.select_one(f"#{idref}")
             filename = corresponding_item.attrs['href']
+
+            if filename in self.html_file_order:
+                continue
 
             file_content = self.get_file_content_xml(
                 join_path(content_directory_path, filename))
 
-            self.files[filename] = file_content
-            self.file_order.append(filename)
+            self.html_files[filename] = file_content
+            self.html_file_order.append(filename)
+        
+    def populate_image_list(self, content: BeautifulSoup, content_directory_path):
+        manifest_tag = content.find('manifest')
+        for manifest_item_tag in manifest_tag.children:
+            manifest_item_tag: BeautifulSoup
+            if type(manifest_item_tag) == NavigableString or type(manifest_item_tag) == Comment:
+                continue
+            
+            mimetype: str = manifest_item_tag.attrs['media-type']
+            
+            if not mimetype.startswith("image/"):
+                continue
 
+            filename = manifest_item_tag.attrs['href']
+            file_content = self.get_file_content(
+                join_path(content_directory_path, filename))
+            
+            self.image_files[filename] = file_content
+            
     def __str__(self):
         a = [self.title, self.slug, self.author, self.description]
         a = [x for x in a if x]
@@ -133,5 +164,7 @@ class EpubParser(object):
 
 
 if __name__ == '__main__':
-    filename = sys.argv[1]
-    epub = EpubParser(filename).parse()
+    # For use in the debugger.
+    # filename = "/home/gytis/Projects/openbook/pipeline/epubs/oscar-wilde_the-picture-of-dorian-gray.epub"
+    filename = "/home/gytis/Projects/openbook/pipeline/epubs/pg66080-images.epub"
+    epub = EpubParser(filename)
