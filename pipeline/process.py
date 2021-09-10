@@ -55,7 +55,14 @@ if not args.dry_run:
         if args.max and processed >= args.max:
             break
 
-        epub = EpubParser(file)
+        try:
+            epub = EpubParser(file)
+        except KeyboardInterrupt:
+            sys.exit()
+            pass
+        except Exception as e:
+            print(e)
+            continue
 
         if not epub:
             print(f"warning: ({file}) not a valid epub")
