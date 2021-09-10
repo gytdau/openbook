@@ -23,10 +23,10 @@ router.get("/get/:title", function (req, res, next) {
     )
 })
 
-router.get("/image/:bookId/:location", function (req, res, next) {
+router.get("/image/:fileLocation", function (req, res, next) {
     pool.query(
-        `SELECT content, format FROM images WHERE book_id = $1 AND location = $2`,
-        [req.params.bookId, req.params.location],
+        `SELECT content, format FROM images WHERE location = $1`,
+        [req.params.fileLocation],
         (err, result) => {
             const image = result.rows[0]
             res.contentType(`image/${image.format}`)

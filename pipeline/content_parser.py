@@ -1,4 +1,5 @@
 import typing
+import uuid
 from bs4 import BeautifulSoup
 from slugify import slugify
 from typing import ByteString, List, Dict, NamedTuple, Tuple
@@ -92,7 +93,9 @@ class ContentParser(object):
         for index, image_file in enumerate(self.image_files.keys()):
             directoryless_image_file = image_file.split("/")[-1]
             image_format = directoryless_image_file.split(".")[-1]
-            new_image_location = f"image-{index}.{image_format}"
+
+            new_image_name = f"image-{str(uuid.uuid4())}" 
+            new_image_location = f"{new_image_name}.{image_format}"
             self.location_mapping[directoryless_image_file] = new_image_location
             image_content = self.image_files[image_file]
             self.images.append(Image(location=new_image_location, content=image_content, format=image_format))
@@ -110,7 +113,7 @@ class ContentParser(object):
                 print("replacing image")
 
                 new_src = self.location_mapping[src]
-                item.attrs["src"] = new_src
+                item.attrs["src"] = f"/api/books/image/{new_src}"
         
         # TODO: This is where we'd swap the links too. Theoretically, this is the only thing left
         # to implement.
