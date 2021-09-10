@@ -28,7 +28,7 @@ h6 {
     font-family: "Inter";
 }
 
-.toc-well>hr {
+.toc-well > hr {
     display: none;
 }
 
@@ -132,19 +132,20 @@ h6 {
 }
 
 /* Calibre */
-.hlink {}
+.hlink {
+}
 
 .calibre {
     font-family: "Crimson Pro";
     font-size: 1.3rem;
 }
 
-.calibre>* {
+.calibre > * {
     margin-bottom: 0.6em;
 }
 
 .calibre img {
-    width: 100%;
+    max-width: 100%;
 }
 
 .calibre1 {
@@ -198,7 +199,7 @@ h6 {
     border-radius: 100px;
     background-color: white;
 
-    &>input {
+    & > input {
         background-color: transparent;
         border-top-right-radius: 100px;
         border-bottom-right-radius: 100px;

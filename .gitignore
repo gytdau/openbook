@@ -4,3 +4,4 @@ __pycache__
 node_modules
 *.env
 oscar-wilde_the-picture-of-dorian-gray
+pipeline/epubs/private/*
