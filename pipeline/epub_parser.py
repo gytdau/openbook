@@ -100,8 +100,10 @@ class EpubParser(object):
         new_navpoint = Navpoint(title=self.title, selector=None)
 
         if first_html_page in self.navpoints:
-            self.navpoints[first_html_page].append(new_navpoint
-                )
+            # self.navpoints[first_html_page].append(new_navpoint
+            #     )
+            pass
+            # Just to see if this actually mattered before
         else:
             self.navpoints[first_html_page] = [new_navpoint]
 

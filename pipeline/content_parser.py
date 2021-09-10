@@ -107,10 +107,8 @@ class ContentParser(object):
             items = chapter.content.find_all("img")
             for item in items:
                 src = item.attrs["src"].split("/")[-1]
-                print("found image")
                 if src not in self.location_mapping:
                     continue
-                print("replacing image")
 
                 new_src = self.location_mapping[src]
                 item.attrs["src"] = f"/api/books/image/{new_src}"
