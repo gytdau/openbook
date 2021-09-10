@@ -34,6 +34,7 @@ class RawChapter:
 class Image:
     location: str
     content: ByteString
+    format: str
 
 
 
@@ -94,7 +95,7 @@ class ContentParser(object):
             new_image_location = f"image-{index}.{image_format}"
             self.location_mapping[directoryless_image_file] = new_image_location
             image_content = self.image_files[image_file]
-            self.images.append(Image(location=new_image_location, content=image_content))
+            self.images.append(Image(location=new_image_location, content=image_content, format=image_format))
 
     
     def swap_locations_in_parsed_chapters(self):

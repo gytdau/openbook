@@ -38,6 +38,7 @@ class db(object):
             book_id integer NOT NULL,
             location text,
             content bytea,
+            format text,
             hint text,
             version integer NOT NULL,
             FOREIGN KEY (book_id) REFERENCES books (id)
@@ -70,6 +71,6 @@ class db(object):
         cur = self.con.cursor()
         for image in images:
             cur.execute(
-                '''INSERT INTO images (book_id, location, content, version) VALUES (%s, %s, %s, %s)''',
-                (book_id, image.location, image.content, self.version))
+                '''INSERT INTO images (book_id, location, content, format, version) VALUES (%s, %s, %s, %s, %s)''',
+                (book_id, image.location, image.content, image.format, self.version))
         self.con.commit()
