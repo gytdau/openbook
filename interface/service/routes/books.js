@@ -54,13 +54,13 @@ router.get("/catalog", function (req, res, next) {
 })
 
 router.get("/search/:query", function (req, res, next) {
-    pool.query(
-        `SELECT * FROM books WHERE title LIKE ('%' || ($1) || '%')`,
-        [req.params.query],
-        (err, result) => {
-            const books = result.rows
-            res.json(books)
-        }
-    )
+  pool.query(
+    `SELECT books.id, books.title, books.author, books.slug, books.description, LEFT(chapters.content_stripped, 500) AS sample FROM books LEFT JOIN chapters ON books.id = chapters.book_id WHERE books.title LIKE ('%' || ($1) || '%')  AND chapters.chapter_order = 2`,
+    [req.params.query],
+    (err, result) => {
+      const books = result.rows
+      res.json(books)
+    }
+  )
 })
 module.exports = router

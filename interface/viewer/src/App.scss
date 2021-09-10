@@ -208,15 +208,37 @@ h6 {
 .search-result {
     text-decoration: none;
     color: unset;
+    display: flex;
+    flex-direction: row;
 
     h2 {
         font-family: "Crimson Pro";
         font-size: 1.9rem;
     }
 
-    border-bottom: 1px solid #eee;
-    display: block;
-    padding: 0.75em 0;
+    .sample {
+        width: 20em;
+        max-width: 20em;
+        min-width: 20em;
+        font-size: 0.8em;
+        margin-right: 1em;
+        border: 1px solid #eee;
+        border-radius: 0.5em;
+        padding: 1em;
+        height: 10.9em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    padding: 1em 0;
+}
+
+.fadeout {
+    position: relative;
+    top: 0;
+    height: 10.9em;
+    margin-bottom: -10.9em;
+    background-image: linear-gradient(rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 1) 100%);
 }
 
 .hero {
