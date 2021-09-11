@@ -61,6 +61,7 @@ if not args.dry_run:
             sys.exit()
             pass
         except Exception as e:
+            # You can delete these lines if debugging is annoying.
             print(e)
             continue
 

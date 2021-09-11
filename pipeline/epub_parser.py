@@ -161,14 +161,12 @@ class EpubParser(object):
             self.image_files[filename] = file_content
 
     def __str__(self):
-        a = [self.title, self.slug, self.author, self.description]
-        a = [x for x in a if x]
-        return " - ".join(a)
+        return f"`{self.title}` -> `{self.slug}`"
 
 
 if __name__ == '__main__':
     # For use in the debugger.
     # filename = "/home/gytis/Projects/openbook/pipeline/epubs/oscar-wilde_the-picture-of-dorian-gray.epub"
     # filename = "/home/gytis/Projects/openbook/pipeline/epubs/pg66080-images.epub"
-    filename = "/media/gytdau/Filestore/Projects/openbook/pipeline/epubs/pg62230-images.epub"
+    filename = "/media/gytdau/Filestore/Projects/openbook/pipeline/epubs/private/The Fabric of Reality - David Deutsch.epub"
     epub = EpubParser(filename)

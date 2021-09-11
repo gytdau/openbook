@@ -157,7 +157,8 @@ class ContentParser(object):
             if file_id in self.navpoints:
                 navpoints = self.navpoints[file_id]
             else:
-                self.carry_over(None, copy.copy(file.find("body")), file_id)
+                self.carry_over("Other Content", copy.copy(
+                    file.find("body")), file_id)
                 continue
 
             for navpoint_id, navpoint in enumerate(navpoints):
@@ -176,7 +177,7 @@ class ContentParser(object):
                         ContentParser.remove_including_after(
                             header_in_remainder)
                         self.carry_over(
-                            None, remainder_of_body, file_id)
+                            navpoint.title, remainder_of_body, file_id)
                         self.push_carry_over()
 
                     ContentParser.remove_including_before(header)
@@ -202,11 +203,13 @@ class ContentParser(object):
     def add_ids_to_location_map(self, chapter: RawChapter, filename):
         content = chapter.content
         tags_with_an_id = content.find_all(id=True)
+        filename = filename.split("/")[-1]
         for tag in tags_with_an_id:
             tag_id = tag.attrs["id"]
             ref = f"{filename}#{tag_id}"
             new_ref = f"{title_to_slug(chapter.title)}#{tag_id}"
             self.location_mapping[ref] = new_ref
+        self.location_mapping[filename] = title_to_slug(chapter.title)
 
     def add_chapter(self, chapter: RawChapter):
         new_chapter = RawChapter(
