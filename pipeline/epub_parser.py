@@ -61,7 +61,7 @@ class EpubParser(object):
         self.process_navpoints(ncx)
 
         self.content = ContentParser(self.html_file_order, self.html_files, self.image_files,
-                                   self.navpoints)
+                                     self.navpoints)
 
         return self
 
@@ -92,9 +92,9 @@ class EpubParser(object):
                     navpoint_to_add)
             else:
                 self.navpoints[filename] = [navpoint_to_add]
-        
+
         self.add_navpoint_to_start_of_book()
-        
+
     def add_navpoint_to_start_of_book(self):
         first_html_page = self.html_file_order[0]
         new_navpoint = Navpoint(title=self.title, selector=None)
@@ -119,7 +119,7 @@ class EpubParser(object):
     def get_file_content_xml(self, filename):
         with self.ezip.open(filename) as f:
             return BeautifulSoup(f, features="lxml")
-    
+
     def populate_html_page_list(self, content: BeautifulSoup, content_directory_path):
         spine_tag = content.find('spine')
         for spine_item_tag in spine_tag.children:
@@ -128,7 +128,8 @@ class EpubParser(object):
                 continue
 
             idref = spine_item_tag.attrs['idref']
-            idref = idref.replace(".", "\.") # Dots are valid in IDs, but they must be escaped for us to use them in a selector 
+            # Dots are valid in IDs, but they must be escaped for us to use them in a selector
+            idref = idref.replace(".", "\.")
             corresponding_item = content.select_one(f"#{idref}")
             filename = corresponding_item.attrs['href']
 
@@ -140,25 +141,25 @@ class EpubParser(object):
 
             self.html_files[filename] = file_content
             self.html_file_order.append(filename)
-        
+
     def populate_image_list(self, content: BeautifulSoup, content_directory_path):
         manifest_tag = content.find('manifest')
         for manifest_item_tag in manifest_tag.children:
             manifest_item_tag: BeautifulSoup
             if type(manifest_item_tag) == NavigableString or type(manifest_item_tag) == Comment:
                 continue
-            
+
             mimetype: str = manifest_item_tag.attrs['media-type']
-            
+
             if not mimetype.startswith("image/"):
                 continue
 
             filename = manifest_item_tag.attrs['href']
             file_content = self.get_file_content(
                 join_path(content_directory_path, filename))
-            
+
             self.image_files[filename] = file_content
-            
+
     def __str__(self):
         a = [self.title, self.slug, self.author, self.description]
         a = [x for x in a if x]
@@ -168,5 +169,6 @@ class EpubParser(object):
 if __name__ == '__main__':
     # For use in the debugger.
     # filename = "/home/gytis/Projects/openbook/pipeline/epubs/oscar-wilde_the-picture-of-dorian-gray.epub"
-    filename = "/home/gytis/Projects/openbook/pipeline/epubs/pg66080-images.epub"
+    # filename = "/home/gytis/Projects/openbook/pipeline/epubs/pg66080-images.epub"
+    filename = "/media/gytdau/Filestore/Projects/openbook/pipeline/epubs/pg62230-images.epub"
     epub = EpubParser(filename)

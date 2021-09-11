@@ -32,12 +32,12 @@ class RawChapter:
     content: BeautifulSoup
     order: int = None
 
+
 @dataclass
 class Image:
     location: str
     content: ByteString
     format: str
-
 
 
 def title_to_slug(title):
@@ -52,6 +52,7 @@ def latin_numerals(word, **kwargs):
 
 def titlecase_chapter(title):
     return titlecase(title, callback=latin_numerals)
+
 
 def content_into_stripped_text(content):
     text = content.text
@@ -91,22 +92,22 @@ class ContentParser(object):
         self.parse_chapters()
         self.swap_locations_in_parsed_chapters()
         self.convert_raws_to_output()
-    
+
     def allocate_locations(self):
-        for index, html_file in enumerate(self.file_order):
-            self.location_mapping[html_file] = f"part-{index}.html"
+        # for index, html_file in enumerate(self.file_order):
+        #     self.location_mapping[html_file] = f"part-{index}.html"
 
         for index, image_file in enumerate(self.image_files.keys()):
             directoryless_image_file = image_file.split("/")[-1]
             image_format = directoryless_image_file.split(".")[-1]
 
-            new_image_name = f"image-{str(uuid.uuid4())}" 
+            new_image_name = f"image-{str(uuid.uuid4())}"
             new_image_location = f"{new_image_name}.{image_format}"
             self.location_mapping[directoryless_image_file] = new_image_location
             image_content = self.image_files[image_file]
-            self.images.append(Image(location=new_image_location, content=image_content, format=image_format))
+            self.images.append(
+                Image(location=new_image_location, content=image_content, format=image_format))
 
-    
     def swap_locations_in_parsed_chapters(self):
         for chapter in self.raw_chapters:
             chapter: RawChapter
@@ -118,11 +119,23 @@ class ContentParser(object):
 
                 new_src = self.location_mapping[src]
                 item.attrs["src"] = f"/api/books/image/{new_src}"
-        
-        # TODO: This is where we'd swap the links too. Theoretically, this is the only thing left
-        # to implement.
 
+        for chapter in self.raw_chapters:
+            chapter: RawChapter
+            items = chapter.content.find_all("a")
+            for item in items:
+                if "href" not in item.attrs:
+                    item.attrs["href"] = "#"
+                    continue
 
+                src = item.attrs["href"].split("/")[-1]
+
+                if src not in self.location_mapping:
+                    item.attrs["href"] = "#"
+                    continue
+
+                new_src = self.location_mapping[src]
+                item.attrs["href"] = new_src
 
     def convert_raws_to_output(self):
         for chapter in self.raw_chapters:
@@ -136,7 +149,6 @@ class ContentParser(object):
                 order=chapter.order
             )
             self.chapters.append(new_chapter)
-
 
     def parse_chapters(self):
         for file_id in self.file_order:
@@ -161,7 +173,8 @@ class ContentParser(object):
                         # `header` references the header in `body`, `header_in_remainder` references the same header but in the `remainder_of_body` object instead
                         header_in_remainder = remainder_of_body.select_one(
                             f"#{header.attrs['id']}")
-                        ContentParser.remove_including_after(header_in_remainder)
+                        ContentParser.remove_including_after(
+                            header_in_remainder)
                         self.carry_over(
                             None, remainder_of_body, file_id)
                         self.push_carry_over()
@@ -176,7 +189,7 @@ class ContentParser(object):
                         self.carry_over(
                             navpoint.title, body, file_id)
                         continue
-                
+
                 self.carry_over(navpoint.title, body, file_id)
                 self.push_carry_over()
 
@@ -185,14 +198,14 @@ class ContentParser(object):
 
     def title_to_slug(self, title):
         return slugify(title)
-    
+
     def add_ids_to_location_map(self, chapter: RawChapter, filename):
         content = chapter.content
         tags_with_an_id = content.find_all(id=True)
         for tag in tags_with_an_id:
             tag_id = tag.attrs["id"]
             ref = f"{filename}#{tag_id}"
-            new_ref = f"part-{self.current_order}.html#{tag_id}"
+            new_ref = f"{title_to_slug(chapter.title)}#{tag_id}"
             self.location_mapping[ref] = new_ref
 
     def add_chapter(self, chapter: RawChapter):
