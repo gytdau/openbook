@@ -30,6 +30,7 @@ parser.add_argument('--dry-run', action='store_true',
 
 args = parser.parse_args()
 db_connection = config['DB_CONNECTION']
+BUCKET_NAME = "gutenberg-vivlia"
 
 if args.drop:
     db(db_connection, False).drop_tables()
@@ -82,7 +83,7 @@ if not args.dry_run:
             filename = os.path.basename(file)
             # TODO push epubs to s3
             # do it here? or perhaps as a seperate step?
-            source = con.add_book_source(book_id, "gutenberg", filename, f"s3:/gutenberg/{filename}", file_hash)
+            source = con.add_book_source(book_id, "gutenberg", filename, f"s3://{BUCKET_NAME}/{filename}", file_hash)
 
         else:
             book_id = source[1]
