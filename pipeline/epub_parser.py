@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 
 import random
 from helpers import join_path
+import helpers
 
 
 class EpubParser(object):
@@ -174,3 +175,6 @@ if __name__ == '__main__':
     # filename = "/home/gytis/Projects/openbook/pipeline/epubs/pg66080-images.epub"
     filename = "/media/gytdau/Filestore/Projects/openbook/pipeline/epubs/private/The Fabric of Reality - David Deutsch.epub"
     epub = EpubParser(filename)
+
+    url = helpers.parse_s3_url("s3://gutenberg-vivlia/pg1-images.epub")
+    epub = helpers.EpubParserFromS3(**url)
