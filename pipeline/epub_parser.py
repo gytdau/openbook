@@ -112,11 +112,15 @@ class EpubParser(object):
 
     def get_file_content(self, filename):
         data = None
+        if filename.startswith("/"):
+            filename = filename[1:]
         with self.ezip.open(filename) as f:
             data = f.read()
         return data
 
     def get_file_content_xml(self, filename):
+        if filename.startswith("/"):
+            filename = filename[1:]
         with self.ezip.open(filename) as f:
             return BeautifulSoup(f, features="lxml")
 
