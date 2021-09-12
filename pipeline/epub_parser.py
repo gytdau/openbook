@@ -15,7 +15,8 @@ from helpers import join_path
 
 
 class EpubParser(object):
-    def __init__(self, filename):
+    def __init__(self, filename, file = None):
+        self.file = file
         self.filename = filename
         self.html_file_order = []
         self.html_files = {}
@@ -39,7 +40,10 @@ class EpubParser(object):
     def parse(self):
         print(f"Processing: {self.filename}")
 
-        self.ezip = ZipFile(self.filename, 'r')
+        if(self.file):
+            self.ezip = ZipFile(self.file, 'r')
+        else:
+            self.ezip = ZipFile(self.filename, 'r')
         if not self.can_be_unzipped():
             return
 
