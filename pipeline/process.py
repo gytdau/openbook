@@ -8,7 +8,6 @@ import shutil
 import argparse
 from pathlib import Path
 from dotenv import dotenv_values
-import hashlib
 
 config = {
     **dotenv_values(".env"),  # load sensitive variables
@@ -71,17 +70,13 @@ if not args.dry_run:
             print(f"warning: ({file}) not a valid epub")
             continue
 
-        file_hash = None
-        with open(file,"rb") as f:
-            data = f.read()
-            file_hash = hashlib.sha256(data).hexdigest()
-        source = con.get_book_source(file_hash)
+        source = con.get_book_source(epub.file_hash)
         if(not source):
             book_id = con.add_book(epub.title, epub.author,
                                 epub.slug, epub.description)
 
             filename = os.path.basename(file)
-            source = con.add_book_source(book_id, "gutenberg", filename, f"s3://{BUCKET_NAME}/{filename}", file_hash)
+            source = con.add_book_source(book_id, "gutenberg", filename, f"s3://{BUCKET_NAME}/{filename}", epub.file_hash)
 
         else:
             book_id = source[1]

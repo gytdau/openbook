@@ -2,6 +2,7 @@ from bs4.element import Comment, NavigableString
 from content_parser import Navpoint, ContentParser
 import sys
 import os
+import hashlib
 
 from zipfile import ZipFile
 from zipfile import is_zipfile
@@ -24,6 +25,7 @@ class EpubParser(object):
         self.image_files = {}
         self.navpoints = {}
         self.ezip = None
+        self.file_hash = None
         self.parse()
 
     @staticmethod
@@ -42,8 +44,14 @@ class EpubParser(object):
         print(f"Processing: {self.filename}")
 
         if(self.file):
+            data = self.file.read()
+            self.file_hash = hashlib.sha256(data).hexdigest()
+            self.file.seek(0)
             self.ezip = ZipFile(self.file, 'r')
         else:
+            with open(self.filename,"rb") as f:
+                data = f.read()
+                self.file_hash = hashlib.sha256(data).hexdigest()
             self.ezip = ZipFile(self.filename, 'r')
         if not self.can_be_unzipped():
             return
