@@ -14,13 +14,23 @@ class db(object):
 
     def _create_tables(self):
         cur = self.con.cursor()
+        cur.execute('''CREATE TABLE IF NOT EXISTS ebook_source (
+            id SERIAL PRIMARY KEY,
+            source text,
+            source_id text,
+            s3_path text,
+            hash_sha256 text,
+            UNIQUE(hash_sha256)
+        )''')
         cur.execute('''CREATE TABLE IF NOT EXISTS books (
                 id SERIAL PRIMARY KEY,
+                ebook_source_id integer NOT NULL,
                 title text NOT NULL,
                 author text,
                 slug text,
                 version integer NOT NULL,
-                description text
+                description text,
+                FOREIGN KEY (ebook_source_id) REFERENCES ebook_source (id)
             )''')
         cur.execute('''CREATE TABLE IF NOT EXISTS chapters (
             id SERIAL PRIMARY KEY,
@@ -45,22 +55,12 @@ class db(object):
             FOREIGN KEY (book_id) REFERENCES books (id),
             CONSTRAINT unique_image_version UNIQUE(book_id, location, version)
         )''')
-        cur.execute('''CREATE TABLE IF NOT EXISTS ebook_source (
-            id SERIAL PRIMARY KEY,
-            book_id integer NOT NULL,
-            source text,
-            source_id text,
-            s3_path text,
-            hash_sha256 text,
-            UNIQUE(hash_sha256),
-            FOREIGN KEY (book_id) REFERENCES books (id)
-        )''')
         self.con.commit()
 
     def drop_tables(self):
         cur = self.con.cursor()
-        for table_name in ['ebook_source', 'images', 'chapters', 'books']:
-            cur.execute(f"DROP TABLE IF EXISTS {table_name};")
+        for table_name in ['images', 'chapters', 'books', 'ebook_source']:
+            cur.execute(f"DROP TABLE IF EXISTS {table_name} CASCADE;")
         self.con.commit()
 
     def add_book(self, title, author, slug, description):
