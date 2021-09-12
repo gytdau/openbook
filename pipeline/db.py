@@ -63,11 +63,17 @@ class db(object):
             cur.execute(f"DROP TABLE IF EXISTS {table_name} CASCADE;")
         self.con.commit()
 
-    def add_book(self, title, author, slug, description):
+    def get_book_by_ebook_source_id(self, ebook_source_id):
         cur = self.con.cursor()
         cur.execute(
-            '''INSERT INTO books (title, author, slug, description, version) VALUES (%s, %s, %s, %s, %s) RETURNING id''',
-            (title, author, slug, description, self.version))
+            '''SELECT * FROM books WHERE ebook_source_id = %s;''', (ebook_source_id,))
+        return cur.fetchone()
+
+    def add_book(self, ebook_source_id, title, author, slug, description):
+        cur = self.con.cursor()
+        cur.execute(
+            '''INSERT INTO books (ebook_source_id, title, author, slug, description, version) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id''',
+            (ebook_source_id, title, author, slug, description, self.version))
         self.con.commit()
         return cur.fetchone()[0]
 
@@ -77,10 +83,10 @@ class db(object):
             '''SELECT * FROM ebook_source WHERE hash_sha256 = %s;''', (hash_sha256,))
         return cur.fetchone()
 
-    def add_book_source(self, book_id, source, source_id, s3_path, hash_sha256):
+    def add_book_source(self, source, source_id, s3_path, hash_sha256):
         cur = self.con.cursor()
         cur.execute(
-            '''INSERT INTO ebook_source (book_id, source, source_id, s3_path, hash_sha256) VALUES (%s, %s, %s, %s, %s) RETURNING id''', (book_id, source, source_id, s3_path, hash_sha256))
+            '''INSERT INTO ebook_source (source, source_id, s3_path, hash_sha256) VALUES (%s, %s, %s, %s) RETURNING id''', (source, source_id, s3_path, hash_sha256))
         self.con.commit()
         return cur.fetchone()[0]
 

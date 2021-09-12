@@ -70,16 +70,23 @@ if not args.dry_run:
             print(f"warning: ({file}) not a valid epub")
             continue
 
-        source = con.get_book_source(epub.file_hash)
-        if(not source):
-            book_id = con.add_book(epub.title, epub.author,
-                                epub.slug, epub.description)
-
-            filename = os.path.basename(file)
-            source = con.add_book_source(book_id, "gutenberg", filename, f"s3://{BUCKET_NAME}/{filename}", epub.file_hash)
-
+        ebook_source = con.get_book_source(epub.file_hash)
+        if(not ebook_source):
+            # ebook_source should be updated as epub is uploaded to s3
+            # this code remains to make sure we can run this locally
+            # since local runs/test we probably dont want to actually upload anything to s3
+            ebook_source_id = con.add_book_source("gutenberg", epub.filename, f"s3://{BUCKET_NAME}/{epub.filename}", epub.file_hash)
         else:
-            book_id = source[1]
+            ebook_source_id = ebook_source[0]
+
+        book_id = None
+        if(ebook_source):
+            book = con.get_book_by_ebook_source_id(ebook_source_id)
+            book_id = book[0]
+
+        if(not book_id):
+            book_id = con.add_book(ebook_source_id, epub.title, epub.author,
+                                epub.slug, epub.description)
 
         con.add_chapters(book_id, epub.content.chapters)
         con.add_images(book_id, epub.content.images)
