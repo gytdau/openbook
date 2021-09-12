@@ -1,3 +1,4 @@
+import io
 import sys
 import os
 import os.path
@@ -5,6 +6,7 @@ import csv
 import argparse
 import requests
 import random
+import boto3
 
 default_epubs_directory = './epubs/'
 default_cache_directory = './cache/'
@@ -12,6 +14,7 @@ default_csv_path = './cache/pg_catalog.csv'
 
 ebook_link_unformatted = "http://aleph.gutenberg.org/cache/epub/{}/pg{}-images.epub"
 
+BUCKET_NAME = "gutenberg-vivlia"
 
 def prepare_args():
     def unsigned_int(value):
@@ -25,6 +28,7 @@ def prepare_args():
     parser.add_argument('--output', default=default_epubs_directory, help="Folder where the epubs files go")
     parser.add_argument('--id', help="Download book associated with specified ID")
     parser.add_argument('--random', '-r', action='store_true', help="Download Random Books")
+    parser.add_argument('--upload_s3', '-s3', action='store_true', help="Download Random Books")
     parser.add_argument('--all', '-a', action='store_true', help="Download All books from gutenberg")
     parser.add_argument('--max', type=unsigned_int, default=5, help="Maximum books to download, applies to --all/--random [default: 5, unlimited: 0]")
 
@@ -73,6 +77,19 @@ def get_csv_reader():
         return csv.DictReader(f.read().splitlines(), delimiter=',', quotechar='"')
 
 
+def upload_ebook_s3(id):
+    ebook_link = ebook_link_unformatted.format(id, id)
+    filename = ebook_link.split('/')[-1]
+    path = os.path.join(default_epubs_directory, filename)
+
+    f = io.BytesIO()
+    download_file(ebook_link, f)
+    f.seek(0)
+    s3_client = boto3.resource('s3')
+    response = s3_client.meta.client.upload_fileobj(f, BUCKET_NAME, filename)
+
+    return f"s3://{BUCKET_NAME}/{filename}"
+
 def download_ebook(id):
     ebook_link = ebook_link_unformatted.format(id, id)
     filename = ebook_link.split('/')[-1]
@@ -99,11 +116,20 @@ if __name__ == '__main__':
             if(book['Type'] != 'Text'):
                 print(f"Not a book, skipping: {id}. {title}.")
                 continue
-            print(f"Downloading {id}. {title}.")
-            download_ebook(id)
+            if(args.upload_s3):
+                print(f"Uploading S3 {id}. {title}.")
+                upload_ebook_s3(id)
+            else:
+                print(f"Downloading {id}. {title}.")
+                download_ebook(id)
             args.max -= 1
             if(args.max == 0):
                 break
 
     if(args.id):
-        download_ebook(args.id)
+        if(args.upload_s3):
+            print(f"Uploading S3 {args.id}.")
+            upload_ebook_s3(args.id)
+        else:
+            print(f"Downloading {args.id}.")
+            download_ebook(args.id)
