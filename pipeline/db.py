@@ -77,7 +77,7 @@ class db(object):
         self.con.commit()
         return cur.fetchone()[0]
 
-    def get_book_source(self, hash_sha256):
+    def get_book_source_by_hash(self, hash_sha256):
         cur = self.con.cursor()
         cur.execute(
             '''SELECT * FROM ebook_source WHERE hash_sha256 = %s;''', (hash_sha256,))

@@ -70,7 +70,7 @@ if not args.dry_run:
             print(f"warning: ({file}) not a valid epub")
             continue
 
-        ebook_source = con.get_book_source(epub.file_hash)
+        ebook_source = con.get_book_source_by_hash(epub.file_hash)
         if(not ebook_source):
             # ebook_source should be updated as epub is uploaded to s3
             # this code remains to make sure we can run this locally
