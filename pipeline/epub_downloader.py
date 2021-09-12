@@ -76,8 +76,10 @@ def get_csv_reader():
 def download_ebook(id):
     ebook_link = ebook_link_unformatted.format(id, id)
     filename = ebook_link.split('/')[-1]
-    with open(os.path.join(default_epubs_directory, filename), "wb") as f:
+    path = os.path.join(default_epubs_directory, filename)
+    with open(path, "wb") as f:
         download_file(ebook_link, f)
+        return path
 
 if __name__ == '__main__':
     args = prepare_args()
