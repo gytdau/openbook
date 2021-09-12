@@ -75,7 +75,8 @@ if not args.dry_run:
             # ebook_source should be updated as epub is uploaded to s3
             # this code remains to make sure we can run this locally
             # since local runs/test we probably dont want to actually upload anything to s3
-            ebook_source_id = con.add_book_source("gutenberg", epub.filename, f"s3://{BUCKET_NAME}/{epub.filename}", epub.file_hash)
+            filename = os.path.basename(epub.filename)
+            ebook_source_id = con.add_book_source("gutenberg", filename, f"s3://{BUCKET_NAME}/{filename}", epub.file_hash)
         else:
             ebook_source_id = ebook_source[0]
 
