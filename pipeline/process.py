@@ -81,8 +81,6 @@ if not args.dry_run:
                                 epub.slug, epub.description)
 
             filename = os.path.basename(file)
-            # TODO push epubs to s3
-            # do it here? or perhaps as a seperate step?
             source = con.add_book_source(book_id, "gutenberg", filename, f"s3://{BUCKET_NAME}/{filename}", file_hash)
 
         else:
