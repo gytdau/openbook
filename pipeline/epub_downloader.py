@@ -111,17 +111,17 @@ if __name__ == '__main__':
 
     if(args.all or args.random):
         for book in books:
-            id = book['Text#']
+            book_id = book['Text#']
             title = book['Title']
             if(book['Type'] != 'Text'):
-                print(f"Not a book, skipping: {id}. {title}.")
+                print(f"Not a book, skipping: {book_id}. {title}.")
                 continue
             if(args.upload_s3):
-                print(f"Uploading S3 {id}. {title}.")
-                upload_ebook_s3(id)
+                print(f"Uploading S3 {book_id}. {title}.")
+                upload_ebook_s3(book_id)
             else:
-                print(f"Downloading {id}. {title}.")
-                download_ebook(id)
+                print(f"Downloading {book_id}. {title}.")
+                download_ebook(book_id)
             args.max -= 1
             if(args.max == 0):
                 break
