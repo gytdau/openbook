@@ -83,6 +83,12 @@ class db(object):
             '''SELECT * FROM ebook_source WHERE hash_sha256 = %s;''', (hash_sha256,))
         return cur.fetchone()
 
+    def get_book_source_by_id(self, ebook_source_id):
+        cur = self.con.cursor()
+        cur.execute(
+            '''SELECT * FROM ebook_source WHERE id = %s;''', (ebook_source_id,))
+        return cur.fetchone()
+
     def add_book_source(self, source, source_id, s3_path, hash_sha256):
         cur = self.con.cursor()
         cur.execute(
