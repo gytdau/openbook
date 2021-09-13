@@ -12,6 +12,11 @@ config = {
 bucket_name = config["BUCKET_NAME"]
 db_connection = config["DB_CONNECTION"]
 
+def test_event(event, context):
+    return {
+        'statusCode': 202,
+        'body': json.dumps({'type' :type(event).__name__, 'event': event}),
+    }
 # this is triggered through an API,
 # the API accepts a json (e.g {'id': [1,2,3,4]})
 # once recieved this function will trigger a single async lambda `updateBook` per id
