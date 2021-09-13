@@ -15,6 +15,7 @@ default_csv_path = './cache/pg_catalog.csv'
 ebook_link_unformatted = "http://aleph.gutenberg.org/cache/epub/{}/pg{}-images.epub"
 
 BUCKET_NAME = "gutenberg-vivlia"
+args = None
 
 def prepare_args():
     def unsigned_int(value):
@@ -68,7 +69,7 @@ def download_file(link, f):
         print("")
 
 def get_csv_reader():
-    if(args.clear_cache or not os.path.isfile(default_csv_path)):
+    if(not args or args.clear_cache or not os.path.isfile(default_csv_path)):
         os.makedirs(os.path.dirname(default_csv_path), exist_ok=True)
         with open(default_csv_path, "wb") as f:
             download_file('http://aleph.gutenberg.org/cache/epub/feeds/pg_catalog.csv', f)
