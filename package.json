@@ -41,5 +41,13 @@
     "sass": "^1.37.5",
     "web-vitals": "^1.0.1"
   },
-  "homepage": "https://github.com/gytdau/openbook#readme"
+  "homepage": "https://github.com/gytdau/openbook#readme",
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.25.1",
+    "eslint-plugin-react-hooks": "^4.2.0"
+  }
 }
