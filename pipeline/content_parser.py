@@ -45,7 +45,7 @@ def title_to_slug(title):
 
 
 def latin_numerals(word, **kwargs):
-    if all(c in 'LXIV' for c in word.upper()):
+    if all(c in 'LXIV.' for c in word.upper()):
         # It's a Latin numeral
         return word.upper()
 
@@ -109,17 +109,11 @@ class ContentParser(object):
                 Image(location=new_image_location, content=image_content, format=image_format))
 
     def swap_locations_in_parsed_chapters(self):
-        for chapter in self.raw_chapters:
-            chapter: RawChapter
-            items = chapter.content.find_all("img")
-            for item in items:
-                src = item.attrs["src"].split("/")[-1]
-                if src not in self.location_mapping:
-                    continue
+        print(self.location_mapping)
+        self.swap_images_in_parsed_chapters()
+        self.swap_links_in_parsed_chapters()
 
-                new_src = self.location_mapping[src]
-                item.attrs["src"] = f"/api/books/image/{new_src}"
-
+    def swap_links_in_parsed_chapters(self):
         for chapter in self.raw_chapters:
             chapter: RawChapter
             items = chapter.content.find_all("a")
@@ -136,6 +130,19 @@ class ContentParser(object):
 
                 new_src = self.location_mapping[src]
                 item.attrs["href"] = new_src
+
+    def swap_images_in_parsed_chapters(self):
+        for chapter in self.raw_chapters:
+            chapter: RawChapter
+            items = chapter.content.find_all(["img", "image"])
+            for item in items:
+
+                src = item.attrs["src"].split("/")[-1]
+                if src not in self.location_mapping:
+                    continue
+
+                new_src = self.location_mapping[src]
+                item.attrs["src"] = f"/api/books/image/{new_src}"
 
     def convert_raws_to_output(self):
         for chapter in self.raw_chapters:
@@ -259,7 +266,7 @@ class ContentParser(object):
 
         return (body, header, next_header)
 
-    @ staticmethod
+    @staticmethod
     def remove_including_before(target):
         curr_target = target
         while curr_target is not None:
@@ -267,9 +274,9 @@ class ContentParser(object):
             for prev_sibling in curr_target.find_previous_siblings():
                 prev_sibling.decompose()
             curr_target = curr_target.parent
-        target.decompose()
+        ContentParser.remove_if_not_complex(target)
 
-    @ staticmethod
+    @staticmethod
     def remove_including_after(target):
         curr_target = target
         while curr_target is not None:
@@ -277,4 +284,10 @@ class ContentParser(object):
             for prev_sibling in curr_target.find_next_siblings():
                 prev_sibling.decompose()
             curr_target = curr_target.parent
-        target.decompose()
+        ContentParser.remove_if_not_complex(target)
+
+    @staticmethod
+    def remove_if_not_complex(target: bs4.Tag):
+        children = target.find_all(recursive=True)
+        if len(children) <= 1:
+            target.decompose()
