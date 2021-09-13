@@ -29,7 +29,7 @@ parser.add_argument('--dry-run', action='store_true',
 
 args = parser.parse_args()
 db_connection = config['DB_CONNECTION']
-BUCKET_NAME = "gutenberg-vivlia"
+bucket_name = config["BUCKET_NAME"]
 
 if args.drop:
     db(db_connection, False).drop_tables()
@@ -76,7 +76,8 @@ if not args.dry_run:
             # this code remains to make sure we can run this locally
             # since local runs/test we probably dont want to actually upload anything to s3
             filename = os.path.basename(epub.filename)
-            ebook_source_id = con.add_book_source("gutenberg", filename, f"s3://{BUCKET_NAME}/{filename}", epub.file_hash)
+            ebook_source_id = con.add_book_source(
+                "gutenberg", filename, f"s3://{bucket_name}/{filename}", epub.file_hash)
         else:
             ebook_source_id = ebook_source[0]
 
@@ -87,7 +88,7 @@ if not args.dry_run:
 
         if(not book_id):
             book_id = con.add_book(ebook_source_id, epub.title, epub.author,
-                                epub.slug, epub.description)
+                                   epub.slug, epub.description)
 
         con.add_chapters(book_id, epub.content.chapters)
         con.add_images(book_id, epub.content.images)
