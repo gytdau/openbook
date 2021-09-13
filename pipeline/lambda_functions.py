@@ -15,8 +15,6 @@ db_connection = config["DB_CONNECTION"]
 # this is triggered through an API,
 # the API accepts a json (e.g {'id': [1,2,3,4]})
 # once recieved this function will trigger a single async lambda `updateBook` per id
-
-
 def UpdateBooks(event, context):
     # body = {"data": [{"book_id": 1, "ebook_source_id": 1}, ...]}
 
