@@ -147,6 +147,37 @@ def DownloadBook(event, context):
         'body': json.dumps(data)
     }
 
+def DownloadRangeBooks(event, context):
+    # body = {"start": n, "end": m}
+
+    start_id = event['start']
+    end_id = event['end']
+
+    responses = []
+    client = boto3.client('lambda')
+
+    import epub_downloader
+    books = epub_downloader.get_csv_reader(False)
+
+    for book in books:
+        if(book['Type'] != 'Text'):
+            continue
+
+        book_id = int(book['Text#'])
+        if(book_id >= start_id and book_id <= end_id):
+            response = client.invoke(
+                FunctionName='downloadBook',
+                InvocationType='Event', #'RequestResponse',
+                Payload=json.dumps({"gutenberg_id": book_id}),
+            )
+
+            del response['Payload']
+            responses.append(response)
+
+    return {
+        'statusCode': 202,
+        'body': json.dumps(responses),
+    }
 
 if __name__ == "__main__":
     res = DownloadBook("{\"gutenberg_id\": 1}", None)
