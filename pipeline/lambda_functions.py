@@ -78,7 +78,7 @@ def UpdateBook(event, context):
         'body': event
     }
 
-def DownloadBook(event, context):
+def DownloadBooks(event, context):
     # body = {"data": [{"gutenberg_id": 1}, ...]}
 
     body = ""
