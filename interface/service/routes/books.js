@@ -1,7 +1,7 @@
 const express = require('express');
 
 const router = express.Router();
-const { Client, Pool } = require('pg');
+const { Pool } = require('pg');
 
 const pool = new Pool();
 
@@ -12,7 +12,7 @@ router.get('/get/:title', (req, res, next) => {
     (err, result) => {
       const book = result.rows[0];
       pool.query(
-        'SELECT id, book_id, title, slug FROM chapters WHERE book_id = $1',
+        'SELECT id, book_id, title, slug FROM chapters WHERE book_id = $1 ORDER BY chapter_order',
         [book.id],
         (err, result) => {
           const chapters = result.rows;
