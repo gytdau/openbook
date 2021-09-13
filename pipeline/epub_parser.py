@@ -2,6 +2,7 @@ from bs4.element import Comment, NavigableString
 from content_parser import Navpoint, ContentParser
 import sys
 import os
+import hashlib
 
 from zipfile import ZipFile
 from zipfile import is_zipfile
@@ -12,16 +13,19 @@ from bs4 import BeautifulSoup
 
 import random
 from helpers import join_path
+import helpers
 
 
 class EpubParser(object):
-    def __init__(self, filename):
+    def __init__(self, filename, file = None):
+        self.file = file
         self.filename = filename
         self.html_file_order = []
         self.html_files = {}
         self.image_files = {}
         self.navpoints = {}
         self.ezip = None
+        self.file_hash = None
         self.parse()
 
     @staticmethod
@@ -39,7 +43,16 @@ class EpubParser(object):
     def parse(self):
         print(f"Processing: {self.filename}")
 
-        self.ezip = ZipFile(self.filename, 'r')
+        if(self.file):
+            data = self.file.read()
+            self.file_hash = hashlib.sha256(data).hexdigest()
+            self.file.seek(0)
+            self.ezip = ZipFile(self.file, 'r')
+        else:
+            with open(self.filename,"rb") as f:
+                data = f.read()
+                self.file_hash = hashlib.sha256(data).hexdigest()
+            self.ezip = ZipFile(self.filename, 'r')
         if not self.can_be_unzipped():
             return
 
@@ -174,3 +187,6 @@ if __name__ == '__main__':
     # filename = "/home/gytis/Projects/openbook/pipeline/epubs/pg66080-images.epub"
     filename = "/media/gytdau/Filestore/Projects/openbook/pipeline/epubs/private/The Fabric of Reality - David Deutsch.epub"
     epub = EpubParser(filename)
+
+    url = helpers.parse_s3_url("s3://gutenberg-vivlia/pg1-images.epub")
+    epub = helpers.EpubParserFromS3(**url)

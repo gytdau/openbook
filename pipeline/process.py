@@ -29,6 +29,7 @@ parser.add_argument('--dry-run', action='store_true',
 
 args = parser.parse_args()
 db_connection = config['DB_CONNECTION']
+bucket_name = config["BUCKET_NAME"]
 
 if args.drop:
     db(db_connection, False).drop_tables()
@@ -69,8 +70,25 @@ if not args.dry_run:
             print(f"warning: ({file}) not a valid epub")
             continue
 
-        book_id = con.add_book(epub.title, epub.author,
-                               epub.slug, epub.description)
+        ebook_source = con.get_book_source_by_hash(epub.file_hash)
+        if(not ebook_source):
+            # ebook_source should be updated as epub is uploaded to s3
+            # this code remains to make sure we can run this locally
+            # since local runs/test we probably dont want to actually upload anything to s3
+            filename = os.path.basename(epub.filename)
+            ebook_source_id = con.add_book_source(
+                "gutenberg", filename, f"s3://{bucket_name}/{filename}", epub.file_hash)
+        else:
+            ebook_source_id = ebook_source[0]
+
+        book_id = None
+        if(ebook_source):
+            book = con.get_book_by_ebook_source_id(ebook_source_id)
+            book_id = book[0]
+
+        if(not book_id):
+            book_id = con.add_book(ebook_source_id, epub.title, epub.author,
+                                   epub.slug, epub.description)
 
         con.add_chapters(book_id, epub.content.chapters)
         con.add_images(book_id, epub.content.images)
