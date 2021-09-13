@@ -6,7 +6,7 @@
   "scripts": {
     "build-interface": "cd interface/viewer && react-scripts build && mv build ../service/build && cd ../..",
     "build": "npm run build-interface",
-    "start": "cd interface/service && npm start",
+    "start": "node interface/service/bin/www",
     "start-interface": "cd interface/viewer && npm start"
   },
   "repository": {
