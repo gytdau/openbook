@@ -18,15 +18,10 @@ db_connection = config["DB_CONNECTION"]
 def UpdateBooks(event, context):
     # body = {"data": [{"book_id": 1, "ebook_source_id": 1}, ...]}
 
-    body = ""
-    if(not event['isBase64Encoded']):
-        body = json.loads(event['body'])
-    else:
-        body = json.loads(base64.b64decode(event['body']))
-
+    data = event['data']
     responses = []
     client = boto3.client('lambda')
-    for book in body['data']:
+    for book in data:
         response = client.invoke(
             FunctionName='updateBook',
             InvocationType='Event',  # 'RequestResponse',
@@ -44,9 +39,8 @@ def UpdateBooks(event, context):
 
 
 def UpdateBook(event, context):
-    data = json.loads(event)
-    book_id = data['book_id']
-    ebook_source_id = data['ebook_source_id']
+    book_id = event['book_id']
+    ebook_source_id = event['ebook_source_id']
 
     from db import db
     con = db(db_connection)
@@ -87,15 +81,10 @@ def UpdateBook(event, context):
 def DownloadBooks(event, context):
     # body = {"data": [{"gutenberg_id": 1}, ...]}
 
-    body = ""
-    if(not event['isBase64Encoded']):
-        body = json.loads(event['body'])
-    else:
-        body = json.loads(base64.b64decode(event['body']))
-
+    data = event['data']
     responses = []
     client = boto3.client('lambda')
-    for book in body['data']:
+    for book in data:
         response = client.invoke(
             FunctionName='downloadBook',
             InvocationType='Event',  # 'RequestResponse',
@@ -113,8 +102,7 @@ def DownloadBooks(event, context):
 
 
 def DownloadBook(event, context):
-    data = json.loads(event)
-    gutenberg_id = data['gutenberg_id']
+    gutenberg_id = event['gutenberg_id']
 
     from db import db
     con = db(db_connection)
