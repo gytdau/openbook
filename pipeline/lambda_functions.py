@@ -2,13 +2,21 @@ import json
 import boto3
 import base64
 import os
+from dotenv import dotenv_values
 
-BUCKET_NAME = "gutenberg-vivlia"
-db_connection = "user=postgres password=123123123 dbname=openbook host=127.0.0.1"
+config = {
+    **dotenv_values(".env"),  # load sensitive variables
+    **os.environ,  # override loaded values with environment variables
+}
+
+bucket_name = config["BUCKET_NAME"]
+db_connection = config["DB_CONNECTION"]
 
 # this is triggered through an API,
 # the API accepts a json (e.g {'id': [1,2,3,4]})
 # once recieved this function will trigger a single async lambda `updateBook` per id
+
+
 def UpdateBooks(event, context):
     # body = {"data": [{"book_id": 1, "ebook_source_id": 1}, ...]}
 
@@ -17,13 +25,13 @@ def UpdateBooks(event, context):
         body = json.loads(event['body'])
     else:
         body = json.loads(base64.b64decode(event['body']))
-        
+
     responses = []
     client = boto3.client('lambda')
     for book in body['data']:
         response = client.invoke(
             FunctionName='updateBook',
-            InvocationType='Event', #'RequestResponse',
+            InvocationType='Event',  # 'RequestResponse',
             Payload=json.dumps(book),
         )
         print(response['Payload'].read())
@@ -36,6 +44,7 @@ def UpdateBooks(event, context):
         'body': json.dumps(responses),
     }
 
+
 def UpdateBook(event, context):
     data = json.loads(event)
     book_id = data['book_id']
@@ -43,7 +52,6 @@ def UpdateBook(event, context):
 
     from db import db
     con = db(db_connection)
-
 
     ebook_source = con.get_book_source_by_id(ebook_source_id)
     if(not ebook_source):
@@ -55,7 +63,6 @@ def UpdateBook(event, context):
     import helpers
     url = helpers.parse_s3_url(ebook_source[3])
     epub = helpers.EpubParserFromS3(**url)
-
 
     book = con.get_book_by_ebook_source_id(ebook_source_id)
     if(not book):
@@ -78,6 +85,7 @@ def UpdateBook(event, context):
         'body': event
     }
 
+
 def DownloadBook(event, context):
     # body = {"data": [{"gutenberg_id": 1}, ...]}
 
@@ -86,13 +94,13 @@ def DownloadBook(event, context):
         body = json.loads(event['body'])
     else:
         body = json.loads(base64.b64decode(event['body']))
-        
+
     responses = []
     client = boto3.client('lambda')
     for book in body['data']:
         response = client.invoke(
             FunctionName='downloadBook',
-            InvocationType='Event', #'RequestResponse',
+            InvocationType='Event',  # 'RequestResponse',
             Payload=json.dumps(book),
         )
         print(response['Payload'].read())
@@ -104,6 +112,7 @@ def DownloadBook(event, context):
         'statusCode': 202,
         'body': json.dumps(responses),
     }
+
 
 def DownloadBook(event, context):
     data = json.loads(event)
@@ -122,8 +131,10 @@ def DownloadBook(event, context):
     if(not ebook_source):
         s3_client = boto3.resource('s3')
         with open(filepath, 'rb') as f:
-            response = s3_client.meta.client.upload_fileobj(f, BUCKET_NAME, filename)
-        ebook_source_id = con.add_book_source("gutenberg", filename, f"s3://{BUCKET_NAME}/{filename}", epub.file_hash)
+            response = s3_client.meta.client.upload_fileobj(
+                f, bucket_name, filename)
+        ebook_source_id = con.add_book_source(
+            "gutenberg", filename, f"s3://{bucket_name}/{filename}", epub.file_hash)
     else:
         ebook_source_id = ebook_source[0]
 
@@ -134,7 +145,7 @@ def DownloadBook(event, context):
 
     if(not book_id):
         book_id = con.add_book(ebook_source_id, epub.title, epub.author,
-                            epub.slug, epub.description)
+                               epub.slug, epub.description)
 
     con.add_chapters(book_id, epub.content.chapters)
     con.add_images(book_id, epub.content.images)
@@ -146,9 +157,9 @@ def DownloadBook(event, context):
         'body': json.dumps(data)
     }
 
+
 if __name__ == "__main__":
     res = DownloadBook("{\"gutenberg_id\": 1}", None)
     print(res)
     res = UpdateBook("{\"book_id\": 1, \"ebook_source_id\": 1}", None)
     print(res)
-
