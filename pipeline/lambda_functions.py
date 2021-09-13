@@ -122,17 +122,16 @@ def DownloadBook(event, context):
     con = db(db_connection)
 
     import epub_downloader
-    filepath = epub_downloader.download_ebook(gutenberg_id)
-    filename = os.path.basename(filepath)
+    f, filename = epub_downloader.download_ebook_to_memory(gutenberg_id)
 
     import epub_parser
-    epub = epub_parser.EpubParser(filepath)
+    epub = epub_parser.EpubParser(filename, f)
     ebook_source = con.get_book_source_by_hash(epub.file_hash)
     if(not ebook_source):
         s3_client = boto3.resource('s3')
-        with open(filepath, 'rb') as f:
-            response = s3_client.meta.client.upload_fileobj(
-                f, bucket_name, filename)
+        f.seek(0)
+        response = s3_client.meta.client.upload_fileobj(
+            f, bucket_name, filename)
         ebook_source_id = con.add_book_source(
             "gutenberg", filename, f"s3://{bucket_name}/{filename}", epub.file_hash)
     else:
