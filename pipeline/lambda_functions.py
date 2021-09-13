@@ -9,8 +9,8 @@ config = {
     **os.environ,  # override loaded values with environment variables
 }
 
-bucket_name = config["BUCKET_NAME"]
-db_connection = config["DB_CONNECTION"]
+bucket_name = config["BUCKET_NAME"] if 'BUCKET_NAME' in config else None
+db_connection = config["DB_CONNECTION"] if 'DB_CONNECTION' in config else None
 
 def test_event(event, context):
     return {
@@ -119,13 +119,17 @@ def DownloadBook(event, context):
     epub = epub_parser.EpubParser(filename, f)
     ebook_source = con.get_book_source_by_hash(epub.file_hash)
     if(not ebook_source):
+        print("Uploading to S3")
         s3_client = boto3.resource('s3')
         f.seek(0)
         response = s3_client.meta.client.upload_fileobj(
             f, bucket_name, filename)
+        print("Uploaded")
+
         ebook_source_id = con.add_book_source(
             "gutenberg", filename, f"s3://{bucket_name}/{filename}", epub.file_hash)
     else:
+        print("Skip Uploading")
         ebook_source_id = ebook_source[0]
 
     book_id = None
@@ -137,14 +141,17 @@ def DownloadBook(event, context):
         book_id = con.add_book(ebook_source_id, epub.title, epub.author,
                                epub.slug, epub.description)
 
+    print("Proccessing Chapters")
     con.add_chapters(book_id, epub.content.chapters)
+    print("Proccessing Images")
     con.add_images(book_id, epub.content.images)
+    print("Done")
 
-    data['book_id'] = book_id
-    data['ebook_source_id'] = ebook_source_id
+    event['book_id'] = book_id
+    event['ebook_source_id'] = ebook_source_id
     return {
         'statusCode': 200,
-        'body': json.dumps(data)
+        'body': json.dumps(event)
     }
 
 def DownloadRangeBooks(event, context):
