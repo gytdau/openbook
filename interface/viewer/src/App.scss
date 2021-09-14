@@ -110,6 +110,12 @@ html {
     flex-direction: column;
 }
 
+.navbar-expand,
+.navbar,
+.navbar-collapse,
+.navbar-nav {
+    width: 100%;
+}
 .navbar {
     z-index: 1;
     position: fixed;
@@ -119,6 +125,10 @@ html {
     background-color: rgba(255, 255, 255, 0.95);
     border-bottom: 1px solid #eee;
     font-weight: bold;
+    .navbar-nav {
+        display: flex;
+        align-items: center;
+    }
 
     .nav-item {
         display: flex;
@@ -128,13 +138,26 @@ html {
 
     .book-title {
         align-items: flex-start;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        max-width: 100%;
+        display: inline-block;
+        margin: 0.5em 0;
+        max-width: 50vw;
     }
 
     .chapter-title {
-        margin-left: 1em;
         padding-left: 1em;
         border-left: 1px solid #eee;
         font-weight: normal;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        max-width: 100%;
+        margin: 0.5em 0 0.5em 1em;
+        display: inline-block;
+        max-width: 50vw;
     }
 
     .back-button {

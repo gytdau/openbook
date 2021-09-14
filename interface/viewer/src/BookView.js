@@ -80,8 +80,8 @@ function BookView(props) {
       <nav class="navbar navbar-expand mb-4">
         <div class="container-fluid">
           <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav me-auto mb-2 mb-md-0">
-              <Link to="/" className="nav-item back-button">
+            <ul class="navbar-nav me-auto">
+              <Link to="/" className="nav-item back-button d-none d-md-block">
                 <i className="mdi mdi-chevron-left"></i>
               </Link>
               <li class="nav-item book-title">
