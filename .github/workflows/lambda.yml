@@ -1,0 +1,55 @@
+name: Prepare AWS Lambda Package
+
+on: [push, pull_request]
+
+env:
+  PYTHON_VERSION: 3.9
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./pipeline
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Prepare Lambda requirements.txt
+        run: |
+          cp requirements.txt lambda_requirements.txt
+          sed -i 's/psycopg2/psycopg2-binary/g' lambda_requirements.txt
+          sed -i '/^boto/d' lambda_requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -U pip
+          python -m pip install virtualenv
+
+      - name: Download libs to venv
+        run: |
+          python -m venv ../venv
+          source ../venv/bin/activate
+          pip install -r lambda_requirements.txt
+          deactivate
+
+      - name: Move libs to pipeline
+        run: |
+          mv ../venv/lib/python${{ env.PYTHON_VERSION }}/site-packages/* .
+
+      - name: Prepare Short Hash
+        run: echo "::set-output name=VALUE::${GITHUB_SHA::7}"
+        id: short_hash
+
+      - name: Create AWS Lambda Zip Package
+        uses: actions/upload-artifact@v2
+        with:
+          name: aws_lambda_${{ steps.short_hash.outputs.VALUE }}
+          path: |
+            pipeline/*
+            !pipeline/epubs/
