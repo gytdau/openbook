@@ -109,7 +109,6 @@ class ContentParser(object):
                 Image(location=new_image_location, content=image_content, format=image_format))
 
     def swap_locations_in_parsed_chapters(self):
-        print(self.location_mapping)
         self.swap_images_in_parsed_chapters()
         self.swap_links_in_parsed_chapters()
 
@@ -181,7 +180,7 @@ class ContentParser(object):
                         # `header` references the header in `body`, `header_in_remainder` references the same header but in the `remainder_of_body` object instead
                         header_in_remainder = remainder_of_body.select_one(
                             f"#{header.attrs['id']}")
-                        ContentParser.remove_including_after(
+                        ContentParser.force_remove_including_after(
                             header_in_remainder)
                         self.carry_over(
                             navpoint.title, remainder_of_body, file_id)
@@ -190,7 +189,7 @@ class ContentParser(object):
                     ContentParser.remove_including_before(header)
 
                 if next_header:
-                    ContentParser.remove_including_after(next_header)
+                    ContentParser.force_remove_including_after(next_header)
                 else:
                     if not navpoint_references_entire_page:
                         # No next_header in this page. Merge into the carry over and look at the next page
@@ -268,6 +267,7 @@ class ContentParser(object):
 
     @staticmethod
     def remove_including_before(target):
+        # If the target is too complex (meaning it's likely to be the page we are trying to display), it won't be removed.
         curr_target = target
         while curr_target is not None:
             curr_target: bs4.Tag
@@ -277,14 +277,15 @@ class ContentParser(object):
         ContentParser.remove_if_not_complex(target)
 
     @staticmethod
-    def remove_including_after(target):
+    def force_remove_including_after(target):
+        # Will always remove the target.
         curr_target = target
         while curr_target is not None:
             target: bs4.Tag
             for prev_sibling in curr_target.find_next_siblings():
                 prev_sibling.decompose()
             curr_target = curr_target.parent
-        ContentParser.remove_if_not_complex(target)
+        target.decompose()
 
     @staticmethod
     def remove_if_not_complex(target: bs4.Tag):
