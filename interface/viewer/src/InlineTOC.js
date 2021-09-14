@@ -10,6 +10,7 @@ let InlineTOC = (props) => {
               to={`/${props.slug}/${chapter.slug}`}
               onClick={() => {
                 props.close()
+                props.clearVisibleChapters(chapter)
               }}
             >
               {chapter.title}

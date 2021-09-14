@@ -1,58 +1,78 @@
-import { useEffect, useState } from "react"
-import InfiniteScroll from "react-infinite-scroll-component"
-import { Link } from "react-router-dom"
-import ChapterView from "./ChapterView"
+import { useEffect, useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { Link } from "react-router-dom";
+import ChapterView from "./ChapterView";
 
 function getChapterFromSlug(book, chapterSlug) {
   let found = book.chapters.find((chapter, index) => {
     if (chapter.slug === chapterSlug) {
-      console.log("Chapter found from slug", chapter)
-      return true
+      return true;
     }
-  })
+  });
   if (found) {
-    return found
+    return found;
   }
-  return book.chapters[0]
+  return book.chapters[0];
 }
 
 function BookView(props) {
-  let { book, chapterSlug } = props
-  let [renderedChapters, setRenderedChapters] = useState([])
+  let { book, chapterSlug } = props;
+  let [renderedChapters, setRenderedChapters] = useState([]);
+  let [visibleChapters, setVisibleChapters] = useState(new Set());
+
+  let orderedVisibleChapters = Array.from(visibleChapters).sort(
+    (a, b) => a.chapter_order - b.chapter_order
+  );
+  let chapter = null
+  if(orderedVisibleChapters.length >= 1) {
+    chapter = orderedVisibleChapters[0]
+  } 
+
+  useEffect(() => {
+    if(!chapter) {
+      return
+    }
+    window.history.replaceState(
+      null,
+      null,
+      `/${book.slug}/${chapter.slug}`
+    );
+  }, [chapter, book.slug]);
 
   let lastRenderedChapterIndex = book.chapters.indexOf(
     renderedChapters[renderedChapters.length - 1]
-  )
+  );
 
   let noMoreChaptersRemaining =
-    lastRenderedChapterIndex == book.chapters.length - 1
-  let isHeaderHidden = book.chapters.indexOf(renderedChapters[0]) > 0
+    lastRenderedChapterIndex == book.chapters.length - 1;
+  let isHeaderHidden = book.chapters.indexOf(renderedChapters[0]) > 0;
 
   let renderNewChapter = () => {
     let newRenderedChapters = [
       ...renderedChapters,
       book.chapters[lastRenderedChapterIndex + 1],
-    ]
-    setRenderedChapters(newRenderedChapters)
-  }
+    ];
+    setRenderedChapters(newRenderedChapters);
+  };
 
   useEffect(() => {
-    let chapters = [getChapterFromSlug(book, chapterSlug)]
-    let chapter_index = book.chapters.indexOf(chapters[0])
+    let chapters = [getChapterFromSlug(book, chapterSlug)];
+    let chapter_index = book.chapters.indexOf(chapters[0]);
     if (chapter_index + 1 < book.chapters.length) {
-      chapters.push(book.chapters[chapter_index + 1])
+      chapters.push(book.chapters[chapter_index + 1]);
     }
     if (chapter_index + 2 < book.chapters.length) {
-      chapters.push(book.chapters[chapter_index + 2])
+      chapters.push(book.chapters[chapter_index + 2]);
     }
     if (chapter_index + 3 < book.chapters.length) {
-      chapters.push(book.chapters[chapter_index + 3])
+      chapters.push(book.chapters[chapter_index + 3]);
     }
-    setRenderedChapters(chapters)
-  }, [book, chapterSlug])
+    setRenderedChapters(chapters);
+    setVisibleChapters(new Set());
+  }, [book, chapterSlug]);
 
   if (renderedChapters.length == 0) {
-    return null
+    return null;
   }
 
   return (
@@ -66,6 +86,9 @@ function BookView(props) {
               </Link>
               <li class="nav-item book-title">
                 <span>{book.title}</span>
+              </li>
+              <li class="nav-item chapter-title">
+                <span>{chapter ? chapter.title : "..."}</span>
               </li>
             </ul>
           </div>
@@ -99,11 +122,26 @@ function BookView(props) {
         endMessage={<p>End of book</p>}
       >
         {renderedChapters.map((chapter) => (
-          <ChapterView chapter={chapter} book={book} key={chapter.id} />
+            <ChapterView chapter={chapter} book={book} key={chapter.id} clearVisibleChapters={(chapter) => {
+
+                console.log("RESETTING", chapter);
+              setVisibleChapters(new Set([chapter]))
+            }}
+            onViewChange={(inView) => {
+              let newVisibleChapters = new Set(visibleChapters);
+              if (inView) {
+                newVisibleChapters.add(chapter);
+                console.log("ADDING", chapter);
+              } else {
+                newVisibleChapters.delete(chapter);
+                console.log("DELETING", chapter);
+              }
+              setVisibleChapters(newVisibleChapters);
+            }}/>
         ))}
       </InfiniteScroll>
     </div>
-  )
+  );
 }
 
-export default BookView
+export default BookView;

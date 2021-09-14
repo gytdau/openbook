@@ -3,7 +3,6 @@ import InlineTOC from "./InlineTOC"
 
 let ChapterHeading = (props) => {
   let chapters = props.chapters
-  console.log("Chapters", chapters)
   let chapterHeading = props.chapterContent.title
   let [open, setOpen] = useState(false)
   let chevron = open ? "mdi mdi-chevron-up" : "mdi mdi-chevron-down"
@@ -29,6 +28,7 @@ let ChapterHeading = (props) => {
               close={() => {
                 setOpen(false)
               }}
+              clearVisibleChapters={props.clearVisibleChapters}
             />
             <div
               className="chapter-toc__close btn btn-outline-secondary"

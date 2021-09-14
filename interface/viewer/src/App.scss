@@ -106,18 +106,31 @@ h6 {
     flex-direction: column;
 }
 
-.book-title {
-    align-items: flex-start;
-}
-
 .navbar {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.95);
     border-bottom: 1px solid #eee;
     font-weight: bold;
+
+    .nav-item {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .book-title {
+        align-items: flex-start;
+    }
+
+    .chapter-title {
+        margin-left: 1em;
+        padding-left: 1em;
+        border-left: 1px solid #eee;
+        font-weight: normal;
+    }
 
     .back-button {
         margin-left: 2em;
