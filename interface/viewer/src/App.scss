@@ -65,6 +65,10 @@ h6 {
     }
 }
 
+html {
+    scroll-behavior: auto !important;
+}
+
 .chapter-toc {
     border-bottom: 1px solid #eee;
 
@@ -107,6 +111,7 @@ h6 {
 }
 
 .navbar {
+    z-index: 1;
     position: fixed;
     top: 0;
     left: 0;
