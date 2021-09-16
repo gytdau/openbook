@@ -47,9 +47,27 @@ jobs:
         id: short_hash
 
       - name: Create AWS Lambda Zip Package
+        run: |
+          rm -rf ./pip*
+          rm -rf ./epubs/
+          zip -r ../aws-lambda.zip .
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
           name: aws_lambda_${{ steps.short_hash.outputs.VALUE }}
-          path: |
-            pipeline/*
-            !pipeline/epubs/
+          path: aws-lambda.zip
+
+      - name: Update Lambda functions
+        if: ${{ env.AWS_ACCESS_KEY_ID != null}}
+        run: |
+          cd ..
+          aws lambda update-function-code --function-name downloadBook --zip-file fileb://aws-lambda.zip
+          aws lambda update-function-code --function-name downloadBooks --zip-file fileb://aws-lambda.zip
+          aws lambda update-function-code --function-name downloadRangeBooks --zip-file fileb://aws-lambda.zip
+          aws lambda update-function-code --function-name uploadBook --zip-file fileb://aws-lambda.zip
+          aws lambda update-function-code --function-name uploadBooks --zip-file fileb://aws-lambda.zip
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'eu-east-1'
