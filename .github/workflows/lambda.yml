@@ -62,11 +62,11 @@ jobs:
         if: ${{ env.AWS_ACCESS_KEY_ID != null}}
         run: |
           cd ..
-          aws lambda update-function-code --function-name downloadBook --zip-file fileb://aws-lambda.zip
-          aws lambda update-function-code --function-name downloadBooks --zip-file fileb://aws-lambda.zip
-          aws lambda update-function-code --function-name downloadRangeBooks --zip-file fileb://aws-lambda.zip
-          aws lambda update-function-code --function-name uploadBook --zip-file fileb://aws-lambda.zip
-          aws lambda update-function-code --function-name uploadBooks --zip-file fileb://aws-lambda.zip
+          aws lambda update-function-code --function-name downloadBook --zip-file fileb://aws-lambda.zip > /dev/null 2>&1
+          aws lambda update-function-code --function-name downloadBooks --zip-file fileb://aws-lambda.zip > /dev/null 2>&1
+          aws lambda update-function-code --function-name downloadRangeBooks --zip-file fileb://aws-lambda.zip > /dev/null 2>&1
+          aws lambda update-function-code --function-name updateBook --zip-file fileb://aws-lambda.zip > /dev/null 2>&1
+          aws lambda update-function-code --function-name updateBooks --zip-file fileb://aws-lambda.zip > /dev/null 2>&1
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
