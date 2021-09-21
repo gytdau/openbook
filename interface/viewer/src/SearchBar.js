@@ -8,10 +8,10 @@ function SearchBar(props) {
   return (
     <div className="search-bar">
       <form>
-        <div class="input-group border-secondary">
-          <span class="input-group-prepend">
-            <button class="btn ms-n3" type="button">
-              <i class="mdi mdi-magnify"></i>
+        <div className="input-group border-secondary">
+          <span className="input-group-prepend">
+            <button className="btn ms-n3" type="button">
+              <i className="mdi mdi-magnify"></i>
             </button>
           </span>
           <input
@@ -25,7 +25,7 @@ function SearchBar(props) {
                 event.preventDefault()
               }
             }}
-            class="form-control border-0"
+            className="form-control border-0"
             type="text"
             placeholder="Search books"
             id="example-search-input"
