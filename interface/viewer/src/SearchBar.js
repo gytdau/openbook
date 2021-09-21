@@ -1,14 +1,8 @@
-import { useEffect, useState } from "react"
-import { useHistory, useParams } from "react-router-dom"
+import { useState } from "react"
+import { useHistory } from "react-router-dom"
 
 function SearchBar() {
   let [query, setQuery] = useState("")
-  let { search } = useParams()
-  useEffect(() => {
-    if (search) {
-      setQuery(search)
-    }
-  }, [search, setQuery])
   const history = useHistory()
 
   return (
