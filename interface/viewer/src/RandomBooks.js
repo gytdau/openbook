@@ -17,7 +17,7 @@ function RandomBooks() {
         <div id="display" className="row row-eq-height justify-content-center m-3">
             <div className="row row-cols-1 row-cols-sm-2 row-cols-md-4 row-cols-lg-5 g-4 text-center">
             {books != null && books.map((book) => 
-                <Link to={`/${book.slug}`} className="col no_dec">
+                <Link key={book.id} to={`/${book.slug}`} className="col no_dec">
                     <div className="card h-100">
                         <img className="card-img-top" alt={book.title} src={`api/books/image/${book.cover}`} />
                         <div className="card-body card-body-flex">
