@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { useHistory } from "react-router-dom"
 
-function SearchBar() {
-  let [query, setQuery] = useState("")
+function SearchBar(props) {
+  let [query, setQuery] = useState(props.query)
   const history = useHistory()
 
   return (
