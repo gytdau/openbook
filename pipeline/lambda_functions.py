@@ -177,6 +177,7 @@ def DownloadRangeBooks(event, context):
                 InvocationType='Event', #'RequestResponse',
                 Payload=json.dumps({"gutenberg_id": book_id}),
             )
+            print(f"Requesting book ({book_id}) download")
 
             del response['Payload']
             responses.append(response)
