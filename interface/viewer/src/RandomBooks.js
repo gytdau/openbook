@@ -27,7 +27,7 @@ function RandomBooks() {
                             </div>
 
                         </div>
-                        <div className="card-footer text-muted">Published Date</div>
+                        <div className="card-footer text-muted">{book.publication}</div>
                     </div>
                 </Link>
             )}
