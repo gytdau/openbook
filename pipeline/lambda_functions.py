@@ -139,7 +139,7 @@ def DownloadBook(event, context):
 
     if(not book_id):
         book_id = con.add_book(ebook_source_id, epub.title, epub.author,
-                               epub.slug, epub.description)
+                               epub.slug, epub.description, epub.publication)
 
     print("Proccessing Chapters")
     con.add_chapters(book_id, epub.content.chapters)
