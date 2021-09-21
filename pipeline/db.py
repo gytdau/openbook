@@ -30,6 +30,7 @@ class db(object):
                 slug text,
                 version integer NOT NULL,
                 description text,
+                publication DATE,
                 FOREIGN KEY (ebook_source_id) REFERENCES ebook_source (id)
             )''')
         cur.execute('''CREATE TABLE IF NOT EXISTS chapters (
@@ -69,11 +70,11 @@ class db(object):
             '''SELECT * FROM books WHERE ebook_source_id = %s;''', (ebook_source_id,))
         return cur.fetchone()
 
-    def add_book(self, ebook_source_id, title, author, slug, description):
+    def add_book(self, ebook_source_id, title, author, slug, description, publication):
         cur = self.con.cursor()
         cur.execute(
-            '''INSERT INTO books (ebook_source_id, title, author, slug, description, version) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id''',
-            (ebook_source_id, title, author, slug, description, self.version))
+            '''INSERT INTO books (ebook_source_id, title, author, slug, description, version, publication) VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id''',
+            (ebook_source_id, title, author, slug, description, self.version, publication))
         self.con.commit()
         return cur.fetchone()[0]
 
