@@ -12,7 +12,7 @@ default_epubs_directory = './epubs/'
 default_cache_directory = './cache/'
 default_csv_path = './cache/pg_catalog.csv'
 
-ebook_link_unformatted = "http://aleph.gutenberg.org/cache/epub/{}/pg{}-images.epub"
+ebook_link_unformatted = "https://gutenberg.readingroo.ms/cache/epub/{}/pg{}-images.epub"
 
 BUCKET_NAME = "gutenberg-vivlia"
 args = None
@@ -73,13 +73,13 @@ def get_csv_reader(save_to_file = True):
         if(not args or args.clear_cache or not os.path.isfile(default_csv_path)):
             os.makedirs(os.path.dirname(default_csv_path), exist_ok=True)
             with open(default_csv_path, "wb") as f:
-                download_file('http://aleph.gutenberg.org/cache/epub/feeds/pg_catalog.csv', f)
+                download_file('https://gutenberg.readingroo.ms/cache/epub/feeds/pg_catalog.csv', f)
 
         with open(default_csv_path, "r", encoding='utf-8') as f:
             return csv.DictReader(f.read().splitlines(), delimiter=',', quotechar='"')
     else:
         f = io.BytesIO()
-        download_file('http://aleph.gutenberg.org/cache/epub/feeds/pg_catalog.csv', f)
+        download_file('https://gutenberg.readingroo.ms/cache/epub/feeds/pg_catalog.csv', f)
         f.seek(0)
         strbuf = io.TextIOWrapper(f, 'utf-8', newline='')
         return csv.DictReader(strbuf.read().splitlines(), delimiter=',', quotechar='"')
