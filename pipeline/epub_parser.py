@@ -82,6 +82,7 @@ class EpubParser(object):
         self.title = self._try_get_text(content, "dc:title")
         self.description = self._try_get_text(content, "dc:description")
         self.author = self._try_get_text(content, "dc:creator")
+        self.publication = self._try_get_text(content, "dc:date")
         self.slug = f'{slugify(self.title)}_{random.randint(0, 1000)}'
 
     def process_navpoints(self, ncx: BeautifulSoup):

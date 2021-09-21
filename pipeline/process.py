@@ -88,7 +88,7 @@ if not args.dry_run:
 
         if(not book_id):
             book_id = con.add_book(ebook_source_id, epub.title, epub.author,
-                                   epub.slug, epub.description)
+                                   epub.slug, epub.description, epub.publication)
 
         con.add_chapters(book_id, epub.content.chapters)
         con.add_images(book_id, epub.content.images)
