@@ -1,4 +1,6 @@
 import SearchBar from "./SearchBar"
+import RandomBooks from "./RandomBooks"
+
 
 function Home() {
   return (
@@ -18,6 +20,7 @@ function Home() {
           <SearchBar />
         </div>
       </div>
+      <RandomBooks />
     </>
   )
 }
