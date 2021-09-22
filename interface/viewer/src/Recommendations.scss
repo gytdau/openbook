@@ -1,0 +1,106 @@
+.recommendations {
+    display: grid;
+    grid-auto-flow: row;
+    grid-template-areas:
+        "top top top"
+        "lists lists lists"
+        "trending trending trending";
+}
+
+.top-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-auto-flow: row;
+    row-gap: 1rem;
+    grid-template-areas:
+        ". . ."
+        ". . .";
+    grid-area: top;
+}
+@media (max-width: 768px) {
+    .top-content {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+        grid-template-areas:
+            ". ."
+            ". ."
+            ". ." !important;
+    }
+    .lists-content {
+        display: flex !important;
+        flex-direction: column;
+    }
+}
+.top {
+    grid-area: top;
+}
+
+.trending {
+    grid-area: trending;
+}
+
+.lists-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 2rem 1rem;
+    grid-auto-flow: row;
+    grid-template-areas: ". . .";
+}
+.lists {
+    grid-area: lists;
+    margin-bottom: 5rem;
+}
+
+.top-book {
+    text-decoration: none;
+    color: unset;
+    align-items: flex-start;
+    display: flex;
+    &__title {
+        h1 {
+            font-size: 1.5rem;
+            font-family: "Crimson Pro";
+        }
+        h2 {
+            font-size: 1rem;
+        }
+    }
+    &__number {
+        font-family: "Crimson Pro";
+        font-size: 3.5rem;
+        margin-top: -0.4em;
+        font-weight: 300;
+        font-style: italic;
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+}
+
+.recommendations-section-title {
+    text-transform: uppercase;
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+    font-weight: bold;
+}
+
+.list-book {
+    text-decoration: none;
+    color: unset;
+    margin-top: 0.5rem;
+    display: block;
+    &__title {
+    }
+    &__author {
+        font-style: italic;
+    }
+}
+.list {
+    border-top: 1px solid #222;
+    &__title {
+        margin-top: 0.5rem;
+        margin-bottom: 1rem;
+        font-weight: bold;
+    }
+}

@@ -87,28 +87,39 @@ WHERE  books.title LIKE ( '%' || ( $1 ) || '%' )
   }
 });
 
-router.get('/random', async (req, res, next) => {
+router.get('/homepage_recommendations', async (req, res, next) => {
   // we're making the assumption that 1st image is the cover, which isnt correct, we need to find a better to solve this.
   try {
     const result = await pool.query(
       `
-SELECT tmp.*,
-       images_tmp.location AS cover
-FROM
-  (SELECT books.id,
-          books.title,
-          books.author,
-          books.slug,
-          books.publication
-   FROM books
-   ORDER BY random()
-   LIMIT 6) AS tmp
-LEFT JOIN
-  (SELECT DISTINCT ON (images.book_id) book_id,
-                      LOCATION
-   FROM images) AS images_tmp ON tmp.id = images_tmp.book_id;`,
+SELECT 
+  books.id, 
+  books.title, 
+  books.author, 
+  books.slug, 
+  books.publication, 
+  LEFT(chapters.content_stripped, 500) AS sample 
+FROM 
+  books 
+  LEFT JOIN chapters ON books.id = chapters.book_id 
+ORDER BY 
+  random() 
+LIMIT 
+  50
+`,
     );
-    const books = result.rows;
+    const top = result.rows.slice(0, 6);
+    const recent = result.rows.slice(6, 16);
+    const lists = [];
+    for (let i = 0; i < 3; i += 1) {
+      lists.push(
+        {
+          title: `List ${i}`,
+          contents: result.rows.slice(16 + i * 5, 16 + (i + 1) * 5),
+        },
+      );
+    }
+    const books = { top, recent, lists };
     res.json(books);
   } catch {
     res.sendStatus(400);

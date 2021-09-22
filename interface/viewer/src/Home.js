@@ -1,5 +1,6 @@
 import SearchBar from "./SearchBar"
 import RandomBooks from "./RandomBooks"
+import Recommendations from "./Recommendations"
 
 
 function Home() {
@@ -19,10 +20,11 @@ function Home() {
         <div className="row">
           <SearchBar />
         </div>
+        <div className="row">
+          <Recommendations/>
+        </div>
       </div>
-      <RandomBooks />
     </>
   )
 }
-
 export default Home
