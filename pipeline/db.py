@@ -7,10 +7,18 @@ class db(object):
 
     def __init__(self, dsn, create_tables=True, version_marker=1):
         # dsn = "user={} password={} host={} port={} dbname={} sslmode=require"
-        self.con = psycopg2.connect(dsn)
+        self.dsn = dsn
+        self._con = None
         if create_tables:
             self._create_tables()
         self.version = version_marker
+
+    @property
+    def con(self):
+        if self._con is not None:
+            return self._con
+        self._con = psycopg2.connect(self.dsn)
+        return self._con
 
     def _create_tables(self):
         cur = self.con.cursor()
