@@ -122,3 +122,13 @@ class db(object):
                     ON CONFLICT ON CONSTRAINT unique_image_version DO NOTHING;''',
                 (book_id, image.location, image.content, image.format, self.version))
         self.con.commit()
+
+    def close(self):
+        self.con.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        print("DB Exited")
+        self.close()
