@@ -68,7 +68,7 @@ router.get('/search/:query', (req, res, next) => {
 router.get('/random', (req, res, next) => {
   // we're making the assumption that 1st image is the cover, which isnt correct, we need to find a better to solve this.
   pool.query(
-    "SELECT tmp.*, images_tmp.location AS cover FROM (SELECT books.id, books.title, books.author, books.slug FROM books order by random() LIMIT 6) AS tmp LEFT JOIN (SELECT DISTINCT ON (images.book_id) book_id, location from images) as images_tmp ON tmp.id = images_tmp.book_id;",
+    "SELECT tmp.*, images_tmp.location AS cover FROM (SELECT books.id, books.title, books.author, books.slug, books.publication FROM books order by random() LIMIT 6) AS tmp LEFT JOIN (SELECT DISTINCT ON (images.book_id) book_id, location from images) as images_tmp ON tmp.id = images_tmp.book_id;",
     [],
     (err, result) => {
       console.log(err)
