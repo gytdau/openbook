@@ -7,19 +7,22 @@ const pool = new Pool();
 
 router.get('/get/:title', (req, res, next) => {
   pool.query(
-    'SELECT * FROM books WHERE slug = $1',
+    'SELECT books.*, json_agg(chapters.* ORDER BY chapters.chapter_order) as chapters FROM books LEFT JOIN chapters on books.id=chapters.book_id WHERE books.slug = $1 GROUP BY books.id',
     [req.params.title],
     (err, result) => {
+      if(err)
+      {
+        console.log(err);
+        res.status(500);
+        return;
+      }
+      else if(result.rowCount == 0)
+      {
+        res.status(404);
+        return;
+      }
       const book = result.rows[0];
-      pool.query(
-        'SELECT id, book_id, title, slug, chapter_order FROM chapters WHERE book_id = $1 ORDER BY chapter_order',
-        [book.id],
-        (err, result) => {
-          const chapters = result.rows;
-          book.chapters = chapters;
-          res.json(book);
-        },
-      );
+      res.json(book);
     },
   );
 });
