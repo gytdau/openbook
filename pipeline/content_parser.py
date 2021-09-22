@@ -156,7 +156,7 @@ class ContentParser(object):
 
     def parse_chapters(self):
         for file_id in self.file_order:
-            file = self.html_files[file_id]
+            file = self.html_files[file_id]()
 
             if file_id in self.navpoints:
                 navpoints = self.navpoints[file_id]

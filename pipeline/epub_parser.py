@@ -161,8 +161,8 @@ class EpubParser(object):
             if filename in self.html_file_order:
                 continue
 
-            file_content = self.get_file_content_xml(
-                join_path(content_directory_path, filename))
+            full_path = join_path(content_directory_path, filename)
+            file_content = lambda full_path=full_path: self.get_file_content_xml(full_path)
 
             self.html_files[filename] = file_content
             self.html_file_order.append(filename)
