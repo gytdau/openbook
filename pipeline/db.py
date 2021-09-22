@@ -7,10 +7,18 @@ class db(object):
 
     def __init__(self, dsn, create_tables=True, version_marker=1):
         # dsn = "user={} password={} host={} port={} dbname={} sslmode=require"
-        self.con = psycopg2.connect(dsn)
+        self.dsn = dsn
+        self._con = None
         if create_tables:
             self._create_tables()
         self.version = version_marker
+
+    @property
+    def con(self):
+        if self._con is not None:
+            return self._con
+        self._con = psycopg2.connect(self.dsn)
+        return self._con
 
     def _create_tables(self):
         cur = self.con.cursor()
@@ -114,3 +122,13 @@ class db(object):
                     ON CONFLICT ON CONSTRAINT unique_image_version DO NOTHING;''',
                 (book_id, image.location, image.content, image.format, self.version))
         self.con.commit()
+
+    def close(self):
+        self.con.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        print("DB Exited")
+        self.close()

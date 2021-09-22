@@ -1,23 +1,17 @@
-import { useEffect, useState } from "react"
-import { useHistory, useParams } from "react-router-dom"
+import { useState } from "react"
+import { useHistory } from "react-router-dom"
 
-function SearchBar() {
-  let [query, setQuery] = useState("")
-  let { search } = useParams()
-  useEffect(() => {
-    if (search) {
-      setQuery(search)
-    }
-  }, [search, setQuery])
+function SearchBar(props) {
+  let [query, setQuery] = useState(props.query)
   const history = useHistory()
 
   return (
     <div className="search-bar">
       <form>
-        <div class="input-group border-secondary">
-          <span class="input-group-prepend">
-            <button class="btn ms-n3" type="button">
-              <i class="mdi mdi-magnify"></i>
+        <div className="input-group border-secondary">
+          <span className="input-group-prepend">
+            <button className="btn ms-n3" type="button">
+              <i className="mdi mdi-magnify"></i>
             </button>
           </span>
           <input
@@ -31,7 +25,7 @@ function SearchBar() {
                 event.preventDefault()
               }
             }}
-            class="form-control border-0"
+            className="form-control border-0"
             type="text"
             placeholder="Search books"
             id="example-search-input"

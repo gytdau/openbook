@@ -258,3 +258,21 @@ html {
     margin-top: 3rem;
     margin-bottom: 3rem;
 }
+
+a.no_dec {
+    color:#1a1a1a;
+    text-decoration:none;
+    background-color:transparent;
+    -webkit-text-decoration-skip:objects
+}
+a.no_dec:hover {
+    color:black;
+    text-decoration:underline
+}
+
+.card-body-flex {
+    flex: 1 1 auto;
+    padding: 1rem 1rem;
+    display: flex;
+    align-items: flex-end;
+}
