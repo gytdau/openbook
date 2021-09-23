@@ -122,8 +122,9 @@ def DownloadBook(event, context):
         print("Uploading to S3")
         s3_client = boto3.resource('s3')
         f.seek(0)
+        config = boto3.s3.transfer.TransferConfig(multipart_threshold=262144, max_concurrency=5, multipart_chunksize=262144, num_download_attempts=5, max_io_queue=5, io_chunksize=262144, use_threads=True)
         response = s3_client.meta.client.upload_fileobj(
-            f, bucket_name, filename)
+            f, bucket_name, filename, Config=config)
         print("Uploaded")
 
         ebook_source_id = con.add_book_source(
