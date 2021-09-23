@@ -105,6 +105,12 @@ def DownloadBooks(event, context):
         'body': json.dumps(responses),
     }
 
+# work around to s3 transfer closing buffer
+# https://github.com/boto/s3transfer/issues/80#issuecomment-482534256
+from io import BufferedReader
+class NonCloseableBufferedReader(BufferedReader):
+    def close(self):
+        self.flush()
 
 def DownloadBook(event, context):
     gutenberg_id = event['gutenberg_id']
@@ -123,8 +129,10 @@ def DownloadBook(event, context):
         s3_client = boto3.resource('s3')
         f.seek(0)
         config = boto3.s3.transfer.TransferConfig(multipart_threshold=262144, max_concurrency=5, multipart_chunksize=262144, num_download_attempts=5, max_io_queue=5, io_chunksize=262144, use_threads=True)
+        s3buffer = NonCloseableBufferedReader(f)
         response = s3_client.meta.client.upload_fileobj(
-            f, bucket_name, filename, Config=config)
+            s3buffer, bucket_name, filename, Config=config)
+        s3buffer.detach()
         print("Uploaded")
 
         ebook_source_id = con.add_book_source(
