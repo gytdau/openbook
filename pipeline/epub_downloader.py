@@ -52,6 +52,8 @@ def prepare_args():
 def download_file(link, f):
     filename = link.split('/')[-1]
     r = requests.get(link, stream=True)
+    if(r.status_code != 200):
+        raise FileNotFoundError(f"404: {link}")
     total_length = r.headers.get('content-length')
     
     # https://stackoverflow.com/a/15645088
