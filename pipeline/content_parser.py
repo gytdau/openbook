@@ -90,6 +90,13 @@ class ContentParser(object):
         self.allocate_locations()
         self.parse_chapters()
         self.swap_locations_in_parsed_chapters()
+
+        self.chapter_carry_over = None
+        self.location_mapping = None
+        self.file_order = None
+        self.html_files = None
+        self.image_files = None
+        self.navpoints = None
         self.convert_raws_to_output()
 
     def allocate_locations(self):
