@@ -135,7 +135,8 @@ def DownloadBook(event, context):
     book_id = None
     if(ebook_source):
         book = con.get_book_by_ebook_source_id(ebook_source_id)
-        book_id = book[0]
+        if(book):
+            book_id = book[0]
 
     if(not book_id):
         book_id = con.add_book(ebook_source_id, epub.title, epub.author,
