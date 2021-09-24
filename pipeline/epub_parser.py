@@ -26,7 +26,14 @@ class EpubParser(object):
         self.navpoints = {}
         self.ezip = None
         self.file_hash = None
-        self.parse()
+        if(self.file):
+            self.file_hash = self._calc_sha256(self.file)
+            self.file.seek(0)
+            self.ezip = ZipFile(self.file, 'r')
+        else:
+            with open(self.filename, "rb") as f:
+                self.file_hash = self._calc_sha256(f)
+            self.ezip = ZipFile(self.filename, 'r')
 
     @staticmethod
     def _try_get_text(content, selector):
@@ -52,14 +59,6 @@ class EpubParser(object):
     def parse(self):
         print(f"Processing: {self.filename}")
 
-        if(self.file):
-            self.file_hash = self._calc_sha256(self.file)
-            self.file.seek(0)
-            self.ezip = ZipFile(self.file, 'r')
-        else:
-            with open(self.filename, "rb") as f:
-                self.file_hash = self._calc_sha256(f)
-            self.ezip = ZipFile(self.filename, 'r')
         if not self.can_be_unzipped():
             return
 

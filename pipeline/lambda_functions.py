@@ -123,6 +123,9 @@ def DownloadBook(event, context):
 
     import epub_parser
     epub = epub_parser.EpubParser(filename, f)
+    if(not epub.can_be_unzipped()):
+        raise ValueError(f"can't be unzipped, invalid epub file, {filename}")
+
     ebook_source = con.get_book_source_by_hash(epub.file_hash)
     if(not ebook_source):
         print("Uploading to S3")
@@ -147,6 +150,7 @@ def DownloadBook(event, context):
         if(book):
             book_id = book[0]
 
+    epub.parse()
     if(not book_id):
         book_id = con.add_book(ebook_source_id, epub.title, epub.author,
                                epub.slug, epub.description, epub.publication)
