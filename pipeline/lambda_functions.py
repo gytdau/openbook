@@ -113,7 +113,7 @@ def DownloadBook(event, context):
     con = db(db_connection)
 
     import epub_downloader
-    f, filename = epub_downloader.download_ebook_to_memory(gutenberg_id)
+    f, filename = epub_downloader.download_ebook_to_temp(gutenberg_id)
 
     import epub_parser
     epub = epub_parser.EpubParser(filename, f)
