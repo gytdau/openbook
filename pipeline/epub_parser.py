@@ -40,18 +40,25 @@ class EpubParser(object):
             return filename.split("#")
         return (filename, None)
 
+    def _calc_sha256(self, f):
+        sha256 = hashlib.sha256()
+        while True:
+            data = f.read(sha256.block_size)
+            if not data:
+                break
+            sha256.update(data)
+            return sha256.hexdigest()
+
     def parse(self):
         print(f"Processing: {self.filename}")
 
         if(self.file):
-            data = self.file.read()
-            self.file_hash = hashlib.sha256(data).hexdigest()
+            self.file_hash = self._calc_sha256(self.file)
             self.file.seek(0)
             self.ezip = ZipFile(self.file, 'r')
         else:
             with open(self.filename, "rb") as f:
-                data = f.read()
-                self.file_hash = hashlib.sha256(data).hexdigest()
+                self.file_hash = self._calc_sha256(f)
             self.ezip = ZipFile(self.filename, 'r')
         if not self.can_be_unzipped():
             return
