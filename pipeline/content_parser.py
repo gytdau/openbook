@@ -22,7 +22,6 @@ class Chapter:
     title: str
     slug: str
     content: str
-    content_stripped: str
     order: int
 
 
@@ -151,7 +150,6 @@ class ContentParser(object):
                 title=title,
                 slug=title_to_slug(title),
                 content=str(chapter.content.prettify()),
-                content_stripped=content_into_stripped_text(chapter.content),
                 order=chapter.order
             )
             self.chapters.append(new_chapter)

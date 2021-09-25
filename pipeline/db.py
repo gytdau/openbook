@@ -64,6 +64,52 @@ class db(object):
             FOREIGN KEY (book_id) REFERENCES books (id),
             CONSTRAINT unique_image_version UNIQUE(book_id, location, version)
         )''')
+        cur.execute('''CREATE OR REPLACE LANGUAGE plv8;''')
+        cur.execute('''CREATE OR REPLACE FUNCTION unescape_html(html text) RETURNS text AS $$
+            var entityPattern = /&([a-z]+);/ig;
+            const entities = {
+                'amp': '&',
+                'apos': "'",
+                'lt': '<',
+                'gt': '>',
+                'quot': '"',
+                'nbsp': '\xa0'
+            };
+            return html.replace(entityPattern,
+                function(match, entity)
+                {
+                    entity = entity.toLowerCase();
+                    if(entities.hasOwnProperty(entity))
+                    {
+                        return entities[entity];
+                    }
+                    else if(entity.startsWith('#'))
+                    {
+                        return String.fromCharCode(entity.substr(1))
+                    }
+                    return match;
+                }
+            )
+        $$ LANGUAGE plv8;''')
+
+        cur.execute('''CREATE OR REPLACE LANGUAGE plpgsql;''')
+        cur.execute('''CREATE OR REPLACE FUNCTION html_strip(html text) RETURNS text AS $$
+                BEGIN
+                        RETURN  unescape_html(REGEXP_REPLACE(array_to_string(xpath('//text()', xmlparse(document html)), ' '), '\s+', ' ', 'g'));
+                END;
+        $$ LANGUAGE plpgsql;''')
+
+        cur.execute('''CREATE OR REPLACE FUNCTION strip_chapter_html()
+        RETURNS trigger AS '
+        BEGIN
+            NEW.content_stripped = html_strip(NEW.content);
+        RETURN NEW;
+        END' LANGUAGE 'plpgsql';''')
+
+        cur.execute('''DROP TRIGGER IF EXISTS strip_chapter_html on chapters;''')
+        cur.execute('''CREATE TRIGGER strip_chapter_html BEFORE INSERT or UPDATE ON chapters FOR EACH ROW
+        EXECUTE PROCEDURE strip_chapter_html();''')
+
         self.con.commit()
 
     def drop_tables(self):
@@ -109,9 +155,9 @@ class db(object):
         cur = self.con.cursor()
         for chapter in chapters:
             cur.execute(
-                '''INSERT INTO chapters (book_id, title, slug, content, content_stripped, chapter_order, version) VALUES (%s, %s, %s, %s, %s, %s, %s)
+                '''INSERT INTO chapters (book_id, title, slug, content, chapter_order, version) VALUES (%s, %s, %s, %s, %s, %s)
                     ON CONFLICT ON CONSTRAINT unique_chapter_version DO NOTHING;''',
-                (book_id, chapter.title, chapter.slug, chapter.content, chapter.content_stripped, chapter.order, self.version))
+                (book_id, chapter.title, chapter.slug, chapter.content, chapter.order, self.version))
         self.con.commit()
 
     def add_images(self, book_id, images):
