@@ -166,7 +166,7 @@ class db(object):
             cur.execute(
                 '''INSERT INTO images (book_id, location, content, format, version) VALUES (%s, %s, %s, %s, %s)
                     ON CONFLICT ON CONSTRAINT unique_image_version DO NOTHING;''',
-                (book_id, image.location, image.content, image.format, self.version))
+                (book_id, image.location, image.content(), image.format, self.version))
         self.con.commit()
 
     def close(self):

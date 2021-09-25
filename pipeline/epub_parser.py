@@ -180,8 +180,8 @@ class EpubParser(object):
                 continue
 
             filename = manifest_item_tag.attrs['href']
-            file_content = self.get_file_content(
-                join_path(content_directory_path, filename))
+            full_path = join_path(content_directory_path, filename)
+            file_content = lambda full_path=full_path: self.get_file_content(full_path)
 
             self.image_files[filename] = file_content
 
