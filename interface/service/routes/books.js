@@ -76,8 +76,14 @@ SELECT books.id,
 FROM   books
        LEFT JOIN chapters
               ON books.id = chapters.book_id
-WHERE  books.title LIKE ( '%' || ( $1 ) || '%' )
-       AND chapters.chapter_order = 2`,
+WHERE 
+      (
+        to_tsvector('english', coalesce(books.title, '')) || 
+        to_tsvector('english', coalesce(books.author, ''))
+      ) @@ plainto_tsquery('english', $1)
+       AND chapters.chapter_order = 2
+LIMIT
+      25`,
       [req.params.query],
     );
     const books = result.rows;

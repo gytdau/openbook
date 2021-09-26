@@ -106,9 +106,17 @@ class db(object):
         RETURN NEW;
         END' LANGUAGE 'plpgsql';''')
 
-        cur.execute('''DROP TRIGGER IF EXISTS strip_chapter_html on chapters;''')
+        cur.execute(
+            '''DROP TRIGGER IF EXISTS strip_chapter_html on chapters;''')
         cur.execute('''CREATE TRIGGER strip_chapter_html BEFORE INSERT or UPDATE ON chapters FOR EACH ROW
         EXECUTE PROCEDURE strip_chapter_html();''')
+        cur.execute('''CREATE INDEX idx 
+            ON books USING gist ( 
+            (
+                to_tsvector('english', coalesce(title, '')) || 
+                to_tsvector('english', coalesce(author, ''))
+            ) 
+        ) ;''')
 
         self.con.commit()
 
