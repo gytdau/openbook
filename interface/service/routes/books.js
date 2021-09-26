@@ -83,7 +83,7 @@ WHERE
       ) @@ plainto_tsquery('english', $1)
        AND chapters.chapter_order = 2
 LIMIT
-      25`,
+      250`,
       [req.params.query],
     );
     const books = result.rows;
