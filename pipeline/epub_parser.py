@@ -54,7 +54,7 @@ class EpubParser(object):
             if not data:
                 break
             sha256.update(data)
-            return sha256.hexdigest()
+        return sha256.hexdigest()
 
     def parse(self):
         print(f"Processing: {self.filename}")
