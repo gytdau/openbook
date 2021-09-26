@@ -116,7 +116,7 @@ def DownloadBook(event, context):
     gutenberg_id = event['gutenberg_id']
 
     from db import db
-    con = db(db_connection)
+    con = db(db_connection, False)
 
     import epub_downloader
     f, filename = epub_downloader.download_ebook_to_temp(gutenberg_id)
