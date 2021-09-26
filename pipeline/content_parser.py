@@ -60,7 +60,7 @@ def content_into_stripped_text(content):
 
 
 class ContentParser(object):
-    def __init__(self, file_order: List[str], html_files: Dict[str, BeautifulSoup], image_files: Dict[str, typing.Any], navpoints: Dict[str, List[Navpoint]]):
+    def __init__(self, file_order: List[str], html_files: Dict[str, typing.Any], image_files: Dict[str, typing.Any], navpoints: Dict[str, List[Navpoint]]):
         # file_order: [file_id, ...]
         # File order is derived from the spine of content.opf
 
