@@ -22,7 +22,6 @@ class Chapter:
     title: str
     slug: str
     content: str
-    content_stripped: str
     order: int
 
 
@@ -61,7 +60,7 @@ def content_into_stripped_text(content):
 
 
 class ContentParser(object):
-    def __init__(self, file_order: List[str], html_files: Dict[str, BeautifulSoup], image_files: Dict[str, typing.Any], navpoints: Dict[str, List[Navpoint]]):
+    def __init__(self, file_order: List[str], html_files: Dict[str, typing.Any], image_files: Dict[str, typing.Any], navpoints: Dict[str, List[Navpoint]]):
         # file_order: [file_id, ...]
         # File order is derived from the spine of content.opf
 
@@ -91,6 +90,13 @@ class ContentParser(object):
         self.allocate_locations()
         self.parse_chapters()
         self.swap_locations_in_parsed_chapters()
+
+        self.chapter_carry_over = None
+        self.location_mapping = None
+        self.file_order = None
+        self.html_files = None
+        self.image_files = None
+        self.navpoints = None
         self.convert_raws_to_output()
 
     def allocate_locations(self):
@@ -151,14 +157,13 @@ class ContentParser(object):
                 title=title,
                 slug=title_to_slug(title),
                 content=str(chapter.content.prettify()),
-                content_stripped=content_into_stripped_text(chapter.content),
                 order=chapter.order
             )
             self.chapters.append(new_chapter)
 
     def parse_chapters(self):
         for file_id in self.file_order:
-            file = self.html_files[file_id]
+            file = self.html_files[file_id]()
 
             if file_id in self.navpoints:
                 navpoints = self.navpoints[file_id]

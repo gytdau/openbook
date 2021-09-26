@@ -105,25 +105,37 @@ def DownloadBooks(event, context):
         'body': json.dumps(responses),
     }
 
+# work around to s3 transfer closing buffer
+# https://github.com/boto/s3transfer/issues/80#issuecomment-482534256
+from io import BufferedReader
+class NonCloseableBufferedReader(BufferedReader):
+    def close(self):
+        self.flush()
 
 def DownloadBook(event, context):
     gutenberg_id = event['gutenberg_id']
 
     from db import db
-    con = db(db_connection)
+    con = db(db_connection, False)
 
     import epub_downloader
-    f, filename = epub_downloader.download_ebook_to_memory(gutenberg_id)
+    f, filename = epub_downloader.download_ebook_to_temp(gutenberg_id)
 
     import epub_parser
     epub = epub_parser.EpubParser(filename, f)
+    if(not epub.can_be_unzipped()):
+        raise ValueError(f"can't be unzipped, invalid epub file, {filename}")
+
     ebook_source = con.get_book_source_by_hash(epub.file_hash)
     if(not ebook_source):
         print("Uploading to S3")
         s3_client = boto3.resource('s3')
         f.seek(0)
+        config = boto3.s3.transfer.TransferConfig(multipart_threshold=262144, max_concurrency=5, multipart_chunksize=262144, num_download_attempts=5, max_io_queue=5, io_chunksize=262144, use_threads=True)
+        s3buffer = NonCloseableBufferedReader(f)
         response = s3_client.meta.client.upload_fileobj(
-            f, bucket_name, filename)
+            s3buffer, bucket_name, filename, Config=config)
+        s3buffer.detach()
         print("Uploaded")
 
         ebook_source_id = con.add_book_source(
@@ -135,8 +147,10 @@ def DownloadBook(event, context):
     book_id = None
     if(ebook_source):
         book = con.get_book_by_ebook_source_id(ebook_source_id)
-        book_id = book[0]
+        if(book):
+            book_id = book[0]
 
+    epub.parse()
     if(not book_id):
         book_id = con.add_book(ebook_source_id, epub.title, epub.author,
                                epub.slug, epub.description, epub.publication)

@@ -52,6 +52,8 @@ def prepare_args():
 def download_file(link, f):
     filename = link.split('/')[-1]
     r = requests.get(link, stream=True)
+    if(r.status_code != 200):
+        raise FileNotFoundError(f"404: {link}")
     total_length = r.headers.get('content-length')
     
     # https://stackoverflow.com/a/15645088
@@ -105,10 +107,10 @@ def download_ebook(id):
         download_file(ebook_link, f)
         return path
 
-def download_ebook_to_memory(id):
+def download_ebook_to_temp(id):
     ebook_link = ebook_link_unformatted.format(id, id)
     filename = ebook_link.split('/')[-1]
-    f = io.BytesIO()
+    f = open(f'/tmp/{filename}', 'w+b')
     download_file(ebook_link, f)
     f.seek(0)
     return [f, filename]
