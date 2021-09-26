@@ -92,6 +92,8 @@ LIMIT
   }
 });
 
+let mapIntoNames = (sources) => sources.map((source) => `pg${source}-images.epub`);
+
 router.get('/homepage_recommendations', async (req, res, next) => {
   try {
     const query = `
@@ -100,11 +102,13 @@ SELECT
   books.title, 
   books.author, 
   books.slug, 
-  books.publication, 
+  books.publication,
+  books.ebook_source_id
 FROM 
-  books 
+  ebook_source
+  JOIN books ON books.ebook_source_id = ebook_source.id
 WHERE
-  books.ebook_source_id = ANY($1)
+  ebook_source.source_id = ANY(ARRAY[$1])
 `;
     const lists = [
       {
@@ -128,12 +132,12 @@ WHERE
 
     for (let i = 0; i < lists.length; i += 1) {
       const list = lists[i];
-      const result = await pool.query(query, list.contents);
+      const result = await pool.query(query, [mapIntoNames(list.contents)]);
       list.contents = result.rows;
     }
-    let result = await pool.query(query, top);
+    let result = await pool.query(query, [mapIntoNames(top)]);
     top = result.rows;
-    result = await pool.query(query, recent);
+    result = await pool.query(query, [mapIntoNames(recent)]);
     recent = result.rows;
     const books = { top, recent, lists };
     res.json(books);
