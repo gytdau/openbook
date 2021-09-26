@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 import "./App.scss"
+import "./Recommendations.scss"
 import Book from "./Book"
 import Catalog from "./Catalog"
 import Home from "./Home"
