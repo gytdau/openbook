@@ -30,8 +30,28 @@ function Recommendations() {
           ))}
         </div>
       </div>
+
+      <div class="lists">
+        <div className="recommendations-section-title">
+          Top 5 Books
+        </div>
+        <div className="lists-content">
+          {recommendations.lists.map((list) => (
+            <div className="list">
+              <div className="list__title">
+                {list.title}
+              </div>
+              {list.contents.map((result) => (
+                <Link to={`/${result.slug}`} className="list-book">
+                    <div className="list-book__title">{result.title}</div>
+                </Link>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
       <div class="trending">
-        <div className="recommendations-section-title">Popular Now</div>
+        <div className="recommendations-section-title">Explore the Harvard Classics</div>
         {recommendations.recent.map((result) => (
           <Link to={`/${result.slug}`} className="search-result">
             <div className="sample">
@@ -44,26 +64,6 @@ function Recommendations() {
             </div>
           </Link>
         ))}
-      </div>
-
-      <div class="lists">
-        <div className="recommendations-section-title">
-          Recommended By Others
-        </div>
-        <div className="lists-content">
-          {recommendations.lists.map((list) => (
-            <div className="list">
-              <div className="list__title">
-                Bill Gates
-              </div>
-              {list.contents.map((result) => (
-                <Link to={`/${result.slug}`} className="list-book">
-                    <div className="list-book__title">{result.title}</div>
-                </Link>
-              ))}
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );

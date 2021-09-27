@@ -42,10 +42,9 @@ router.get('/image/:fileLocation', async (req, res, next) => {
 
 router.get('/chapter/:id', async (req, res, next) => {
   try {
-    const result = await pool.query(
-      'SELECT * FROM chapters WHERE id = $1',
-      [req.params.id],
-    );
+    const result = await pool.query('SELECT * FROM chapters WHERE id = $1', [
+      req.params.id,
+    ]);
     const chapter = result.rows[0];
     res.json(chapter);
   } catch {
@@ -93,38 +92,53 @@ LIMIT
   }
 });
 
+let mapIntoNames = (sources) => sources.map((source) => `pg${source}-images.epub`);
+
 router.get('/homepage_recommendations', async (req, res, next) => {
-  // we're making the assumption that 1st image is the cover, which isnt correct, we need to find a better to solve this.
   try {
-    const result = await pool.query(
-      `
+    const query = `
 SELECT 
   books.id, 
   books.title, 
   books.author, 
   books.slug, 
-  books.publication, 
-  LEFT(chapters.content_stripped, 500) AS sample 
+  books.publication,
+  books.ebook_source_id
 FROM 
-  books 
-  LEFT JOIN chapters ON books.id = chapters.book_id 
-ORDER BY 
-  random() 
-LIMIT 
-  50
-`,
-    );
-    const top = result.rows.slice(0, 6);
-    const recent = result.rows.slice(6, 16);
-    const lists = [];
-    for (let i = 0; i < 3; i += 1) {
-      lists.push(
-        {
-          title: `List ${i}`,
-          contents: result.rows.slice(16 + i * 5, 16 + (i + 1) * 5),
-        },
-      );
+  ebook_source
+  JOIN books ON books.ebook_source_id = ebook_source.id
+WHERE
+  ebook_source.source_id = ANY($1)
+`;
+    const lists = [
+      {
+        title: 'Classical Antiquity',
+        contents: [6130, 1727, 3296, 1974],
+      },
+      {
+        title: 'Science Fiction',
+        contents: [1250, 36, 35, 29720, 21279],
+      },
+      {
+        title: 'Religion',
+        contents: [3296, 131, 398, 1653, 1549],
+      },
+    ];
+    let top = [1342, 84, 11, 1661, 2701, 66371];
+    let recent = [
+      1342, 1232, 1727, 2554, 3207, 20203, 996, 41, 766, 3296, 1399, 2680, 779,
+      16643,
+    ];
+
+    for (let i = 0; i < lists.length; i += 1) {
+      const list = lists[i];
+      const result = await pool.query(query, [mapIntoNames(list.contents)]);
+      list.contents = result.rows;
     }
+    let result = await pool.query(query, [mapIntoNames(top)]);
+    top = result.rows;
+    result = await pool.query(query, [mapIntoNames(recent)]);
+    recent = result.rows;
     const books = { top, recent, lists };
     res.json(books);
   } catch {
