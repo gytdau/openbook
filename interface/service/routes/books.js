@@ -108,7 +108,7 @@ FROM
   ebook_source
   JOIN books ON books.ebook_source_id = ebook_source.id
 WHERE
-  ebook_source.source_id = ANY(ARRAY[$1])
+  ebook_source.source_id = ANY($1)
 `;
     const lists = [
       {
