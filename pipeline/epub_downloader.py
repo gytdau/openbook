@@ -49,6 +49,9 @@ def prepare_args():
     
     return args
 
+def get_epub_link(id):
+    return ebook_link_unformatted.format(id, id)
+
 def download_file(link, f):
     filename = link.split('/')[-1]
     r = requests.get(link, stream=True)
@@ -87,7 +90,7 @@ def get_csv_reader(save_to_file = True, clear_cache = False):
         return csv.DictReader(strbuf.read().splitlines(), delimiter=',', quotechar='"')
 
 def upload_ebook_s3(id):
-    ebook_link = ebook_link_unformatted.format(id, id)
+    ebook_link = get_epub_link(id)
     filename = ebook_link.split('/')[-1]
     path = os.path.join(default_epubs_directory, filename)
 
@@ -100,7 +103,7 @@ def upload_ebook_s3(id):
     return f"s3://{BUCKET_NAME}/{filename}"
 
 def download_ebook(id):
-    ebook_link = ebook_link_unformatted.format(id, id)
+    ebook_link = get_epub_link(id)
     filename = ebook_link.split('/')[-1]
     path = os.path.join(default_epubs_directory, filename)
     with open(path, "wb") as f:
@@ -108,7 +111,7 @@ def download_ebook(id):
         return path
 
 def download_ebook_to_temp(id):
-    ebook_link = ebook_link_unformatted.format(id, id)
+    ebook_link = get_epub_link(id)
     filename = ebook_link.split('/')[-1]
     f = open(f'/tmp/{filename}', 'w+b')
     download_file(ebook_link, f)
