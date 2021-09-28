@@ -29,7 +29,7 @@ def prepare_args():
     parser.add_argument('--output', default=default_epubs_directory, help="Folder where the epubs files go")
     parser.add_argument('--id', help="Download book associated with specified ID")
     parser.add_argument('--random', '-r', action='store_true', help="Download Random Books")
-    parser.add_argument('--upload_s3', '-s3', action='store_true', help="Download Random Books")
+    parser.add_argument('--upload_s3', '-s3', action='store_true', help="Upload Book(s) to AWS S3")
     parser.add_argument('--all', '-a', action='store_true', help="Download All books from gutenberg")
     parser.add_argument('--max', type=unsigned_int, default=5, help="Maximum books to download, applies to --all/--random [default: 5, unlimited: 0]")
 
