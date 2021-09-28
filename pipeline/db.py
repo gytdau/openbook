@@ -1,8 +1,5 @@
 import psycopg2
 
-from helpers import join_path
-
-
 class db(object):
 
     def __init__(self, dsn, create_tables=True, version_marker=1):
