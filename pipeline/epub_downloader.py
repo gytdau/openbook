@@ -16,7 +16,6 @@ GUTENBERG_MIRROR = "https://gutenberg.readingroo.ms/cache/epub"
 ebook_link_unformatted = GUTENBERG_MIRROR + "/{}/pg{}-images.epub"
 
 BUCKET_NAME = "gutenberg-vivlia"
-args = None
 
 def prepare_args():
     def unsigned_int(value):
@@ -71,9 +70,9 @@ def download_file(link, f):
             sys.stdout.flush()
         print("")
 
-def get_csv_reader(save_to_file = True):
+def get_csv_reader(save_to_file = True, clear_cache = False):
     if(save_to_file):
-        if(not args or args.clear_cache or not os.path.isfile(default_csv_path)):
+        if(clear_cache or not os.path.isfile(default_csv_path)):
             os.makedirs(os.path.dirname(default_csv_path), exist_ok=True)
             with open(default_csv_path, "wb") as f:
                 download_file(f'{GUTENBERG_MIRROR}/feeds/pg_catalog.csv', f)
@@ -122,10 +121,10 @@ if __name__ == '__main__':
         os.remove(default_csv_path)
 
     if(args.all):
-        books = get_csv_reader()
+        books = get_csv_reader(clear_cache=args.clear_cache)
 
     if(args.random):
-        books = random.choices(list(get_csv_reader()), k=args.max)
+        books = random.choices(list(get_csv_reader(clear_cache=args.clear_cache)), k=args.max)
 
     if(args.all or args.random):
         for book in books:
