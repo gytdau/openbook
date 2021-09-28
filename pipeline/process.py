@@ -66,7 +66,7 @@ if not args.dry_run:
                 print(e)
                 continue
 
-            if not epub:
+            if not epub.parse():
                 print(f"warning: ({file}) not a valid epub")
                 continue
 
