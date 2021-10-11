@@ -4,9 +4,7 @@ from itertools import chain
 from glob import glob
 from db import db
 import os
-import shutil
 import argparse
-from pathlib import Path
 from dotenv import dotenv_values
 
 config = {
@@ -66,7 +64,7 @@ if not args.dry_run:
                 print(e)
                 continue
 
-            if not epub:
+            if not epub.parse():
                 print(f"warning: ({file}) not a valid epub")
                 continue
 

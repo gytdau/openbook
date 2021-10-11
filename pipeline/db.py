@@ -1,8 +1,5 @@
 import psycopg2
 
-from helpers import join_path
-
-
 class db(object):
 
     def __init__(self, dsn, create_tables=True, version_marker=1):
@@ -132,6 +129,12 @@ class db(object):
             '''SELECT * FROM books WHERE ebook_source_id = %s;''', (ebook_source_id,))
         return cur.fetchone()
 
+    def get_books_count(self):
+        cur = self.con.cursor()
+        cur.execute(
+            '''SELECT count(*) FROM books;''')
+        return cur.fetchone()[0]
+
     def add_book(self, ebook_source_id, title, author, slug, description, publication):
         cur = self.con.cursor()
         cur.execute(
@@ -139,6 +142,12 @@ class db(object):
             (ebook_source_id, title, author, slug, description, self.version, publication))
         self.con.commit()
         return cur.fetchone()[0]
+
+    def get_all_book_source(self):
+        cur = self.con.cursor()
+        cur.execute(
+            '''SELECT * FROM ebook_source;''')
+        return cur.fetchall()
 
     def get_book_source_by_hash(self, hash_sha256):
         cur = self.con.cursor()

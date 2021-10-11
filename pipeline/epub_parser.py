@@ -1,6 +1,5 @@
 from bs4.element import Comment, NavigableString
 from content_parser import Navpoint, ContentParser
-import sys
 import os
 import hashlib
 
@@ -13,7 +12,6 @@ from bs4 import BeautifulSoup
 
 import random
 from helpers import join_path
-import helpers
 
 
 class EpubParser(object):
