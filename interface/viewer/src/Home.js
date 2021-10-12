@@ -18,7 +18,7 @@ function Home() {
       </div>
       <div className="container">
         <div className="row">
-          <SearchBar />
+          <SearchBar searchUrl="search" />
         </div>
         <div className="row">
           <Recommendations/>
