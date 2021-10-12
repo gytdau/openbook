@@ -92,6 +92,31 @@ LIMIT
   }
 });
 
+router.get('/book-search/:query/:search', async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `SELECT
+        id,
+        title,
+        slug,
+        ts_headline('english', content_stripped, to_tsquery($1)) AS Highlights,
+        ts_rank_cd(textsearchable_index_col, to_tsquery($2)) AS rank
+      FROM
+        chapters
+      WHERE
+        textsearchable_index_col @@ to_tsquery($3)
+      ORDER BY rank DESC
+      LIMIT 100;
+      `,
+      [req.params.search,req.params.search,req.params.search],
+    );
+    const books = result.rows;
+    res.json(books);
+  } catch {
+    res.sendStatus(400);
+  }
+});
+
 let mapIntoNames = (sources) => sources.map((source) => `pg${source}-images.epub`);
 
 router.get('/homepage_recommendations', async (req, res, next) => {

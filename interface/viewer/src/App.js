@@ -5,6 +5,7 @@ import Book from "./Book"
 import Catalog from "./Catalog"
 import Home from "./Home"
 import Search from "./Search"
+import BookSearch from "./BookSearch"
 
 function App() {
   return (
@@ -15,6 +16,9 @@ function App() {
         </Route>
         <Route path="/search/:query" exact>
           <Search />
+        </Route>
+        <Route path="/book-search/:bookSlug/:query/" exact>
+          <BookSearch />
         </Route>
         <Route path="/catalog">
           <Catalog />
