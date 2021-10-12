@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
 
-let BookNavbar = (props) => (
+let BookNavbar = (props) => { 
+  if(!props.visible) {
+    return null;
+  }
+  return (
   <nav class="navbar navbar-expand mb-4">
     <div class="container-fluid">
       <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -22,6 +26,6 @@ let BookNavbar = (props) => (
         </ul>
       </div>
     </div>
-  </nav>
-);
+  </nav>)
+};
 export default BookNavbar;

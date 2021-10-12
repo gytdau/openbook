@@ -88,6 +88,7 @@ function BookView(props) {
         openToc={() => {
           setTocOpen(true);
         }}
+        visible={!tocOpen}
       />
       <TOC
         clearVisibleChapters={(chapter) => {

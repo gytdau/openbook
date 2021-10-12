@@ -47,22 +47,14 @@ h6 {
 
 .chapter-heading {
     padding: 0.6em;
-    border: 1px solid #eee;
+    border-bottom: 1px solid #eee;
     margin-bottom: 1.3em;
     margin-top: 1.3em;
-    border-left: 0px;
-    border-right: 0px;
     font-size: 2.3em;
     text-align: center;
     font-family: "Crimson Pro";
-    cursor: pointer;
     display: flex;
     justify-content: center;
-
-    &__chevron {
-        align-items: center;
-        display: flex;
-    }
 }
 
 html {
@@ -158,6 +150,7 @@ html {
         margin: 0.5em 0 0.5em 1em;
         display: inline-block;
         max-width: 50vw;
+        cursor: pointer;
     }
 
     .back-button {
@@ -275,4 +268,14 @@ a.no_dec:hover {
     padding: 1rem 1rem;
     display: flex;
     align-items: flex-end;
+}
+
+.modal-toc {
+    .modal-body {
+        padding: 0;
+    }
+    .modal-header {
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
 }
