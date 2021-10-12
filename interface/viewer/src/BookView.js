@@ -35,6 +35,12 @@ function BookView(props) {
     if (!chapter) {
       return;
     }
+    let newPathName = `/${book.slug}/${chapter.slug}`
+    
+    if (newPathName == window.location.pathname) {
+      return
+    }
+
     window.history.replaceState(null, null, `/${book.slug}/${chapter.slug}`);
   }, [chapter, book.slug]);
 
