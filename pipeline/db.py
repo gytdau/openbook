@@ -47,9 +47,12 @@ class db(object):
             content_stripped text,
             chapter_order integer,
             version integer NOT NULL,
+            searchable_tsvector tsvector,
             FOREIGN KEY (book_id) REFERENCES books (id),
             CONSTRAINT unique_chapter_version UNIQUE(book_id, slug, chapter_order, version)
         )''')
+        cur.execute('''CREATE INDEX searchable_idx
+            ON chapters USING GIN (searchable_tsvector);''')
         cur.execute('''CREATE TABLE IF NOT EXISTS images (
             id SERIAL PRIMARY KEY,
             book_id integer NOT NULL,
@@ -96,17 +99,20 @@ class db(object):
                 END;
         $$ LANGUAGE plpgsql;''')
 
-        cur.execute('''CREATE OR REPLACE FUNCTION strip_chapter_html()
+        cur.execute('''CREATE OR REPLACE FUNCTION prepare_chapter_search()
         RETURNS trigger AS '
         BEGIN
             NEW.content_stripped = html_strip(NEW.content);
+            NEW.searchable_tsvector = to_tsvector('english', coalesce(NEW.content_stripped,''))
         RETURN NEW;
         END' LANGUAGE 'plpgsql';''')
 
         cur.execute(
             '''DROP TRIGGER IF EXISTS strip_chapter_html on chapters;''')
-        cur.execute('''CREATE TRIGGER strip_chapter_html BEFORE INSERT or UPDATE ON chapters FOR EACH ROW
-        EXECUTE PROCEDURE strip_chapter_html();''')
+        cur.execute(
+            '''DROP TRIGGER IF EXISTS prepare_chapter_search on chapters;''')
+        cur.execute('''CREATE TRIGGER prepare_chapter_search BEFORE INSERT or UPDATE ON chapters FOR EACH ROW
+        EXECUTE PROCEDURE prepare_chapter_search();''')
         cur.execute('''CREATE INDEX idx 
             ON books USING gist ( 
             (
