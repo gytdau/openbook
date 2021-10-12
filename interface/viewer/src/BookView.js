@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Link } from "react-router-dom";
+import BookNavbar from "./BookNavbar";
 import ChapterView from "./ChapterView";
+import TOC from "./TOC";
 
 function getChapterFromSlug(book, chapterSlug) {
   let found = book.chapters.find((chapter, index) => {
@@ -19,24 +21,27 @@ function BookView(props) {
   let { book, chapterSlug } = props;
   let [renderedChapters, setRenderedChapters] = useState([]);
   let [visibleChapters, setVisibleChapters] = useState(new Set());
+  let [tocOpen, setTocOpen] = useState(false);
 
   let orderedVisibleChapters = Array.from(visibleChapters).sort(
     (a, b) => a.chapter_order - b.chapter_order
   );
-  let chapter = null
-  if(orderedVisibleChapters.length >= 1) {
-    chapter = orderedVisibleChapters[0]
-  } 
+  let chapter = null;
+  if (orderedVisibleChapters.length >= 1) {
+    chapter = orderedVisibleChapters[0];
+  }
 
   useEffect(() => {
-    if(!chapter) {
+    if (!chapter) {
+      return;
+    }
+    let newPathName = `/${book.slug}/${chapter.slug}`
+    
+    if (newPathName == window.location.pathname) {
       return
     }
-    window.history.replaceState(
-      null,
-      null,
-      `/${book.slug}/${chapter.slug}`
-    );
+
+    window.history.replaceState(null, null, `/${book.slug}/${chapter.slug}`);
   }, [chapter, book.slug]);
 
   let lastRenderedChapterIndex = book.chapters.indexOf(
@@ -77,23 +82,26 @@ function BookView(props) {
 
   return (
     <div className="App" id="#react-scroller">
-      <nav class="navbar navbar-expand mb-4">
-        <div class="container-fluid">
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav me-auto">
-              <Link to="/" className="nav-item back-button d-none d-md-block">
-                <i className="mdi mdi-chevron-left"></i>
-              </Link>
-              <li class="nav-item book-title">
-                <span>{book.title}</span>
-              </li>
-              <li class="nav-item chapter-title">
-                <span>{chapter ? chapter.title : "..."}</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+      <BookNavbar
+        chapter={chapter}
+        book={book}
+        openToc={() => {
+          setTocOpen(true);
+        }}
+        visible={!tocOpen}
+      />
+      <TOC
+        clearVisibleChapters={(chapter) => {
+          console.log("RESETTING", chapter);
+          setVisibleChapters(new Set([chapter]));
+        }}
+        open={tocOpen}
+        close={() => {
+          setTocOpen(false);
+        }}
+        chapters={book.chapters}
+        slug={book.slug}
+      />
       {isHeaderHidden ? (
         <div className="container m-4 p-4"></div>
       ) : (
@@ -122,11 +130,10 @@ function BookView(props) {
         endMessage={<p>End of book</p>}
       >
         {renderedChapters.map((chapter) => (
-            <ChapterView chapter={chapter} book={book} key={chapter.id} clearVisibleChapters={(chapter) => {
-
-                console.log("RESETTING", chapter);
-              setVisibleChapters(new Set([chapter]))
-            }}
+          <ChapterView
+            chapter={chapter}
+            book={book}
+            key={chapter.id}
             onViewChange={(inView) => {
               let newVisibleChapters = new Set(visibleChapters);
               if (inView) {
@@ -137,7 +144,8 @@ function BookView(props) {
                 console.log("DELETING", chapter);
               }
               setVisibleChapters(newVisibleChapters);
-            }}/>
+            }}
+          />
         ))}
       </InfiniteScroll>
     </div>
