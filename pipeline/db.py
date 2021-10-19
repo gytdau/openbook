@@ -100,12 +100,12 @@ class db(object):
         $$ LANGUAGE plpgsql;''')
 
         cur.execute('''CREATE OR REPLACE FUNCTION prepare_chapter_search()
-        RETURNS trigger AS '
+        RETURNS trigger AS $$
         BEGIN
             NEW.content_stripped = html_strip(NEW.content);
-            NEW.searchable_tsvector = to_tsvector('english', coalesce(NEW.content_stripped,''))
+            NEW.searchable_tsvector = to_tsvector('english', coalesce(NEW.content_stripped,''));
         RETURN NEW;
-        END' LANGUAGE 'plpgsql';''')
+        END$$ LANGUAGE 'plpgsql';''')
 
         cur.execute(
             '''DROP TRIGGER IF EXISTS strip_chapter_html on chapters;''')
