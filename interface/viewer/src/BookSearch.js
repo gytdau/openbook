@@ -20,13 +20,13 @@ function BookSearch(props) {
   } else {
     resultsDisplay = results.map((result) => {
       return (
-        <Link to={`/${bookSlug}/${result.slug}`} className="search-result">
-          <div className="sample">
-            <div className="fadeout"> </div>
-            <span dangerouslySetInnerHTML={{ __html: result.highlights}}></span>
-          </div>
+        <Link to={`/${bookSlug}/${result.slug}`} className="search-result d-block">
           <div>
             <h2>{result.title}</h2>
+          </div>
+          <div className="sample mw-100 w-100">
+            <div className="fadeout"> </div>
+            <span dangerouslySetInnerHTML={{ __html: result.highlights}}></span>
           </div>
         </Link>
       )
