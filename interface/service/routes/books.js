@@ -144,7 +144,7 @@ router.get('/book-search/:query/:search', async (req, res, next) => {
         id,
         title,
         slug,
-        ts_headline('english', content_stripped, to_tsquery($1)) AS Highlights,
+        ts_headline('english', content_stripped, to_tsquery($1), 'MaxWords=50, MinWords=30, MaxFragments=3, FragmentDelimiter=" [....] "') AS Highlights,
         ts_rank_cd(textsearchable_index_col, to_tsquery($2)) AS rank
       FROM
         chapters
