@@ -51,7 +51,7 @@ class db(object):
             FOREIGN KEY (book_id) REFERENCES books (id),
             CONSTRAINT unique_chapter_version UNIQUE(book_id, slug, chapter_order, version)
         )''')
-        cur.execute('''CREATE INDEX searchable_idx
+        cur.execute('''CREATE INDEX IF NOT EXISTS searchable_idx
             ON chapters USING GIN (searchable_tsvector);''')
         cur.execute('''CREATE TABLE IF NOT EXISTS images (
             id SERIAL PRIMARY KEY,
@@ -113,7 +113,7 @@ class db(object):
             '''DROP TRIGGER IF EXISTS prepare_chapter_search on chapters;''')
         cur.execute('''CREATE TRIGGER prepare_chapter_search BEFORE INSERT or UPDATE ON chapters FOR EACH ROW
         EXECUTE PROCEDURE prepare_chapter_search();''')
-        cur.execute('''CREATE INDEX idx 
+        cur.execute('''CREATE INDEX IF NOT EXISTS idx 
             ON books USING gist ( 
             (
                 to_tsvector('english', coalesce(title, '')) || 
