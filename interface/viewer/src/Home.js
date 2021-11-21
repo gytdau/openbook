@@ -1,6 +1,7 @@
 import SearchBar from "./SearchBar"
 import RandomBooks from "./RandomBooks"
 import Recommendations from "./Recommendations"
+import Footer from "./Footer"
 
 
 function Home() {
@@ -22,6 +23,9 @@ function Home() {
         </div>
         <div className="row">
           <Recommendations/>
+        </div>
+        <div className="footer">
+          <Footer/>
         </div>
       </div>
     </>

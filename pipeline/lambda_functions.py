@@ -19,6 +19,7 @@ def test_event(event, context):
         'body': json.dumps({'type': type(event).__name__, 'event': event}),
     }
 
+
 def UpdateBooks(event, context):
     # body = {"data": [{"book_id": 1, "ebook_source_id": 1}, ...]}
 
@@ -40,6 +41,7 @@ def UpdateBooks(event, context):
         'statusCode': 202,
         'body': json.dumps(responses),
     }
+
 
 def UpdateBook(event, context):
     book_id = event['book_id']
@@ -80,6 +82,7 @@ def UpdateBook(event, context):
             'body': event
         }
 
+
 def DownloadBooks(event, context):
     # body = {"data": [{"gutenberg_id": 1}, ...]}
 
@@ -104,9 +107,12 @@ def DownloadBooks(event, context):
 
 # work around to s3 transfer closing buffer
 # https://github.com/boto/s3transfer/issues/80#issuecomment-482534256
+
+
 class NonCloseableBufferedReader(BufferedReader):
     def close(self):
         self.flush()
+
 
 def DownloadBook(event, context):
     gutenberg_id = event['gutenberg_id']
@@ -165,6 +171,7 @@ def DownloadBook(event, context):
             'statusCode': 200,
             'body': json.dumps(event)
         }
+
 
 def DownloadRangeBooks(event, context):
     # body = {"start": n, "end": m}
