@@ -1,17 +1,10 @@
 from io import BufferedReader
 import json
 import boto3
-import os
-from dotenv import dotenv_values
+from config import config
 
-config = {
-    **dotenv_values(".env"),  # load sensitive variables
-    **os.environ,  # override loaded values with environment variables
-}
-
-bucket_name = config["BUCKET_NAME"] if 'BUCKET_NAME' in config else None
-db_connection = config["DB_CONNECTION"] if 'DB_CONNECTION' in config else None
-
+bucket_name = config["BUCKET_NAME"]
+db_connection = config["DB_CONNECTION"]
 
 def test_event(event, context):
     return {

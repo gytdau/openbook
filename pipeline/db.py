@@ -1,5 +1,6 @@
 import psycopg2
 
+
 class db(object):
 
     def __init__(self, dsn, create_tables=True, version_marker=1):
@@ -185,6 +186,25 @@ class db(object):
                     ON CONFLICT ON CONSTRAINT unique_image_version DO NOTHING;''',
                 (book_id, image.location, image.content(), image.format, self.version))
         self.con.commit()
+
+    def get_featured_books(self):
+        cur = self.con.cursor()
+        source_ids = [1342, 1232, 1727, 2554, 3207, 20203, 996, 41, 766, 3296, 1399, 2680, 779,
+                      16643, 1250, 36, 35, 29720, 21279, 6130, 1727, 3296, 1974, 7700, 3296, 131, 398, 1653, 1549]
+        source_ids = [f"\'pg{x}-images.epub\'" for x in source_ids]
+        cur.execute(
+            f'''SELECT books.title, books.author,
+       LEFT(chapters.content_stripped, 500) AS sample
+             FROM
+            ebook_source
+          JOIN books ON books.ebook_source_id = ebook_source.id
+       LEFT JOIN chapters
+              ON books.id = chapters.book_id
+           WHERE
+          ebook_source.source_id IN ({", ".join(source_ids)})
+          AND
+                  chapters.chapter_order = 4;''')
+        return cur.fetchall()
 
     def close(self):
         self.con.close()
