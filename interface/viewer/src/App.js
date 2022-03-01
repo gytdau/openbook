@@ -5,6 +5,7 @@ import Book from "./Book"
 import Catalog from "./Catalog"
 import Home from "./Home"
 import Search from "./Search"
+import SimpleView from "./SimpleView"
 
 function App() {
   return (
@@ -18,6 +19,9 @@ function App() {
         </Route>
         <Route path="/catalog">
           <Catalog />
+        </Route>
+        <Route path="/immersive/:slug/:chapterSlug">
+          <SimpleView />
         </Route>
         <Route path="/:slug/:chapterSlug">
           <Book />

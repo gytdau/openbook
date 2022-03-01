@@ -22,6 +22,23 @@ router.get('/get/:title', async (req, res, next) => {
   }
 });
 
+router.get('/get/:title/simple', async (req, res, next) => {
+  try {
+    const books = await pool.query(
+      'SELECT * FROM books WHERE slug = $1',
+      [req.params.title],
+    );
+    if (books.rows.length == 0) {
+      res.sendStatus(404);
+      return;
+    }
+    const book = books.rows[0];
+    res.json(book);
+  } catch {
+    res.sendStatus(400);
+  }
+});
+
 router.get('/image/:fileLocation', async (req, res, next) => {
   try {
     const result = await pool.query(
@@ -36,6 +53,35 @@ router.get('/image/:fileLocation', async (req, res, next) => {
     res.contentType(`image/${image.format}`);
     res.end(image.content);
   } catch {
+    res.sendStatus(400);
+  }
+});
+
+router.get('/chapter/:book_id/paragraphs/count', async (req, res, next) => {
+  try {
+    const result = await pool.query(`select paragraphs.chapters_id, chapters.chapter_order, CAST(count(paragraphs.*) as integer) from paragraphs
+      LEFT JOIN chapters ON chapters.id = paragraphs.chapters_id WHERE chapters.book_id = $1 group by chapters_id, chapter_order`, [
+      req.params.book_id,
+    ]);
+    const chapter = result.rows;
+    res.json(chapter);
+  } catch (error) {
+    process.stdout.write(error + '\n');
+    res.sendStatus(400);
+  }
+});
+
+
+router.get('/chapter/:book_id/paragraphs', async (req, res, next) => {
+  try {
+    const result = await pool.query(`SELECT paragraphs.id, paragraph_order, paragraphs.chapters_id, book_id, title, slug, paragraphs.content, chapter_order FROM paragraphs
+      LEFT JOIN chapters ON chapters.id = paragraphs.chapters_id WHERE chapters.book_id = $1`, [
+      req.params.book_id,
+    ]);
+    const chapter = result.rows;
+    res.json(chapter);
+  } catch (error) {
+    process.stdout.write(error + '\n');
     res.sendStatus(400);
   }
 });

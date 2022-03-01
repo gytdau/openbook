@@ -51,6 +51,16 @@ class db(object):
             FOREIGN KEY (book_id) REFERENCES books (id),
             CONSTRAINT unique_chapter_version UNIQUE(book_id, slug, chapter_order, version)
         )''')
+        cur.execute('''CREATE TABLE IF NOT EXISTS paragraphs (
+            id SERIAL PRIMARY KEY,
+            chapters_id integer NOT NULL,
+            paragraph_order integer NOT NULL,
+            content text,
+            color text,
+            version integer NOT NULL,
+            FOREIGN KEY (chapters_id) REFERENCES chapters (id),
+            CONSTRAINT unique_chapter_version_tbl_paragraphs UNIQUE(chapters_id, paragraph_order, version)
+        )''')
         cur.execute('''CREATE TABLE IF NOT EXISTS images (
             id SERIAL PRIMARY KEY,
             book_id integer NOT NULL,
@@ -96,13 +106,38 @@ class db(object):
                         RETURN  unescape_html(REGEXP_REPLACE(array_to_string(xpath('//text()', xmlparse(document html)), ' '), '\s+', ' ', 'g'));
                 END;
         $$ LANGUAGE plpgsql;''')
-
+        cur.execute('''CREATE OR REPLACE FUNCTION html_to_paragraph(html text) RETURNS text[] AS $$
+                BEGIN
+                    RETURN string_to_array(
+                        unescape_html(
+                            REGEXP_REPLACE(
+                                array_to_string(
+                                    xpath('//p[text()][normalize-space()]', xmlparse(document html)
+                                        ), '0x13374141'
+                                ), '\s+', ' ', 'g'
+                            )
+                        ), '0x13374141'
+                    );
+                END;
+        $$ LANGUAGE plpgsql;''')
         cur.execute('''CREATE OR REPLACE FUNCTION strip_chapter_html()
         RETURNS trigger AS '
         BEGIN
             NEW.content_stripped = html_strip(NEW.content);
         RETURN NEW;
         END' LANGUAGE 'plpgsql';''')
+
+        cur.execute('''CREATE OR REPLACE FUNCTION create_paragraphs()
+        RETURNS trigger AS '
+        BEGIN
+            INSERT INTO paragraphs (chapters_id, paragraph_order, content, version)
+                SELECT NEW.id, paragraph_order, a.content, 1 FROM unnest(html_to_paragraph(NEW.content)) WITH ORDINALITY AS a(content, paragraph_order) ON CONFLICT DO NOTHING;
+            RETURN NEW;
+        END' LANGUAGE 'plpgsql';''')
+        cur.execute(
+            '''DROP TRIGGER IF EXISTS trigger_create_paragraphs on chapters;''')
+        cur.execute('''CREATE TRIGGER trigger_create_paragraphs AFTER INSERT or UPDATE ON chapters FOR EACH ROW
+        EXECUTE PROCEDURE create_paragraphs();''')
 
         cur.execute(
             '''DROP TRIGGER IF EXISTS strip_chapter_html on chapters;''')
