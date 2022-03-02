@@ -109,13 +109,11 @@ class db(object):
         cur.execute('''CREATE OR REPLACE FUNCTION html_to_paragraph(html text) RETURNS text[] AS $$
                 BEGIN
                     RETURN string_to_array(
-                        unescape_html(
-                            REGEXP_REPLACE(
-                                array_to_string(
-                                    xpath('//p[text()][normalize-space()]', xmlparse(document html)
-                                        ), '0x13374141'
-                                ), '\s+', ' ', 'g'
-                            )
+                        REGEXP_REPLACE(
+                            array_to_string(
+                                xpath('//p[text()][normalize-space()]', xmlparse(document html)
+                                    ), '0x13374141'
+                            ), '\s+', ' ', 'g'
                         ), '0x13374141'
                     );
                 END;
