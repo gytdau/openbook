@@ -239,6 +239,27 @@ class db(object):
                   chapters.chapter_order = 4;''')
         return cur.fetchall()
 
+
+    def get_featured_books_paragraphs(self):
+        cur = self.con.cursor()
+        source_ids = [1342, 1232, 1727, 2554, 3207, 20203, 996, 41, 766, 3296, 1399, 2680, 779,
+                      16643, 1250, 36, 35, 29720, 21279, 6130, 1727, 3296, 1974, 7700, 3296, 131, 398, 1653, 1549]
+        cur.execute(
+            f'''SELECT id, regexp_replace(content_stripped, E'[\\n\\r\\u2028]+', ' ', 'g' ) as content_stripped FROM (
+                    SELECT id, html_strip(content) as content_stripped FROM paragraphs WHERE chapters_id IN (
+                        SELECT id FROM chapters WHERE book_id IN (
+                            SELECT id FROM books WHERE ebook_source_id IN (
+                                select id FROM (
+                                    SELECT id, CAST(unnest(regexp_matches(source_id, 'pg(\d+)-images\.epub', 'g')) as integer) AS epub_books_id FROM public.ebook_source
+                                ) source_id
+                                WHERE epub_books_id IN ({", ".join([str(i) for i in source_ids])})
+                            )
+                        )
+                    )
+                ) tmp WHERE length(content_stripped) > 50 limit 10
+            ''')
+        return cur.fetchall()
+
     def close(self):
         self.con.close()
 
