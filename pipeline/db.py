@@ -260,6 +260,11 @@ class db(object):
             ''')
         return cur.fetchall()
 
+    def update_paragraphs_colour(self, id, colour):
+        cur = self.con.cursor()
+        cur.execute('UPDATE paragraphs SET color=%s WHERE id = %s', (colour, id,))
+        return cur.fetchall()
+
     def close(self):
         self.con.close()
 
