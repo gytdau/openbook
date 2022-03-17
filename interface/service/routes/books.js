@@ -74,8 +74,8 @@ router.get('/chapter/:book_id/paragraphs/count', async (req, res, next) => {
 
 router.get('/chapter/:book_id/paragraphs', async (req, res, next) => {
   try {
-    const result = await pool.query(`SELECT paragraphs.id, paragraph_order, paragraphs.chapters_id, book_id, title, slug, paragraphs.content, chapter_order FROM paragraphs
-      LEFT JOIN chapters ON chapters.id = paragraphs.chapters_id WHERE chapters.book_id = $1`, [
+    const result = await pool.query(`SELECT paragraphs.id, paragraph_order, paragraphs.chapters_id, chapter_order, book_id, title, slug, paragraphs.content FROM paragraphs
+      LEFT JOIN chapters ON chapters.id = paragraphs.chapters_id WHERE chapters.book_id = $1  order by chapter_order, paragraph_order`, [
       req.params.book_id,
     ]);
     const chapter = result.rows;
