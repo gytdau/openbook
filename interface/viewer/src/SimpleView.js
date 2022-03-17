@@ -38,10 +38,10 @@ function SimpleView(props) {
 
         case 'restart':
           return {...state, chapter: 1, paragraph: 1, action: 1};
-      case 'update':
-        return {...state, chapters: action.chapters};
-      default:
-        throw new Error();
+        case 'update':
+          return {...state, chapters: action.chapters};
+        default:
+          throw new Error();
     }
     return {...state};
   }
