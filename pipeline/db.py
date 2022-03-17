@@ -56,7 +56,7 @@ class db(object):
             chapters_id integer NOT NULL,
             paragraph_order integer NOT NULL,
             content text,
-            color text,
+            colour text,
             version integer NOT NULL,
             FOREIGN KEY (chapters_id) REFERENCES chapters (id),
             CONSTRAINT unique_chapter_version_tbl_paragraphs UNIQUE(chapters_id, paragraph_order, version)
@@ -262,7 +262,7 @@ class db(object):
 
     def update_paragraphs_colour(self, id, colour):
         cur = self.con.cursor()
-        cur.execute('UPDATE paragraphs SET color=%s WHERE id = %s', (colour, id,))
+        cur.execute('UPDATE paragraphs SET colour=%s WHERE id = %s', (colour, id,))
         return cur.fetchall()
 
     def close(self):
