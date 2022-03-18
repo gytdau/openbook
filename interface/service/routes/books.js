@@ -66,11 +66,10 @@ router.get('/chapter/:book_id/paragraphs/count', async (req, res, next) => {
     const chapter = result.rows;
     res.json(chapter);
   } catch (error) {
-    process.stdout.write(error + '\n');
+    process.stdout.write(`${error}\n`);
     res.sendStatus(400);
   }
 });
-
 
 router.get('/chapter/:book_id/paragraphs', async (req, res, next) => {
   try {
@@ -81,7 +80,7 @@ router.get('/chapter/:book_id/paragraphs', async (req, res, next) => {
     const chapter = result.rows;
     res.json(chapter);
   } catch (error) {
-    process.stdout.write(error + '\n');
+    process.stdout.write(`${error}\n`);
     res.sendStatus(400);
   }
 });
@@ -138,7 +137,7 @@ LIMIT
   }
 });
 
-let mapIntoNames = (sources) => sources.map((source) => `pg${source}-images.epub`);
+const mapIntoNames = (sources) => sources.map((source) => `pg${source}-images.epub`);
 
 router.get('/homepage_recommendations', async (req, res, next) => {
   try {
