@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 function SearchBar(props) {
-  let [query, setQuery] = useState(props.query);
+  const [query, setQuery] = useState(props.query);
   const history = useHistory();
   const submit = () => {
-    if(!query) {
-      alert("Type in a search query to continue.")
-      return
+    if (!query) {
+      alert('Type in a search query to continue.');
+      return;
     }
     history.push(`/search/${query}`);
   };
@@ -22,8 +22,8 @@ function SearchBar(props) {
               setQuery(event.target.value);
             }}
             onKeyPress={(event) => {
-              if (event.key == "Enter") {
-                submit()
+              if (event.key == 'Enter') {
+                submit();
                 event.preventDefault();
               }
             }}
@@ -34,7 +34,7 @@ function SearchBar(props) {
           />
           <span className="input-group-append">
             <button onClick={submit} className="btn btn-primary" type="button">
-              <i className="mdi mdi-magnify"></i>
+              <i className="mdi mdi-magnify" />
             </button>
           </span>
         </div>
