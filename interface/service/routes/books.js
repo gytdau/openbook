@@ -187,7 +187,8 @@ WHERE
     recent = result.rows;
     const books = { top, recent, lists };
     res.json(books);
-  } catch {
+  } catch (error) {
+    console.log(error);
     res.sendStatus(400);
   }
 });

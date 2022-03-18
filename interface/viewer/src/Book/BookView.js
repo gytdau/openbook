@@ -36,7 +36,7 @@ function BookView(props) {
       return;
     }
     let newPathName = `/${book.slug}/${chapter.slug}`
-    
+
     if (newPathName == window.location.pathname) {
       return
     }

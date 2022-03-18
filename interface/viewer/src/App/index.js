@@ -1,11 +1,11 @@
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 import "./App.scss"
 import "./Recommendations.scss"
-import Book from "./Book"
-import Catalog from "./Catalog"
-import Home from "./Home"
-import Search from "./Search"
-import SimpleView from "./SimpleView"
+import Book from "../Book/Book"
+import Catalog from "../Home/Catalog"
+import Home from "../Home/Home"
+import Search from "../Home/Search"
+import SimpleView from "../SimpleView/SimpleView"
 
 function App() {
   return (
