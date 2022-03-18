@@ -1,12 +1,12 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { Link, Redirect, useParams } from "react-router-dom";
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { Link, Redirect, useParams } from 'react-router-dom';
 
 function Recommendations() {
-  let [recommendations, setRecommendations] = useState(null);
+  const [recommendations, setRecommendations] = useState(null);
 
   useEffect(() => {
-    axios.get(`/api/books/homepage_recommendations`).then((value) => {
+    axios.get('/api/books/homepage_recommendations').then((value) => {
       setRecommendations(value.data);
     });
   }, [setRecommendations]);
@@ -15,13 +15,16 @@ function Recommendations() {
     return null;
   }
   return (
-    <div class="recommendations">
-      <div class="top">
+    <div className="recommendations">
+      <div className="top">
         <div className="recommendations-section-title">Most Read</div>
         <div className="top-content">
           {recommendations.top.map((book, index) => (
             <Link to={`/${book.slug}`} className="top-book">
-              <div className="top-book__number">{index + 1}.</div>
+              <div className="top-book__number">
+                {index + 1}
+                .
+              </div>
               <div className="top-book__title">
                 <h2>{book.author}</h2>
                 <h1>{book.title}</h1>
@@ -31,7 +34,7 @@ function Recommendations() {
         </div>
       </div>
 
-      <div class="lists">
+      <div className="lists">
         <div className="recommendations-section-title">
           Top 5 Books
         </div>
@@ -43,14 +46,14 @@ function Recommendations() {
               </div>
               {list.contents.map((result) => (
                 <Link to={`/${result.slug}`} className="list-book">
-                    <div className="list-book__title">{result.title}</div>
+                  <div className="list-book__title">{result.title}</div>
                 </Link>
               ))}
             </div>
           ))}
         </div>
       </div>
-      <div class="trending">
+      <div className="trending">
         <div className="recommendations-section-title">Explore the Harvard Classics</div>
         {recommendations.recent.map((result) => (
           <Link to={`/${result.slug}`} className="search-result">

@@ -1,16 +1,16 @@
-import axios from "axios"
-import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 function Catalog() {
-  let [catalog, setCatalog] = useState(null)
+  const [catalog, setCatalog] = useState(null);
   useEffect(() => {
-    axios.get("/api/books/catalog").then((res) => {
-      setCatalog(res.data)
-    })
-  }, [setCatalog])
+    axios.get('/api/books/catalog').then((res) => {
+      setCatalog(res.data);
+    });
+  }, [setCatalog]);
   if (!catalog) {
-    return null
+    return null;
   }
 
   return (
@@ -25,7 +25,7 @@ function Catalog() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Catalog
+export default Catalog;

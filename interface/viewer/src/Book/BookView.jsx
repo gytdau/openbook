@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { Link } from "react-router-dom";
-import BookNavbar from "./BookNavbar";
-import ChapterView from "./ChapterView";
-import TOC from "./TOC";
+import { useEffect, useState } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { Link } from 'react-router-dom';
+import BookNavbar from './BookNavbar';
+import ChapterView from './ChapterView';
+import TOC from './TOC';
 
 function getChapterFromSlug(book, chapterSlug) {
-  let found = book.chapters.find((chapter, index) => {
+  const found = book.chapters.find((chapter, index) => {
     if (chapter.slug === chapterSlug) {
       return true;
     }
@@ -18,13 +18,13 @@ function getChapterFromSlug(book, chapterSlug) {
 }
 
 function BookView(props) {
-  let { book, chapterSlug } = props;
-  let [renderedChapters, setRenderedChapters] = useState([]);
-  let [visibleChapters, setVisibleChapters] = useState(new Set());
-  let [tocOpen, setTocOpen] = useState(false);
+  const { book, chapterSlug } = props;
+  const [renderedChapters, setRenderedChapters] = useState([]);
+  const [visibleChapters, setVisibleChapters] = useState(new Set());
+  const [tocOpen, setTocOpen] = useState(false);
 
-  let orderedVisibleChapters = Array.from(visibleChapters).sort(
-    (a, b) => a.chapter_order - b.chapter_order
+  const orderedVisibleChapters = Array.from(visibleChapters).sort(
+    (a, b) => a.chapter_order - b.chapter_order,
   );
   let chapter = null;
   if (orderedVisibleChapters.length >= 1) {
@@ -35,25 +35,24 @@ function BookView(props) {
     if (!chapter) {
       return;
     }
-    let newPathName = `/${book.slug}/${chapter.slug}`
-    
+    const newPathName = `/${book.slug}/${chapter.slug}`;
+
     if (newPathName == window.location.pathname) {
-      return
+      return;
     }
 
     window.history.replaceState(null, null, `/${book.slug}/${chapter.slug}`);
   }, [chapter, book.slug]);
 
-  let lastRenderedChapterIndex = book.chapters.indexOf(
-    renderedChapters[renderedChapters.length - 1]
+  const lastRenderedChapterIndex = book.chapters.indexOf(
+    renderedChapters[renderedChapters.length - 1],
   );
 
-  let noMoreChaptersRemaining =
-    lastRenderedChapterIndex == book.chapters.length - 1;
-  let isHeaderHidden = book.chapters.indexOf(renderedChapters[0]) > 0;
+  const noMoreChaptersRemaining = lastRenderedChapterIndex == book.chapters.length - 1;
+  const isHeaderHidden = book.chapters.indexOf(renderedChapters[0]) > 0;
 
-  let renderNewChapter = () => {
-    let newRenderedChapters = [
+  const renderNewChapter = () => {
+    const newRenderedChapters = [
       ...renderedChapters,
       book.chapters[lastRenderedChapterIndex + 1],
     ];
@@ -61,8 +60,8 @@ function BookView(props) {
   };
 
   useEffect(() => {
-    let chapters = [getChapterFromSlug(book, chapterSlug)];
-    let chapter_index = book.chapters.indexOf(chapters[0]);
+    const chapters = [getChapterFromSlug(book, chapterSlug)];
+    const chapter_index = book.chapters.indexOf(chapters[0]);
     if (chapter_index + 1 < book.chapters.length) {
       chapters.push(book.chapters[chapter_index + 1]);
     }
@@ -92,7 +91,7 @@ function BookView(props) {
       />
       <TOC
         clearVisibleChapters={(chapter) => {
-          console.log("RESETTING", chapter);
+          console.log('RESETTING', chapter);
           setVisibleChapters(new Set([chapter]));
         }}
         open={tocOpen}
@@ -103,18 +102,21 @@ function BookView(props) {
         slug={book.slug}
       />
       {isHeaderHidden ? (
-        <div className="container m-4 p-4"></div>
+        <div className="container m-4 p-4" />
       ) : (
-        <main class="container">
+        <main className="container">
           <div className="row">
             <div className="col-md-8 offset-md-2">
-              <div class="title-well">
-                <h1 class="title-well__title">{book.title}</h1>
-                <div class="title-well__details">
+              <div className="title-well">
+                <h1 className="title-well__title">{book.title}</h1>
+                <div className="title-well__details">
                   {book.author ? (
-                    <div class="detail">by {book.author}</div>
+                    <div className="detail">
+                      by
+                      {book.author}
+                    </div>
                   ) : null}
-                  <div class="detail">Published by Project Gutenberg</div>
+                  <div className="detail">Published by Project Gutenberg</div>
                 </div>
               </div>
             </div>
@@ -135,13 +137,13 @@ function BookView(props) {
             book={book}
             key={chapter.id}
             onViewChange={(inView) => {
-              let newVisibleChapters = new Set(visibleChapters);
+              const newVisibleChapters = new Set(visibleChapters);
               if (inView) {
                 newVisibleChapters.add(chapter);
-                console.log("ADDING", chapter);
+                console.log('ADDING', chapter);
               } else {
                 newVisibleChapters.delete(chapter);
-                console.log("DELETING", chapter);
+                console.log('DELETING', chapter);
               }
               setVisibleChapters(newVisibleChapters);
             }}

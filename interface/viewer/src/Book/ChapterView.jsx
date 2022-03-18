@@ -1,12 +1,12 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
-import ChapterHeading from "./ChapterHeading";
-import { InView } from "react-intersection-observer";
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { InView } from 'react-intersection-observer';
+import ChapterHeading from './ChapterHeading';
 
 function ChapterView(props) {
-  let chapter = props.chapter;
-  let chapters = props.book.chapters;
-  let [chapterContent, setChapterContent] = useState(null);
+  const { chapter } = props;
+  const { chapters } = props.book;
+  const [chapterContent, setChapterContent] = useState(null);
 
   useEffect(() => {
     setChapterContent(null);

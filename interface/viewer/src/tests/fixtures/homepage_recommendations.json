@@ -1,0 +1,295 @@
+{
+    "top": [
+        {
+            "id": 13,
+            "title": "Alice's Adventures in Wonderland",
+            "author": "Lewis Carroll",
+            "slug": "alice-s-adventures-in-wonderland_577",
+            "publication": "2008-06-26T23:00:00.000Z",
+            "ebook_source_id": 13
+        },
+        {
+            "id": 43,
+            "title": "Frankenstein; Or, The Modern Prometheus",
+            "author": "Mary Wollstonecraft Shelley",
+            "slug": "frankenstein-or-the-modern-prometheus_716",
+            "publication": "1993-09-30T23:00:00.000Z",
+            "ebook_source_id": 43
+        },
+        {
+            "id": 361,
+            "title": "The Duchesse of Langeais",
+            "author": "Honoré de Balzac",
+            "slug": "the-duchesse-of-langeais_930",
+            "publication": "2004-09-18T23:00:00.000Z",
+            "ebook_source_id": 362
+        },
+        {
+            "id": 984,
+            "title": "Pride and Prejudice",
+            "author": "Jane Austen",
+            "slug": "pride-and-prejudice_941",
+            "publication": "1998-05-31T23:00:00.000Z",
+            "ebook_source_id": 984
+        },
+        {
+            "id": 1214,
+            "title": "The Adventures of Sherlock Holmes",
+            "author": "Arthur Conan Doyle",
+            "slug": "the-adventures-of-sherlock-holmes_713",
+            "publication": "1999-03-01T00:00:00.000Z",
+            "ebook_source_id": 1214
+        },
+        {
+            "id": 2624,
+            "title": "Moby Dick; Or, The Whale",
+            "author": "Herman Melville",
+            "slug": "moby-dick-or-the-whale_32",
+            "publication": "2001-06-30T23:00:00.000Z",
+            "ebook_source_id": 2624
+        }
+    ],
+    "recent": [
+        {
+            "id": 19,
+            "title": "The Legend of Sleepy Hollow",
+            "author": "Washington Irving",
+            "slug": "the-legend-of-sleepy-hollow_227",
+            "publication": "2008-06-26T23:00:00.000Z",
+            "ebook_source_id": 19
+        },
+        {
+            "id": 886,
+            "title": "The Prince",
+            "author": "Niccolò Machiavelli",
+            "slug": "the-prince_126",
+            "publication": "2006-02-11T00:00:00.000Z",
+            "ebook_source_id": 886
+        },
+        {
+            "id": 984,
+            "title": "Pride and Prejudice",
+            "author": "Jane Austen",
+            "slug": "pride-and-prejudice_941",
+            "publication": "1998-05-31T23:00:00.000Z",
+            "ebook_source_id": 984
+        },
+        {
+            "id": 1301,
+            "title": "Anna Karenina",
+            "author": "graf Leo Tolstoy",
+            "slug": "anna-karenina_457",
+            "publication": "1998-06-30T23:00:00.000Z",
+            "ebook_source_id": 1301
+        },
+        {
+            "id": 1310,
+            "title": "The Tragical History of Doctor Faustus / From the Quarto of 1604",
+            "author": "Christopher Marlowe",
+            "slug": "the-tragical-history-of-doctor-faustus-from-the-quarto-of-1604_3",
+            "publication": "1997-01-01T00:00:00.000Z",
+            "ebook_source_id": 1310
+        },
+        {
+            "id": 1496,
+            "title": "The Odyssey / Rendered into English prose for the use of those who cannot read the original",
+            "author": "Homer",
+            "slug": "the-odyssey-rendered-into-english-prose-for-the-use-of-those-who-cannot-read-the-original_940",
+            "publication": "1999-03-31T23:00:00.000Z",
+            "ebook_source_id": 1496
+        },
+        {
+            "id": 2427,
+            "title": "Crime and Punishment",
+            "author": "Fyodor Dostoyevsky",
+            "slug": "crime-and-punishment_1000",
+            "publication": "2006-03-27T23:00:00.000Z",
+            "ebook_source_id": 2427
+        },
+        {
+            "id": 2500,
+            "title": "Meditations",
+            "author": "Emperor of Rome Marcus Aurelius",
+            "slug": "meditations_248",
+            "publication": "2001-05-31T23:00:00.000Z",
+            "ebook_source_id": 2500
+        },
+        {
+            "id": 3010,
+            "title": "The Confessions of St. Augustine",
+            "author": "Bishop of Hippo Saint Augustine",
+            "slug": "the-confessions-of-st-augustine_201",
+            "publication": "2002-05-31T23:00:00.000Z",
+            "ebook_source_id": 3010
+        },
+        {
+            "id": 3151,
+            "title": "Leviathan",
+            "author": "Thomas Hobbes",
+            "slug": "leviathan_192",
+            "publication": "2002-04-30T23:00:00.000Z",
+            "ebook_source_id": 3151
+        },
+        {
+            "id": 17772,
+            "title": "Autobiography of Benjamin Franklin",
+            "author": "Benjamin Franklin",
+            "slug": "autobiography-of-benjamin-franklin_593",
+            "publication": "2006-12-28T00:00:00.000Z",
+            "ebook_source_id": 17781
+        },
+        {
+            "id": 37985,
+            "title": "David Copperfield",
+            "author": "Charles Dickens",
+            "slug": "david-copperfield_421",
+            "publication": "1996-12-01T00:00:00.000Z",
+            "ebook_source_id": 37990
+        },
+        {
+            "id": 37987,
+            "title": "Don Quixote",
+            "author": "Miguel de Cervantes Saavedra",
+            "slug": "don-quixote_513",
+            "publication": "2004-07-26T23:00:00.000Z",
+            "ebook_source_id": 37992
+        }
+    ],
+    "lists": [
+        {
+            "title": "Classical Antiquity",
+            "contents": [
+                {
+                    "id": 1496,
+                    "title": "The Odyssey / Rendered into English prose for the use of those who cannot read the original",
+                    "author": "Homer",
+                    "slug": "the-odyssey-rendered-into-english-prose-for-the-use-of-those-who-cannot-read-the-original_940",
+                    "publication": "1999-03-31T23:00:00.000Z",
+                    "ebook_source_id": 1496
+                },
+                {
+                    "id": 1853,
+                    "title": "The Poetics of Aristotle",
+                    "author": "Aristotle",
+                    "slug": "the-poetics-of-aristotle_1000",
+                    "publication": "1999-11-01T00:00:00.000Z",
+                    "ebook_source_id": 1853
+                },
+                {
+                    "id": 3010,
+                    "title": "The Confessions of St. Augustine",
+                    "author": "Bishop of Hippo Saint Augustine",
+                    "slug": "the-confessions-of-st-augustine_201",
+                    "publication": "2002-05-31T23:00:00.000Z",
+                    "ebook_source_id": 3010
+                },
+                {
+                    "id": 5926,
+                    "title": "The Iliad",
+                    "author": "Homer",
+                    "slug": "the-iliad_123",
+                    "publication": "2004-06-30T23:00:00.000Z",
+                    "ebook_source_id": 5927
+                },
+                {
+                    "id": 38890,
+                    "title": "Lysistrata",
+                    "author": "Aristophanes",
+                    "slug": "lysistrata_154",
+                    "publication": "2005-03-01T00:00:00.000Z",
+                    "ebook_source_id": 38894
+                }
+            ]
+        },
+        {
+            "title": "Science Fiction",
+            "contents": [
+                {
+                    "id": 21,
+                    "title": "The Time Machine",
+                    "author": "H. G. Wells",
+                    "slug": "the-time-machine_161",
+                    "publication": "2004-10-01T23:00:00.000Z",
+                    "ebook_source_id": 21
+                },
+                {
+                    "id": 26,
+                    "title": "The War of the Worlds",
+                    "author": "H. G. Wells",
+                    "slug": "the-war-of-the-worlds_319",
+                    "publication": "2004-09-30T23:00:00.000Z",
+                    "ebook_source_id": 25
+                },
+                {
+                    "id": 893,
+                    "title": "Anthem",
+                    "author": "Ayn Rand",
+                    "slug": "anthem_196",
+                    "publication": "1998-03-01T00:00:00.000Z",
+                    "ebook_source_id": 893
+                },
+                {
+                    "id": 18348,
+                    "title": "Hall of Mirrors",
+                    "author": "Fredric Brown",
+                    "slug": "hall-of-mirrors_218",
+                    "publication": "2009-08-16T23:00:00.000Z",
+                    "ebook_source_id": 18349
+                },
+                {
+                    "id": 29254,
+                    "title": "2 B R 0 2 B",
+                    "author": "Kurt Vonnegut",
+                    "slug": "2-b-r-0-2-b_499",
+                    "publication": "2007-05-02T23:00:00.000Z",
+                    "ebook_source_id": 29259
+                }
+            ]
+        },
+        {
+            "title": "Religion",
+            "contents": [
+                {
+                    "id": 90,
+                    "title": "The Pilgrim's Progress from this world to that which is to come / Delivered under the similitude of a dream, by John Bunyan",
+                    "author": "John Bunyan",
+                    "slug": "the-pilgrim-s-progress-from-this-world-to-that-which-is-to-come-delivered-under-the-similitude-of-a-dream-by-john-bunyan_49",
+                    "publication": "1994-04-30T23:00:00.000Z",
+                    "ebook_source_id": 90
+                },
+                {
+                    "id": 294,
+                    "title": "The First Book of Adam and Eve",
+                    "author": "Rutherford Hayes Platt",
+                    "slug": "the-first-book-of-adam-and-eve_894",
+                    "publication": "1996-01-01T00:00:00.000Z",
+                    "ebook_source_id": 294
+                },
+                {
+                    "id": 1372,
+                    "title": "Commentary on the Epistle to the Galatians",
+                    "author": "Martin Luther",
+                    "slug": "commentary-on-the-epistle-to-the-galatians_5",
+                    "publication": "1998-12-01T00:00:00.000Z",
+                    "ebook_source_id": 1372
+                },
+                {
+                    "id": 1521,
+                    "title": "The Imitation of Christ",
+                    "author": "à Kempis Thomas",
+                    "slug": "the-imitation-of-christ_265",
+                    "publication": "1999-02-01T00:00:00.000Z",
+                    "ebook_source_id": 1521
+                },
+                {
+                    "id": 3010,
+                    "title": "The Confessions of St. Augustine",
+                    "author": "Bishop of Hippo Saint Augustine",
+                    "slug": "the-confessions-of-st-augustine_201",
+                    "publication": "2002-05-31T23:00:00.000Z",
+                    "ebook_source_id": 3010
+                }
+            ]
+        }
+    ]
+}

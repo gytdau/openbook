@@ -1,8 +1,7 @@
-import SearchBar from "./SearchBar"
-import RandomBooks from "./RandomBooks"
-import Recommendations from "./Recommendations"
-import Footer from "./Footer"
-
+import SearchBar from './SearchBar';
+import RandomBooks from './RandomBooks';
+import Recommendations from './Recommendations';
+import Footer from './Footer';
 
 function Home() {
   return (
@@ -22,13 +21,13 @@ function Home() {
           <SearchBar />
         </div>
         <div className="row">
-          <Recommendations/>
+          <Recommendations />
         </div>
         <div className="footer">
-          <Footer/>
+          <Footer />
         </div>
       </div>
     </>
-  )
+  );
 }
-export default Home
+export default Home;
