@@ -4,6 +4,32 @@ import { Link, useParams } from "react-router-dom";
 import BookNavbar from "./BookNavbar";
 import axios from "axios";
 
+function getFirstChapter(chapters)
+{
+  let keys = Object.keys(chapters);
+  keys = keys.filter(function(value, index, arr)
+  {
+      return value[0];
+  });
+  let counts = new Uint32Array(keys.map(Number)).sort();
+  let chapter = counts[0];
+  let paragraph = chapters[chapter];
+  return [chapter, paragraph]
+}
+
+function getLastChapter(chapters)
+{
+  let keys = Object.keys(chapters);
+  keys = keys.filter(function(value, index, arr)
+  {
+      return value.length < 4;
+  });
+  let counts = new Uint32Array(keys.map(Number)).sort();
+  let chapter = counts.reverse()[0];
+  let paragraph = chapters[chapter];
+  return [chapter, paragraph]
+}
+
 function SimpleView(props) {
 
   let { slug, chapterSlug } = useParams()
@@ -37,7 +63,8 @@ function SimpleView(props) {
           return {chapter: 1, paragraph: 1, chapters: [], action: 1};
 
         case 'restart':
-          return {...state, chapter: 1, paragraph: 1, action: 1};
+          let chapter = getFirstChapter(state.chapters)[0]
+          return {...state, chapter: chapter, paragraph: 1, action: 1};
         case 'update':
           return {...state, chapters: action.chapters};
         default:
@@ -68,8 +95,8 @@ function SimpleView(props) {
     // console.log("Pre-getActiveParagraph", activeChapter);
     if(!(activeChapter.chapter in activeChapter.chapters))
     {
-      let counts = Object.keys(activeChapter.chapters).sort()
-      if(counts.pop() > activeChapter.chapter)
+      let lastChapter = getLastChapter(activeChapter.chapters)[0]
+      if(lastChapter > activeChapter.chapter)
       {
         repeatAction()
       }
@@ -111,7 +138,7 @@ function SimpleView(props) {
       .then((data) =>
       {
         // console.log("data", data)
-        let map = []
+        let map = {}
 
         for (let i = 0; i < data.length; i++)
         {
@@ -124,21 +151,22 @@ function SimpleView(props) {
         }
         // console.log("MAP", map)
         setParagraphs(map);
+        axios.get(`/api/books/chapter/${book['id']}/paragraphs/count`)
+        .then((value) => value.data)
+        .then((limits) =>
+        {
+          // console.log("limits", limits);
+          let limits_map = Object.assign({}, ...limits.map((x) => ({[x.chapter_order]: x.count})));
+          let counts = new Uint32Array(Object.keys(limits_map).map(Number)).sort()
+          let last_chapter = counts.reverse()[0]
+          limits_map.length = last_chapter
+  
+          // console.log("limits_map", limits_map);
+          updateActiveChapter({type: 'update', chapters: limits_map});
+          updateActiveChapter({type: 'restart'})
+        });
       })
 
-      axios.get(`/api/books/chapter/${book['id']}/paragraphs/count`)
-      .then((value) => value.data)
-      .then((limits) =>
-      {
-        // console.log("limits", limits);
-        let limits_map = Object.assign({}, ...limits.map((x) => ({[x.chapter_order]: x.count})));
-        let counts = Object.keys(limits_map).sort()
-        let last_chapter = counts.pop()
-        limits_map.length = last_chapter
-
-        // console.log("limits_map", limits_map);
-        updateActiveChapter({type: 'update', chapters: limits_map});
-      });
 
     })
   }, [slug, setBook])
@@ -165,21 +193,21 @@ function SimpleView(props) {
   });
 
   if (book && activeChapter.chapters.length > 0) {
-    if(book != null && paragraphs.length > activeChapter.chapter)
+    if(book != null && activeChapter.chapter in paragraphs)
     {
       // var doc = new DOMParser().parseFromString(book.chapters[activeChapter.chapter].content, "text/html");
       // var text = doc.body.textContent.replaceAll("\n\n", "\n");
       // console.log("PP", activeChapter, paragraphs)
       return (
           <div className="App" id="#react-scroller">
-            <BookNavbar
+            {/* <BookNavbar
               chapter={paragraphs[activeChapter.chapter][activeChapter.paragraph]}
               book={book}
               // openToc={() => {
               //   setTocOpen(true);
               // }}
               visible={true}
-            />
+            /> */}
 
         <div className="flex-center position-ref full-height">
           <div className="container">
