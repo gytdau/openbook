@@ -274,3 +274,9 @@ class db(object):
     def __exit__(self, exc_type, exc_value, exc_traceback):
         print("DB Exited")
         self.close()
+
+if __name__ == "__main__":
+    from config import config
+    db_connection = config["DB_CONNECTION"]
+    con = db(db_connection)
+    del con
