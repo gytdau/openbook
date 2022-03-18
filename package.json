@@ -7,7 +7,8 @@
     "build-interface": "cd interface/viewer && react-scripts build && mv build ../service/build && cd ../..",
     "build": "npm run build-interface",
     "start": "node interface/service/bin/www",
-    "start-interface": "cd interface/viewer && npm start"
+    "start-interface": "cd interface/viewer && npm start",
+    "test": "cd interface/viewer && npm test"
   },
   "repository": {
     "type": "git",
@@ -19,9 +20,8 @@
     "url": "https://github.com/gytdau/openbook/issues"
   },
   "dependencies": {
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
+    "@testing-library/jest-dom": "^5.16.2",
+    "@testing-library/react": "^12.1.4",
     "axios": "^0.21.1",
     "better-sqlite3": "^7.4.3",
     "cookie-parser": "~1.4.3",
@@ -30,7 +30,7 @@
     "dotenv": "^8.2.0",
     "express": "~4.16.0",
     "http-errors": "~1.6.2",
-    "jade": "~1.11.0",
+    "jade": "^1.9.2",
     "morgan": "~1.9.0",
     "pg": "^8.7.1",
     "react": "^17.0.2",
@@ -39,7 +39,7 @@
     "react-intersection-observer": "^8.32.1",
     "react-modal": "^3.14.3",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^5.0.0",
     "sass": "^1.37.5",
     "web-vitals": "^1.0.1"
   },
