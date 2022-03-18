@@ -15,7 +15,7 @@ const BookNavbar = (props) => {
             <li className="nav-item book-title">
               <span>{props.book.title}</span>
             </li>
-            <li className="nav-item chapter-title" onClick={props.openToc}>
+            <li className="nav-item chapter-title" data-testid="open-toc" onClick={props.openToc}>
               <div className="nav-link">
                 <span>{props.chapter ? props.chapter.title : '...'}</span>
                 <span>

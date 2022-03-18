@@ -14,7 +14,7 @@ const TOC = (props) => {
           <div className="modal-header">
             Table of Contents
 
-            <div className="btn btn-close" onClick={props.close} />
+            <div className="btn btn-close" data-testid="close-toc" onClick={props.close} />
           </div>
 
           <div className="modal-body m-0">
