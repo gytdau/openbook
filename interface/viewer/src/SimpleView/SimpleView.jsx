@@ -45,9 +45,9 @@ function SimpleView(props) {
         break;
 
       case 'previous':
-
-        if (state.paragraph - 1 >= 0) return { ...state, paragraph: state.paragraph - 1, action: -1 };
-        if (state.chapter - 1 >= 0) {
+        const firstChapter = getFirstChapter(state.chapters)[0]
+        if (state.paragraph - 1 >= 1) return { ...state, paragraph: state.paragraph - 1, action: -1 };
+        if (state.chapter - 1 >= firstChapter) {
           return {
             ...state, paragraph: state.chapters[state.chapter - 1] - 1, chapter: state.chapter - 1, action: -1,
           };
