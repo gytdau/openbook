@@ -170,9 +170,6 @@ function SimpleView(props) {
 
   if (book && activeChapter.chapters.length > 0) {
     if (book != null && activeChapter.chapter in paragraphs) {
-      // var doc = new DOMParser().parseFromString(book.chapters[activeChapter.chapter].content, "text/html");
-      // var text = doc.body.textContent.replaceAll("\n\n", "\n");
-      // console.log("PP", activeChapter, paragraphs)
       let currentChapter = getActiveParagraph()
       return (
         <div className="App" id="#react-scroller">
