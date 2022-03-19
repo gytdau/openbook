@@ -6,7 +6,7 @@ import BookNavbar from '../Book/BookNavbar';
 
 function getFirstChapter(chapters) {
   let keys = Object.keys(chapters);
-  keys = keys.filter((value, index, arr) => value[0]);
+  keys = keys.filter((value, index, arr) => value.length < 4);
   const counts = new Uint32Array(keys.map(Number)).sort();
   const chapter = counts[0];
   const paragraph = chapters[chapter];
