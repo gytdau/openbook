@@ -23,6 +23,10 @@ const BookNavbar = (props) => {
                 </span>
               </div>
             </li>
+            {props.paragraph_order ?
+            <li className="nav-item paragraph-order">
+                <span>{props.paragraph_order}</span>
+            </li> : null}
           </ul>
         </div>
       </div>

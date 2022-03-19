@@ -102,7 +102,7 @@ function SimpleView(props) {
       return;
     }
 
-    return paragraphs[activeChapter.chapter][activeChapter.paragraph].content;
+    return paragraphs[activeChapter.chapter][activeChapter.paragraph];
   }
 
   useEffect(() => {
@@ -173,21 +173,23 @@ function SimpleView(props) {
       // var doc = new DOMParser().parseFromString(book.chapters[activeChapter.chapter].content, "text/html");
       // var text = doc.body.textContent.replaceAll("\n\n", "\n");
       // console.log("PP", activeChapter, paragraphs)
+      let currentChapter = getActiveParagraph()
       return (
         <div className="App" id="#react-scroller">
-          {/* <BookNavbar
-              chapter={paragraphs[activeChapter.chapter][activeChapter.paragraph]}
+          <BookNavbar
+              chapter={currentChapter}
+              paragraph_order={currentChapter.paragraph_order}
               book={book}
               // openToc={() => {
               //   setTocOpen(true);
               // }}
               visible={true}
-            /> */}
+            />
 
           <div className="flex-center position-ref full-height">
             <div className="container">
               <div className="content">
-                <h3 dangerouslySetInnerHTML={{ __html: getActiveParagraph() }} />
+                <h3 dangerouslySetInnerHTML={{ __html: currentChapter.content }} />
               </div>
             </div>
           </div>
