@@ -194,10 +194,20 @@ function SimpleView(props) {
         </div>
       );
     }
-  } else {
-    return null;
   }
-  return null;
+  return (
+  <div className="App" id="#react-scroller">
+    <div className="flex-center position-ref full-height">
+      <div className="container">
+          <div className="content">
+            <div class="spinner-border" role="status">
+              <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  );
 }
 
 export default SimpleView;
