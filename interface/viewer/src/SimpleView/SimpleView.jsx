@@ -3,7 +3,6 @@ import { useEffect, useState, useReducer } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import BookNavbar from '../Book/BookNavbar';
-import { strict as assert } from 'assert';
 
 function getFirstChapter(chapters) {
   let keys = Object.keys(chapters);
@@ -30,7 +29,6 @@ function getTextColour(colour)
   {
     startIndex = 1
   }
-  assert(colour.length == 6 + startIndex)
   let R = parseInt(colour.substr(startIndex + 0, 2), 16)
   let G = parseInt(colour.substr(startIndex + 2, 2), 16)
   let B = parseInt(colour.substr(startIndex + 4, 2), 16)
