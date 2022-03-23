@@ -6,14 +6,18 @@ from config import config
 bucket_name = config["BUCKET_NAME"]
 db_connection = config["DB_CONNECTION"]
 
-def test_event(event, context):
-    return {
-        'statusCode': 202,
-        'body': json.dumps({'type': type(event).__name__, 'event': event}),
-    }
-
 
 def UpdateBooks(event, context):
+    """Updates books given a list of dictionaries of the book id and the source id. Invokes the update_book function
+    for each book.
+
+    Arguments:
+        event {dict} -- A dictionary containing the list of dictionaries of the book id and the source id.
+        context {object} -- The Lambda context object.
+
+    Returns:
+        dict -- A dictionary containing the status of the update.
+    """
     # body = {"data": [{"book_id": 1, "ebook_source_id": 1}, ...]}
 
     data = event['data']
@@ -37,6 +41,14 @@ def UpdateBooks(event, context):
 
 
 def UpdateBook(event, context):
+    """Updates a book given a dictionary of the book id and the source id.
+
+    Arguments:
+        event {dict} -- A dictionary containing the book id and the source id.
+        context {object} -- The Lambda context object.
+
+    Returns:
+        dict -- A dictionary containing the status of the update."""
     book_id = event['book_id']
     ebook_source_id = event['ebook_source_id']
 
@@ -77,6 +89,15 @@ def UpdateBook(event, context):
 
 
 def DownloadBooks(event, context):
+    """Downloads books given a list of dictionaries of the gutenberg id and the source id. Invokes the download_book function
+    for each book.
+
+    Arguments:
+        event {dict} -- A dictionary containing the list of dictionaries of the gutenberg id and the source id.
+        context {object} -- The Lambda context object.
+
+    Returns:
+        dict -- A dictionary containing the status of the invocation."""
     # body = {"data": [{"gutenberg_id": 1}, ...]}
 
     data = event['data']
@@ -108,6 +129,14 @@ class NonCloseableBufferedReader(BufferedReader):
 
 
 def DownloadBook(event, context):
+    """Downloads a book given a dictionary of the gutenberg id and the source id.
+
+    Arguments:
+        event {dict} -- A dictionary containing the gutenberg id and the source id.
+        context {object} -- The Lambda context object.
+
+    Returns:
+        dict -- A dictionary containing the status of the invocation."""
     gutenberg_id = event['gutenberg_id']
 
     from db import db
@@ -167,6 +196,14 @@ def DownloadBook(event, context):
 
 
 def DownloadRangeBooks(event, context):
+    """Downloads a range of books, given a start and end gutenberg id. Invokes the download_book function for each book.
+
+    Arguments:
+        event {dict} -- A dictionary containing the start and end gutenberg id.
+        context {object} -- The Lambda context object.
+
+    Returns:
+        dict -- A dictionary containing the status of the invocation."""
     # body = {"start": n, "end": m}
 
     start_id = event['start']

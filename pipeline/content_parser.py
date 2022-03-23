@@ -119,6 +119,10 @@ class ContentParser(object):
         self.swap_links_in_parsed_chapters()
 
     def swap_links_in_parsed_chapters(self):
+        """Update all <a> tags in the book to point to the new location of their href when they are parsed from the epub file into our own format.
+
+        Returns:
+            None"""
         for chapter in self.raw_chapters:
             chapter: RawChapter
             items = chapter.content.find_all("a")
@@ -137,6 +141,10 @@ class ContentParser(object):
                 item.attrs["href"] = new_src
 
     def swap_images_in_parsed_chapters(self):
+        """Update all <img> tags in the book to point to the new location of their src when they are parsed from the epub file into our own format.
+
+        Returns:
+            None"""
         for chapter in self.raw_chapters:
             chapter: RawChapter
             items = chapter.content.find_all(["img", "image"])
@@ -150,6 +158,11 @@ class ContentParser(object):
                 item.attrs["src"] = f"/api/books/image/{new_src}"
 
     def convert_raws_to_output(self):
+        """Convert the raw chapters into the chapters we want to output. The raw chapters are temporary and will be discarded.
+        Appends the new chapters to self.chapters.
+
+        Returns:
+            None"""
         for chapter in self.raw_chapters:
             chapter: RawChapter
             title = titlecase_chapter(chapter.title)
@@ -162,6 +175,10 @@ class ContentParser(object):
             self.chapters.append(new_chapter)
 
     def parse_chapters(self):
+        """Parses through each file, and each navpoint in each file, to seperate them out into their own chapters. A chapter is defined as the content in between two navpoints, including the first navpoint.
+
+        Returns:
+            None"""
         for file_id in self.file_order:
             file = self.html_files[file_id]()
 
@@ -209,9 +226,24 @@ class ContentParser(object):
             self.push_carry_over()
 
     def title_to_slug(self, title):
+        """Converts a title to a slug. This is used to create a url for the chapter.
+
+        Args:
+            title (str): The title of the chapter.
+
+            Returns:
+                str: The slug of the chapter."""
         return slugify(title)
 
     def add_ids_to_location_map(self, chapter: RawChapter, filename):
+        """For each element in a chapter which has an id, add it to the location map. This is to preserve any links that link to that id.
+
+        Args:
+            chapter (RawChapter): The chapter to add the ids from.
+            filename (str): The original filename of the page to map from.
+
+        Returns:
+            None"""
         content = chapter.content
         tags_with_an_id = content.find_all(id=True)
         filename = filename.split("/")[-1]
@@ -223,6 +255,13 @@ class ContentParser(object):
         self.location_mapping[filename] = title_to_slug(chapter.title)
 
     def add_chapter(self, chapter: RawChapter):
+        """Adds a raw chapter to the book.
+
+        Args:
+            chapter (RawChapter): The chapter to add.
+
+        Returns:
+            None"""
         new_chapter = RawChapter(
             title=chapter.title,
             content=chapter.content,
@@ -232,6 +271,15 @@ class ContentParser(object):
         self.current_order += 1
 
     def carry_over(self, title, to_merge, filename):
+        """Merges the content of a chapter into the carry over.
+
+        Args:
+            title (str): The title of the chapter.
+            to_merge (bs4.element.Tag): The content of the chapter.
+            filename (str): The original filename of the page to map from.
+
+        Returns:
+            None"""
         if self.chapter_carry_over is None:
             self.chapter_carry_over = RawChapter(
                 title=title, content=to_merge)
@@ -243,6 +291,10 @@ class ContentParser(object):
         self.add_ids_to_location_map(self.chapter_carry_over, filename)
 
     def push_carry_over(self):
+        """Pushes the carry over into the book as its own chapter.
+
+        Returns:
+            None"""
         if self.chapter_carry_over.title is None:
             self.chapter_carry_over.title = "Other Content"
 
@@ -250,6 +302,15 @@ class ContentParser(object):
         self.chapter_carry_over = None
 
     def find_headers(self, file: BeautifulSoup, navpoint_id, navpoints):
+        """Finds the header and next header of a file. In between the two headers, we have the content of the chapter.
+
+        Args:
+            file (bs4.element.Tag): The file to find the headers in.
+            navpoint_id (int): The id of the navpoint we are currently on.
+            navpoints (list): The list of navpoints in the file.
+
+        Returns:
+            tuple: A tuple containing the body, header, and next_header of the file."""
         navpoint = navpoints[navpoint_id]
 
         next_navpoint = None

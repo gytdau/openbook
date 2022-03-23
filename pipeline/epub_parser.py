@@ -55,6 +55,11 @@ class EpubParser(object):
         return sha256.hexdigest()
 
     def parse(self):
+        """Main function which parses the EPUB file and populates the class attributes with the resulting data.
+
+        Returns:
+            EpubParser -- The current instance of the class"""
+
         print(f"Processing: {self.filename}")
 
         if not self.can_be_unzipped():
@@ -83,6 +88,15 @@ class EpubParser(object):
         return self
 
     def set_metadata_from_xml(self, content: BeautifulSoup):
+        """Sets the metadata from the EPUB's container.xml file.
+
+        Arguments:
+            content {BeautifulSoup} -- The BeautifulSoup representation of the container.xml file.
+
+        Returns:
+            None
+        """
+
         self.title = self._try_get_text(content, "dc:title")
         self.description = self._try_get_text(content, "dc:description")
         self.author = self._try_get_text(content, "dc:creator")
@@ -90,6 +104,14 @@ class EpubParser(object):
         self.slug = f'{slugify(self.title)}_{random.randint(0, 1000)}'
 
     def process_navpoints(self, ncx: BeautifulSoup):
+        """Processes the navpoints in the EPUB's NCX file.
+
+        Arguments:
+            ncx {BeautifulSoup} -- The BeautifulSoup representation of the NCX file.
+
+        Returns:
+            None
+        """
         navpoints = ncx.find_all("navpoint")
 
         # sort them by playorder
@@ -114,6 +136,12 @@ class EpubParser(object):
         self.add_navpoint_to_start_of_book()
 
     def add_navpoint_to_start_of_book(self):
+        """Adds a navpoint to the start of the book. This is used in case the book doesn't have a navpoint in the
+        beginning of the book.
+
+        Returns:
+            None
+        """
         first_html_page = self.html_file_order[0]
         new_navpoint = Navpoint(title=self.title, selector=None)
 
@@ -126,9 +154,22 @@ class EpubParser(object):
             self.navpoints[first_html_page] = [new_navpoint]
 
     def can_be_unzipped(self):
+        """Checks if the EPUB file can be unzipped. Correctly formatted EPUB files should be able to be unzipped.
+
+        Returns:
+            bool -- True if the EPUB file can be unzipped, False otherwise.
+        """
         return not self.ezip.testzip()
 
     def get_file_content(self, filename):
+        """Gets the content of a file in the EPUB file.
+
+        Arguments:
+            filename {str} -- The name of the file to get the content of.
+
+        Returns:
+            bytes -- The content of the file.
+        """
         data = None
         if filename.startswith("/"):
             filename = filename[1:]
@@ -137,12 +178,32 @@ class EpubParser(object):
         return data
 
     def get_file_content_xml(self, filename):
+        """Gets the content of a file in the EPUB file and parses it as XML.
+
+        Arguments:
+            filename {str} -- The name of the file to get the content of.
+
+        Returns:
+            BeautifulSoup -- The BeautifulSoup representation of the file's content.
+        """
         if filename.startswith("/"):
             filename = filename[1:]
         with self.ezip.open(filename) as f:
             return BeautifulSoup(f, features="lxml")
 
     def populate_html_page_list(self, content: BeautifulSoup, content_directory_path):
+        """Populates the html_file_order and html_files attributes with the content of the EPUB's HTML files. The
+        html_file_order attribute is a list of the filenames of the HTML files in the order they appear in the EPUB.
+        The html_files attribute is a dictionary of the filenames of the HTML files and their BeautifulSoup
+        representations.
+
+        Arguments:
+            content {BeautifulSoup} -- The BeautifulSoup representation of the container.xml file.
+            content_directory_path {str} -- The path to the directory which contains the EPUB's content.
+
+        Returns:
+            None
+        """
         spine_tag = content.find('spine')
         for spine_item_tag in spine_tag.children:
             spine_item_tag: BeautifulSoup
@@ -159,12 +220,22 @@ class EpubParser(object):
                 continue
 
             full_path = join_path(content_directory_path, filename)
-            file_content = lambda full_path=full_path: self.get_file_content_xml(full_path)
+            def file_content(
+                full_path=full_path): return self.get_file_content_xml(full_path)
 
             self.html_files[filename] = file_content
             self.html_file_order.append(filename)
 
     def populate_image_list(self, content: BeautifulSoup, content_directory_path):
+        """Populates the image_files attribute with the content of the EPUB's images. The image_files attribute is a
+        dictionary of the filenames of the images and the bytes of the images.
+
+        Arguments:
+            content {BeautifulSoup} -- The BeautifulSoup representation of the container.xml file.
+            content_directory_path {str} -- The path to the directory which contains the EPUB's content.
+
+        Returns:
+            None"""
         manifest_tag = content.find('manifest')
         for manifest_item_tag in manifest_tag.children:
             manifest_item_tag: BeautifulSoup
@@ -178,7 +249,8 @@ class EpubParser(object):
 
             filename = manifest_item_tag.attrs['href']
             full_path = join_path(content_directory_path, filename)
-            file_content = lambda full_path=full_path: self.get_file_content(full_path)
+            def file_content(
+                full_path=full_path): return self.get_file_content(full_path)
 
             self.image_files[filename] = file_content
 

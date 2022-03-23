@@ -58,3 +58,88 @@ Lambda also offers a built-in monitoring dashboard that can be used to monitor t
 The backend is a Heroku dyno that is a thin wrapper to execute queries on the database and serve data to the front end. It relays information from Amazon RDS, which uses Postgres to store our book data, and S3 for images.
 
 The backend was built using Express.js. Express is a lightweight web application framework that provides a set of features for web and mobile applications. These features include routing, session management, and template engines. ORMs like Sequelize can also be used with Express. However, in our judgement, an ORM was too heavyweight to be necessary for our application, and we opted for interacting with Postgres directly through the `pg` module.
+
+# Database
+
+```
+@startuml
+entity ebook_source {
+    id INTEGER PRIMARY KEY
+    source text
+    source_id text
+    s3_path text
+    hash_sha256 text
+}
+
+entity books {
+    id INTEGER PRIMARY KEY
+    ebook_source_id INTEGER
+    title text
+    author text
+    slug text
+    version INTEGER
+    description text
+    publication DATE
+}
+
+entity chapters {
+    id INTEGER PRIMARY KEY
+    book_id INTEGER
+    title text
+    slug text
+    content text
+    content_stripped text
+    chapter_order integer
+    version INTEGER
+}
+
+entity paragraphs {
+    id INTEGER PRIMARY KEY
+    chapters_id INTEGER
+    paragraph_order integer
+    content text
+    colour text
+    version INTEGER
+}
+
+entity images {
+    id INTEGER PRIMARY KEY
+    book_id integer
+    location text
+    content bytea
+    format text
+    hint text
+    version INTEGER
+}
+
+ebook_source <|- books
+books <|- chapters
+chapters <|- paragraphs
+books <|- images
+@enduml
+```
+
+Database adapter:
+
+```
+@startuml
+class Database {
+    {field}+con : psycopg2.extensions.connection
+    {field}+version : int
+    +drop_tables()
+    +get_book_by_ebook_source_id(ebook_source_id : int)
+    +get_books_count()
+    +add_book(ebook_source_id : int, title : str, author : str, slug : str, description : str, publication : date)
+    +get_all_book_source()
+    +get_book_source_by_hash(hash_sha256 : str)
+    +get_book_source_by_id(ebook_source_id : int)
+    +add_book_source(source : str, source_id : str, s3_path : str, hash_sha256 : str)
+    +add_chapters(book_id : int, chapters : list)
+    +add_images(book_id : int, images : list)
+    +get_featured_books()
+    +get_featured_books_paragraphs()
+    +update_paragraphs_colour(id : int, colour : str)
+    +close()
+}
+@enduml
+```
