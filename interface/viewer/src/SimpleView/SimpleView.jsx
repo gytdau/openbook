@@ -3,6 +3,7 @@ import { useEffect, useState, useReducer } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import BookNavbar from '../Book/BookNavbar';
+import { strict as assert } from 'assert';
 
 function getFirstChapter(chapters) {
   let keys = Object.keys(chapters);
@@ -20,6 +21,23 @@ function getLastChapter(chapters) {
   const chapter = counts.reverse()[0];
   const paragraph = chapters[chapter];
   return [chapter, paragraph];
+}
+
+function getTextColour(colour)
+{
+  let startIndex = 0
+  if(colour[0] == '#')
+  {
+    startIndex = 1
+  }
+  assert(colour.length == 6 + startIndex)
+  let R = parseInt(colour.substr(startIndex + 0, 2), 16)
+  let G = parseInt(colour.substr(startIndex + 2, 2), 16)
+  let B = parseInt(colour.substr(startIndex + 4, 2), 16)
+
+  let brightness  = (0.299 * R + 0.587 * G + 0.114 * B) / 255
+
+  return brightness > 0.5 ? 'black' : 'white'
 }
 
 function SimpleView(props) {
@@ -171,6 +189,17 @@ function SimpleView(props) {
   if (book && activeChapter.chapters.length > 0) {
     if (book != null && activeChapter.chapter in paragraphs) {
       let currentChapter = getActiveParagraph()
+      let colour = null;
+      if(currentChapter.colour == null)
+      {
+        let colours = ["#ffecb3", "#c8e6c9", "#bbdefb", "#e1bee7", "#d7ccc8", "#f5f5f5"]
+        colour = colours[currentChapter.paragraph_order % colours.length]
+      }
+      else
+      {
+        colour = currentChapter.colour
+      }
+      let textColour = getTextColour(colour)
       return (
         <div className="App" id="#react-scroller">
           <BookNavbar
@@ -183,7 +212,7 @@ function SimpleView(props) {
               visible={true}
             />
 
-          <div className="flex-center position-ref full-height">
+          <div className="flex-center position-ref full-height smooth-colour-transition" style={{backgroundColor: colour, color: textColour}}>
             <div className="container">
               <div className="content">
                 <h3 dangerouslySetInnerHTML={{ __html: currentChapter.content }} />
