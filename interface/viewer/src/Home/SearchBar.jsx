@@ -3,17 +3,18 @@ import { useHistory } from 'react-router-dom';
 
 function SearchBar(props) {
   const [query, setQuery] = useState(props.query);
+  let [searchUrl, _] = useState(props.searchUrl);
   const history = useHistory();
   const submit = () => {
     if (!query) {
       alert('Type in a search query to continue.');
       return;
     }
-    history.push(`/search/${query}`);
+    history.push(`/${searchUrl}/${query}`);
   };
 
   return (
-    <div className="search-bar">
+    <div className={ props.parentClassName  ? props.parentClassName : "search-bar" }>
       <form>
         <div className="input-group border-secondary">
           <input
@@ -27,9 +28,9 @@ function SearchBar(props) {
                 event.preventDefault();
               }
             }}
-            className="form-control border-0"
+            className={ props.inputClassName ? props.inputClassName : "form-control border-0" }
             type="text"
-            placeholder="Search books"
+            placeholder={ props.placeholder ? props.placeholder : "Search books" }
             id="example-search-input"
           />
           <span className="input-group-append">

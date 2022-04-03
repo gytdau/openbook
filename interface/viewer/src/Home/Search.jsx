@@ -38,7 +38,7 @@ function Search() {
     <div className="container">
       <div className="row">
         <div className="search">
-          <SearchBar query={query} />
+          <SearchBar searchUrl="search" query={query} />
         </div>
       </div>
       <div className="row">
