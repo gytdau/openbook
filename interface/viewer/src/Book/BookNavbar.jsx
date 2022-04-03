@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import SearchBar from "../Home/SearchBar"
 
 const BookNavbar = (props) => {
   if (!props.visible) {
@@ -28,6 +29,7 @@ const BookNavbar = (props) => {
                 <span>{props.paragraph_order}</span>
             </li> : null}
           </ul>
+          <SearchBar placeholder="Search Chapters" searchUrl={`book-search/${props.book.slug}`} parentClassName="d-flex" inputClassName="form-control me-2" />
         </div>
       </div>
     </nav>

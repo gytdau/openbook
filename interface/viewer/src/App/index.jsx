@@ -6,6 +6,7 @@ import Catalog from '../Home/Catalog';
 import Home from '../Home/Home';
 import Search from '../Home/Search';
 import SimpleView from '../SimpleView/SimpleView';
+import BookSearch from "../BookSearch/BookSearch";
 
 function App() {
   return (
@@ -16,6 +17,9 @@ function App() {
         </Route>
         <Route path="/search/:query" exact>
           <Search />
+        </Route>
+        <Route path="/book-search/:bookSlug/:query/" exact>
+          <BookSearch />
         </Route>
         <Route path="/catalog">
           <Catalog />
