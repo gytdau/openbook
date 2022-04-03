@@ -125,7 +125,7 @@ class db(object):
         RETURNS trigger AS $$
         BEGIN
             NEW.content_stripped = html_strip(NEW.content);
-            NEW.searchable_tsvector = to_tsvector('english', coalesce(NEW.content_stripped,''));
+            NEW.searchable_tsvector = to_tsvector('english', (select string_agg(txt, ' ') from unnest(string_to_array(coalesce(NEW.content_stripped,''), ' ')) with ordinality as tmp(txt) where length(txt) < 20))
         RETURN NEW;
         END$$ LANGUAGE 'plpgsql';''')
 
