@@ -52,7 +52,7 @@ class db(object):
             FOREIGN KEY (book_id) REFERENCES books (id),
             CONSTRAINT unique_chapter_version UNIQUE(book_id, slug, chapter_order, version)
         )''')
-        cur.execute('''CREATE INDEX IF NOT EXIST searchable_idx
+        cur.execute('''CREATE INDEX IF NOT EXISTS searchable_idx
             ON chapters USING GIN (searchable_tsvector);''')
         cur.execute('''CREATE TABLE IF NOT EXISTS paragraphs (
             id SERIAL PRIMARY KEY,
