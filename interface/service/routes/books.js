@@ -59,9 +59,19 @@ router.get('/image/:fileLocation', async (req, res, next) => {
 
 router.get('/chapter/:book_id/paragraphs/count', async (req, res, next) => {
   try {
-    const result = await pool.query(`select paragraphs.chapters_id, chapters.chapter_order, CAST(count(paragraphs.*) as integer) from paragraphs
-      LEFT JOIN chapters ON chapters.id = paragraphs.chapters_id WHERE chapters.book_id = $1 group by chapters_id, chapter_order`, [
+    const chapters_qry = await pool.query(`SELECT id, book_id, title, slug FROM chapters WHERE chapters.book_id = $1 order by chapter_order`, [
       req.params.book_id,
+    ]);
+    const chapters = chapters_qry.rows;
+    var chapters_id = []
+    chapters.forEach(chapter => {
+      chapters_id.push(chapter.id)
+    });
+    const result = await pool.query(`SELECT paragraphs.chapters_id, chapters.chapter_order, CAST(count(paragraphs.*) as integer) FROM paragraphs
+      LEFT JOIN chapters ON chapters.id = paragraphs.chapters_id
+      where chapters_id = ANY($1)
+      group by chapters_id, chapter_order`, [
+        chapters_id,
     ]);
     const chapter = result.rows;
     res.json(chapter);
@@ -73,9 +83,19 @@ router.get('/chapter/:book_id/paragraphs/count', async (req, res, next) => {
 
 router.get('/chapter/:book_id/paragraphs', async (req, res, next) => {
   try {
-    const result = await pool.query(`SELECT paragraphs.id, paragraph_order, paragraphs.chapters_id, chapter_order, book_id, paragraphs.colour, title, slug, paragraphs.content FROM paragraphs
-      LEFT JOIN chapters ON chapters.id = paragraphs.chapters_id WHERE chapters.book_id = $1 order by chapter_order, paragraph_order`, [
+    const chapters_qry = await pool.query(`SELECT id, book_id, title, slug FROM chapters WHERE chapters.book_id = $1 order by chapter_order`, [
       req.params.book_id,
+    ]);
+    const chapters = chapters_qry.rows;
+    var chapters_id = []
+    chapters.forEach(chapter => {
+      chapters_id.push(chapter.id)
+    });
+    const result = await pool.query(`SELECT paragraphs.id, paragraph_order, paragraphs.chapters_id, chapter_order, book_id, paragraphs.colour, title, slug, paragraphs.content FROM paragraphs
+      LEFT JOIN chapters ON chapters.id = paragraphs.chapters_id
+      where chapters_id = ANY($1)
+      order by chapter_order, paragraph_order`, [
+        chapters_id,
     ]);
     const chapter = result.rows;
     res.json(chapter);
