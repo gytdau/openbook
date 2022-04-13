@@ -232,7 +232,7 @@ class db(object):
                       16643, 1250, 36, 35, 29720, 21279, 6130, 1727, 3296, 1974, 7700, 3296, 131, 398, 1653, 1549]
         source_ids = [f"\'pg{x}-images.epub\'" for x in source_ids]
         cur.execute(
-            f'''SELECT books.title, books.author,
+            f'''SELECT books.id, books.title, books.author,
        LEFT(chapters.content_stripped, 500) AS sample
              FROM
             ebook_source
