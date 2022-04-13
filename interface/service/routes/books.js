@@ -59,7 +59,7 @@ router.get('/image/:fileLocation', async (req, res, next) => {
 
 router.get('/chapter/:book_id/paragraphs/count', async (req, res, next) => {
   try {
-    const chapters_qry = await pool.query(`SELECT id, book_id, title, slug FROM chapters WHERE chapters.book_id = $1 order by chapter_order`, [
+    const chapters_qry = await pool.query(`SELECT id FROM chapters WHERE chapters.book_id = $1`, [
       req.params.book_id,
     ]);
     const chapters = chapters_qry.rows;
@@ -73,8 +73,8 @@ router.get('/chapter/:book_id/paragraphs/count', async (req, res, next) => {
       group by chapters_id, chapter_order`, [
         chapters_id,
     ]);
-    const chapter = result.rows;
-    res.json(chapter);
+    const paragraphs = result.rows;
+    res.json(paragraphs);
   } catch (error) {
     process.stdout.write(`${error}\n`);
     res.sendStatus(400);
@@ -83,7 +83,7 @@ router.get('/chapter/:book_id/paragraphs/count', async (req, res, next) => {
 
 router.get('/chapter/:book_id/paragraphs', async (req, res, next) => {
   try {
-    const chapters_qry = await pool.query(`SELECT id, book_id, title, slug FROM chapters WHERE chapters.book_id = $1 order by chapter_order`, [
+    const chapters_qry = await pool.query(`SELECT id FROM chapters WHERE chapters.book_id = $1`, [
       req.params.book_id,
     ]);
     const chapters = chapters_qry.rows;
@@ -97,8 +97,8 @@ router.get('/chapter/:book_id/paragraphs', async (req, res, next) => {
       order by chapter_order, paragraph_order`, [
         chapters_id,
     ]);
-    const chapter = result.rows;
-    res.json(chapter);
+    const paragraphs = result.rows;
+    res.json(paragraphs);
   } catch (error) {
     process.stdout.write(`${error}\n`);
     res.sendStatus(400);
