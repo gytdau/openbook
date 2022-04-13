@@ -112,8 +112,7 @@ function BookView(props) {
                 <div className="title-well__details">
                   {book.author ? (
                     <div className="detail">
-                      by
-                      {book.author}
+                      by {book.author}
                     </div>
                   ) : null}
                   <div className="detail">Published by Project Gutenberg</div>
