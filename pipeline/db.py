@@ -242,7 +242,7 @@ class db(object):
     def get_featured_books(self):
         cur = self.con.cursor()
         source_ids = [1342, 1232, 1727, 2554, 3207, 20203, 996, 41, 766, 3296, 1399, 2680, 779,
-                      16643, 1250, 36, 35, 29720, 21279, 6130, 1727, 3296, 1974, 7700, 3296, 131, 398, 1653, 1549]
+                      16643, 1250, 36, 35, 29720, 21279, 6130, 1727, 3296, 1974, 7700, 3296, 131, 398, 1653, 1549, 11, 84, 469, 1661, 2701]
         source_ids = [f"\'pg{x}-images.epub\'" for x in source_ids]
         cur.execute(
             f'''SELECT books.id, books.title, books.author,
