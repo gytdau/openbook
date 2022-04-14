@@ -130,6 +130,7 @@ function BookView(props) {
                   ) : null}
                   <div className="detail">Published by Project Gutenberg</div>
                   <div className="detail">{getCategoryLinks(categories)}</div>
+                  <div className="detail"><Link to={`/immersive/${book.slug}/${chapterSlug}`}>Start Immersive Mode</Link></div>
                 </div>
               </div>
             </div>
