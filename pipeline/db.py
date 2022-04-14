@@ -239,6 +239,18 @@ class db(object):
                 (book_id, image.location, image.content(), image.format, self.version))
         self.con.commit()
 
+
+    def add_category(self, name):
+        cur = self.con.cursor()
+        cur.execute("INSERT INTO category(name) values ('%s') ON CONFLICT DO NOTHING;" (name,))
+        self.con.commit()
+
+    def add_book_category(self, book_id, category_name):
+        cur = self.con.cursor()
+        cur.execute("INSERT INTO books_category(book_id, category_id) SELECT %s as book_id, id as category_id FROM category where name = '%s' ON CONFLICT DO NOTHING;"
+                (book_id, category_name))
+        self.con.commit()
+
     def get_featured_books(self):
         cur = self.con.cursor()
         source_ids = [1342, 1232, 1727, 2554, 3207, 20203, 996, 41, 766, 3296, 1399, 2680, 779,

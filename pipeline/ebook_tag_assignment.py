@@ -54,7 +54,7 @@ Categories:'''
     )
     return response.choices[0].text
 
-def get_books_from_db():
+def update_book_classification():
     with db(db_connection, create_tables=False) as con:
         books = con.get_featured_books()
         # print(books)
@@ -63,8 +63,13 @@ def get_books_from_db():
             classifications = classify_text(book[1], book[2], book[3]) 
 
             print(f"#{book[0]} {book[1]}, {book[2]}): {classifications}")
+            for cat in classifications.split(","):
+                cat = cat.strip()
+                id = book[0]
+                con.add_category(cat)
+                con.add_book_category(id, cat)
 
             
 
 # print(classify_text("Moby Dick; Or, The Whale", "Herman Melville", "CHAPTER 1. Loomings.Call me Ishmael. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world. It is a way I have of driving off the spleen and regulating the circulation."))
-get_books_from_db()
+update_book_classification()
