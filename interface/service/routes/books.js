@@ -54,7 +54,7 @@ router.get('/category/get/:ids', async (req, res, next) => {
 router.get('/categories/get', async (req, res, next) => {
   try {
     const categories = await pool.query(
-      `SELECT * FROM category;`,
+      `SELECT * FROM category  ORDER BY name;`,
     );
     res.json(categories.rows);
   } catch (error) {
