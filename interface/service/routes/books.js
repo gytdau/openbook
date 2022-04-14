@@ -206,11 +206,11 @@ router.get('/book-search/:query/:search', async (req, res, next) => {
         title,
         slug,
         ts_headline('english', content_stripped, to_tsquery($1), 'MaxWords=50, MinWords=30, MaxFragments=3, FragmentDelimiter=" [....] "') AS Highlights,
-        ts_rank_cd(textsearchable_index_col, to_tsquery($2)) AS rank
+        ts_rank_cd(searchable_tsvector, to_tsquery($2)) AS rank
       FROM
         chapters
       WHERE
-        textsearchable_index_col @@ to_tsquery($3)
+        searchable_tsvector @@ to_tsquery($3)
       ORDER BY rank DESC
       LIMIT 100;
       `,
