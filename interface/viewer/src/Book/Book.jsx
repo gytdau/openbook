@@ -7,6 +7,7 @@ function Book() {
   const { slug, chapterSlug } = useParams();
 
   const [book, setBook] = useState(null);
+  const [categories, setCategories] = useState(null);
 
   useEffect(() => {
     axios.get(`/api/books/get/${slug}`).then((value) => {
@@ -14,13 +15,19 @@ function Book() {
     });
   }, [slug, setBook]);
 
-  if (book == null) {
+  useEffect(() => {
+    axios.get(`/api/books/get/${slug}/categories`).then((value) => {
+      setCategories(value.data);
+    });
+  }, [slug, setCategories]);
+
+  if (book == null || categories == null) {
     return <p>Loading</p>;
   }
   if (chapterSlug == null) {
     return <Redirect to={`${slug}/${book.chapters[0].slug}`} />;
   }
-  return <BookView book={book} chapterSlug={chapterSlug} />;
+  return <BookView book={book} chapterSlug={chapterSlug} categories={categories} />;
 }
 
 export default Book;

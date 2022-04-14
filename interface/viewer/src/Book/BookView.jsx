@@ -17,8 +17,21 @@ function getChapterFromSlug(book, chapterSlug) {
   return book.chapters[0];
 }
 
+function getCategoryLinks(categories)
+{
+  if(categories == null || categories.length == 0)
+    return <></>
+
+  let ids = categories.map(function(category) { return category.id });
+  let link = (<><Link to={`/category/${ids}`}>Categories:</Link><span> </span></>)
+
+  return [link, ...categories.map((category) =>
+     (<Link to={`/category/${category.id}`}>{category.name}</Link>)
+  ).reduce((prev, curr) => [prev, ', ', curr])]
+}
+
 function BookView(props) {
-  const { book, chapterSlug } = props;
+  const { book, chapterSlug, categories} = props;
   const [renderedChapters, setRenderedChapters] = useState([]);
   const [visibleChapters, setVisibleChapters] = useState(new Set());
   const [tocOpen, setTocOpen] = useState(false);
@@ -116,6 +129,7 @@ function BookView(props) {
                     </div>
                   ) : null}
                   <div className="detail">Published by Project Gutenberg</div>
+                  <div className="detail">{getCategoryLinks(categories)}</div>
                 </div>
               </div>
             </div>

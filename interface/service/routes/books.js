@@ -22,6 +22,47 @@ router.get('/get/:title', async (req, res, next) => {
   }
 });
 
+router.get('/get/:title/categories', async (req, res, next) => {
+  try {
+    const categories = await pool.query(
+      `SELECT category.* FROM books_category
+      INNER JOIN category ON category.id = books_category.category_id
+      WHERE book_id IN (SELECT id FROM books WHERE slug = $1);`,
+      [req.params.title],
+    );
+    res.json(categories.rows);
+  } catch (error) {
+    process.stdout.write(`${error}\n`);
+    res.sendStatus(400);
+  }
+});
+
+router.get('/category/get/:ids', async (req, res, next) => {
+  try {
+    let cat_ids = req.params.ids.split(",")
+    const categories = await pool.query(
+      `SELECT * FROM books where id = ANY(SELECT book_id from books_category GROUP BY book_id HAVING ARRAY_AGG(category_id) @> ($1));`,
+      [cat_ids],
+    );
+    res.json(categories.rows);
+  } catch (error) {
+    process.stdout.write(`${error}\n`);
+    res.sendStatus(400);
+  }
+});
+
+router.get('/categories/get', async (req, res, next) => {
+  try {
+    const categories = await pool.query(
+      `SELECT * FROM category;`,
+    );
+    res.json(categories.rows);
+  } catch (error) {
+    process.stdout.write(`${error}\n`);
+    res.sendStatus(400);
+  }
+});
+
 router.get('/get/:title/simple', async (req, res, next) => {
   try {
     const books = await pool.query(

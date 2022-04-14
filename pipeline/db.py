@@ -75,6 +75,19 @@ class db(object):
             FOREIGN KEY (book_id) REFERENCES books (id),
             CONSTRAINT unique_image_version UNIQUE(book_id, location, version)
         )''')
+        cur.execute('''CREATE TABLE IF NOT EXISTS category (
+            id SERIAL PRIMARY KEY,
+            name text,
+            UNIQUE(name)
+        )''')
+        cur.execute('''CREATE TABLE IF NOT EXISTS books_category (
+            id SERIAL PRIMARY KEY,
+            book_id integer NOT NULL,
+            category_id integer NOT NULL,
+            FOREIGN KEY (book_id) REFERENCES books (id),
+            FOREIGN KEY (category_id) REFERENCES category (id),
+            CONSTRAINT book_category_id_tbl_books_category UNIQUE(book_id, category_id)
+        )''')
         cur.execute('''CREATE OR REPLACE LANGUAGE plv8;''')
         cur.execute('''CREATE OR REPLACE FUNCTION unescape_html(html text) RETURNS text AS $$
             var entityPattern = /&([a-z]+);/ig;

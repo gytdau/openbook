@@ -7,6 +7,7 @@ import Home from '../Home/Home';
 import Search from '../Home/Search';
 import SimpleView from '../SimpleView/SimpleView';
 import BookSearch from "../BookSearch/BookSearch";
+import Category from "../Category/Category";
 
 function App() {
   return (
@@ -23,6 +24,12 @@ function App() {
         </Route>
         <Route path="/catalog">
           <Catalog />
+        </Route>
+        <Route path="/category/:category_ids">
+          <Category />
+        </Route>
+        <Route path="/category/">
+          <Category />
         </Route>
         <Route path="/immersive/:slug/:chapterSlug">
           <SimpleView />
