@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import BookNavbar from '../Book/BookNavbar';
 
+
 function getFirstChapter(chapters) {
   let keys = Object.keys(chapters);
   keys = keys.filter((value, index, arr) => value.length < 4);
@@ -69,7 +70,12 @@ function SimpleView(props) {
           };
         }
         break;
-
+      case 'goto':
+        {
+          return {
+            ...state, chapter: action.chapter, paragraph: action.paragraph, action: 1,
+          };
+        }
       case 'reset':
         return {
           chapter: 1, paragraph: 1, chapters: [], action: 1,
@@ -87,6 +93,17 @@ function SimpleView(props) {
     }
     return { ...state };
   }
+
+  function getChapterBySlug(paraphraphs, slug) {
+    for (let i = 0; i < paraphraphs.length; i++) {
+      const paragraph = paraphraphs[i];
+      if(paragraph.slug ==  slug)
+      {
+        return [paragraph.chapter_order, paragraph.paragraph_order];
+      }
+  }
+  return null
+}
 
   function repeatAction() {
     if (activeChapter.action == 1) {
@@ -161,6 +178,12 @@ function SimpleView(props) {
                 // console.log("limits_map", limits_map);
                 updateActiveChapter({ type: 'update', chapters: limits_map });
                 updateActiveChapter({ type: 'restart' });
+                let chapter = getChapterBySlug(data, chapterSlug);
+                console.log("SLUG FOUND", chapter);
+                if(chapter != null)
+                {
+                  updateActiveChapter({ type: 'goto', chapter:  chapter[0], paragraph: chapter[1]});
+                }
               });
           });
       });
