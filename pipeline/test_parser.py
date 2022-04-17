@@ -10,7 +10,7 @@ def print_result(result):
 
 
 def scaffold(text):
-    return BeautifulSoup(f"""<head>
+    return lambda : BeautifulSoup(f"""<head>
     <title>Title</title>
 </head>
 <body>
