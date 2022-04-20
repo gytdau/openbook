@@ -198,7 +198,7 @@ LIMIT
   }
 });
 
-router.get('/book-search/:query/:search', async (req, res, next) => {
+router.get('/book-search/:book_slug/:search', async (req, res, next) => {
   try {
     const result = await pool.query(
       `SELECT
@@ -210,12 +210,12 @@ router.get('/book-search/:query/:search', async (req, res, next) => {
       FROM
         chapters
       WHERE
-        searchable_tsvector @@ phraseto_tsquery('english', $3)
-        AND book_id = $4
+        book_id = ANY(select id from books where slug = $4)
+        AND searchable_tsvector @@ phraseto_tsquery('english', $3)
       ORDER BY rank DESC
       LIMIT 100;
       `,
-      [req.params.search,req.params.search,req.params.search],
+      [req.params.search,req.params.search,req.params.search,req.params.book_slug],
     );
     const books = result.rows;
     res.json(books);
