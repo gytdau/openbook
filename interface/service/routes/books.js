@@ -210,7 +210,8 @@ router.get('/book-search/:query/:search', async (req, res, next) => {
       FROM
         chapters
       WHERE
-        searchable_tsvector @@ to_tsquery($3)
+        searchable_tsvector @@ phraseto_tsquery('english', $3)
+        AND book_id = $4
       ORDER BY rank DESC
       LIMIT 100;
       `,
