@@ -250,7 +250,7 @@ function SimpleView(props) {
       <div className="container">
           <div className="content">
             <div class="spinner-border" role="status">
-              <span class="sr-only">Loading...</span>
+              <span class="sr-only"></span>
           </div>
         </div>
       </div>
