@@ -30,6 +30,7 @@ function getCategoryLinks(categories)
   ).reduce((prev, curr) => [prev, ', ', curr])]
 }
 
+/* Renders a book */
 function BookView(props) {
   const { book, chapterSlug, categories} = props;
   const [renderedChapters, setRenderedChapters] = useState([]);

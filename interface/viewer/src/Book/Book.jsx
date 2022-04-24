@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Redirect, useParams } from 'react-router-dom';
 import BookView from './BookView';
 
+/* Load the book data and then render the presentation component. */
 function Book() {
   const { slug, chapterSlug } = useParams();
 

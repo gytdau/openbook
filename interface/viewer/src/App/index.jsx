@@ -9,6 +9,7 @@ import SimpleView from '../SimpleView/SimpleView';
 import BookSearch from "../BookSearch/BookSearch";
 import Category from "../Category/Category";
 
+/* Render the app with React Router to deploy a single page app. */
 function App() {
   return (
     <Router>
